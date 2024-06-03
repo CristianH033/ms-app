@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
-import { VitePWA } from 'vite-plugin-pwa'
+// import { VitePWA } from 'vite-plugin-pwa'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -9,36 +9,36 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   plugins: [
     vue(),
-    VueDevTools(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'script-defer',
+    VueDevTools()
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   injectRegister: 'script-defer',
 
-      pwaAssets: {
-        disabled: false,
-        config: true
-      },
+    //   pwaAssets: {
+    //     disabled: false,
+    //     config: true
+    //   },
 
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true
-      },
+    //   workbox: {
+    //     globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+    //     cleanupOutdatedCaches: true,
+    //     clientsClaim: true
+    //   },
 
-      manifest: {
-        name: 'MS App',
-        short_name: 'MS App',
-        description: 'Miguel Santos Raffles App',
-        theme_color: '#ffffff'
-      },
+    //   manifest: {
+    //     name: 'MS App',
+    //     short_name: 'MS App',
+    //     description: 'Miguel Santos Raffles App',
+    //     theme_color: '#ffffff'
+    //   },
 
-      devOptions: {
-        enabled: true,
-        navigateFallback: 'index.html',
-        suppressWarnings: false,
-        type: 'module'
-      }
-    })
+    //   devOptions: {
+    //     enabled: false,
+    //     navigateFallback: 'index.html',
+    //     suppressWarnings: false,
+    //     type: 'module'
+    //   }
+    // })
   ],
   resolve: {
     alias: {
