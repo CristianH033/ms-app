@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 // import { VitePWA } from 'vite-plugin-pwa'
+import { compression } from 'vite-plugin-compression2'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -9,7 +10,7 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   plugins: [
     vue(),
-    VueDevTools()
+    VueDevTools(),
     // VitePWA({
     //   registerType: 'autoUpdate',
     //   injectRegister: 'script-defer',
@@ -38,7 +39,10 @@ export default defineConfig({
     //     suppressWarnings: false,
     //     type: 'module'
     //   }
-    // })
+    // }),
+    compression({
+      algorithm: 'brotliCompress'
+    })
   ],
   resolve: {
     alias: {
