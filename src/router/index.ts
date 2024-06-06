@@ -259,19 +259,22 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const userIsAuthenticated = useAuthStore().isAuthenticated
+  const authStore = useAuthStore()
   const toRequiresAuth = to.matched.some((record) => record.meta.requires_auth)
   const toRequiresGuest = to.matched.some((record) => record.meta.requires_guest)
 
+  // Asyncronously check if the user is authenticated
+  authStore.checkAuth()
+
   if (toRequiresAuth) {
-    if (!userIsAuthenticated) {
+    if (!authStore.isAuthenticated) {
       next({ name: 'login', query: { redirect: to.fullPath } })
       return
     }
   }
 
   if (toRequiresGuest) {
-    if (userIsAuthenticated) {
+    if (authStore.isAuthenticated) {
       next({ name: 'home' })
       return
     }

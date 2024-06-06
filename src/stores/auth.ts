@@ -1,4 +1,4 @@
-import { loginWithEmailPassword, logout, singupWithEmailPassword } from '@/lib/auth'
+import { checkAuth, loginWithEmailPassword, logout, singupWithEmailPassword } from '@/lib/auth'
 import { defineStore } from 'pinia'
 
 type User = {
@@ -60,6 +60,14 @@ export const useAuthStore = defineStore('auth', {
     reset() {
       this.user = null
       this.authenticated = false
+      this.isLoading = false
+      this.error = null
+      this.message = null
+      this.token = null
+      this.refreshToken = null
+    },
+    async checkAuth() {
+      this.authenticated = await checkAuth()
     }
   },
   persist: true
