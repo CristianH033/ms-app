@@ -1,9 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-// import { isAuthenticated } from '@/lib/supabase.client'
 import NotFoundErrorView from '@/views/NotFoundErrorView.vue'
 import LoadingIndicator from '@/components/LoadingIndicator.vue'
 import ErrorComponent from '@/components/ErrorComponent.vue'
 import { defineAsyncComponent, type AsyncComponentOptions } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
 type asyncComponentOptions = Omit<AsyncComponentOptions<unknown>, 'loader'>
 
@@ -258,35 +258,26 @@ const router = createRouter({
   ]
 })
 
-// router.beforeEach(async (to, from, next) => {
-//   const userIsAuthenticated = await isAuthenticated()
-//   const userIsGuest = !userIsAuthenticated
-//   const fromRequiresAuth = from.matched.some((record) => record.meta.requires_auth)
-//   const fromRequiresGuest = from.matched.some((record) => record.meta.requires_guest)
-//   const toRequiresAuth = to.matched.some((record) => record.meta.requires_auth)
-//   const toRequiresGuest = to.matched.some((record) => record.meta.requires_guest)
+router.beforeEach((to, from, next) => {
+  const userIsAuthenticated = useAuthStore().isAuthenticated
+  const toRequiresAuth = to.matched.some((record) => record.meta.requires_auth)
+  const toRequiresGuest = to.matched.some((record) => record.meta.requires_guest)
 
-//   if (fromRequiresAuth && toRequiresGuest && userIsAuthenticated) {
-//     next({ name: 'home' })
-//     return
-//   }
+  if (toRequiresAuth) {
+    if (!userIsAuthenticated) {
+      next({ name: 'login', query: { redirect: to.fullPath } })
+      return
+    }
+  }
 
-//   if (fromRequiresGuest && toRequiresAuth && userIsGuest) {
-//     next({ name: 'login' })
-//     return
-//   }
+  if (toRequiresGuest) {
+    if (userIsAuthenticated) {
+      next({ name: 'home' })
+      return
+    }
+  }
 
-//   if (toRequiresAuth && userIsGuest) {
-//     next({ name: 'login' })
-//     return
-//   }
-
-//   if (toRequiresGuest && userIsAuthenticated) {
-//     next({ name: 'home' })
-//     return
-//   }
-
-//   next()
-// })
+  next()
+})
 
 export default router

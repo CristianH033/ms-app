@@ -38,6 +38,7 @@
   }
 
   :root {
+    color-scheme: light dark;
     @apply box-border;
   }
 
@@ -94,30 +95,6 @@
 
   .pl-safe {
     padding-left: env(safe-area-inset-right);
-  }
-
-  .layout {
-    @apply w-screen min-h-dvh grid gap-0 grid-rows-[auto_1fr_auto] grid-cols-[1fr_1fr_1fr] auto-rows-[row] md:grid-cols-[10rem_1fr_1fr] md:grid-rows-[auto_1fr_1fr];
-  }
-
-  .app-bar {
-    @apply col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-10 p-2 h-16 grid grid-cols-[30%_auto_30%] bg-primary dark:bg-primary-dark text-on-primary dark:text-on-primary-dark md:col-span-3 md:row-start-1 md:row-end-2;
-  }
-
-  .main-content {
-    @apply p-4 col-span-3 row-start-2 row-end-3 md:col-span-2 md:row-start-2 md:row-end-4;
-  }
-
-  .nav-bar {
-    @apply col-span-3 row-start-3 row-end-3 w-full h-16 mx-0 flex flex-row items-center justify-center sticky bottom-0 z-10 rounded-t-xl bg-primary dark:bg-primary-dark text-on-primary dark:text-on-primary-dark pb-safe md:col-span-1 md:row-start-2 md:row-end-4 md:col-start-1 md:col-end-1 md:h-fit md:flex-col md:items-stretch md:top-20 md:p-2 md:bg-transparent md:dark:bg-transparent;
-  }
-
-  .nav-bar ul {
-    @apply flex flex-row gap-2 md:flex-col;
-  }
-
-  .nav-bar ul li {
-    @apply md:p-2 md:rounded-xl md:bg-primary md:dark:bg-primary-dark md:text-on-primary md:dark:text-on-primary-dark;
   }
 }
 

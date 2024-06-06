@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { supabase } from '@/lib/supabase.client'
-import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-const router = useRouter()
+const authStore = useAuthStore()
 
 const loading = ref(false)
 const email = ref('')
@@ -11,16 +10,10 @@ const password = ref('')
 
 const handleLogin = async () => {
   loading.value = true
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.value,
-    password: password.value
-  })
 
-  console.log(data, error)
+  await authStore.login(email.value, password.value)
 
   loading.value = false
-
-  router.push({ name: 'home' })
 }
 </script>
 

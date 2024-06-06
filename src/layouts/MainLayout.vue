@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { supabase } from '@/lib/supabase.client'
+import { useAuthStore } from '@/stores/auth'
 
 const menuItems = [
   {
@@ -22,29 +22,33 @@ const menuItems = [
 ]
 
 const logout = () => {
-  supabase.auth.signOut()
+  useAuthStore().logout()
 }
 </script>
 
 <template>
-  <div class="layout" style="">
-    <header class="app-bar">
-      <img
-        class="max-w-32 w-full h-full justify-self-start"
-        alt="Vue logo"
-        src="@/assets/img/logo.svg"
-      />
+  <div
+    class="w-screen min-h-dvh grid gap-0 grid-rows-[auto_1fr_auto] grid-cols-[1fr_1fr_1fr] auto-rows-[row] md:grid-cols-[10rem_1fr_1fr] md:grid-rows-[auto_1fr_1fr]"
+  >
+    <header
+      class="col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-10 p-2 h-16 flex flex-row justify-between bg-primary dark:bg-primary-dark text-on-primary dark:text-on-primary-dark"
+    >
+      <div class="max-w-32 w-full h-full justify-self-start">
+        <img class="w-full h-full" alt="Vue logo" src="@/assets/img/logo.svg" />
+      </div>
       <span class="justify-self-center self-center">MS App</span>
       <button class="max-w-32 w-full h-full justify-self-end" @click="logout">Logout</button>
     </header>
-    <main class="main-content">
+    <main class="p-4 col-span-3 row-start-2 row-end-3 md:col-span-2 md:row-start-2 md:row-end-4">
       <RouterView v-slot="{ Component, route }">
         <Transition name="fade" mode="out-in">
           <component :is="Component" :key="route.name" />
         </Transition>
       </RouterView>
     </main>
-    <nav class="nav-bar">
+    <nav
+      class="col-span-3 row-start-3 row-end-3 w-full h-16 mx-0 flex flex-row items-center justify-center sticky bottom-0 z-10 rounded-t-xl bg-primary dark:bg-primary-dark text-on-primary dark:text-on-primary-dark pb-safe md:col-span-1 md:row-start-2 md:row-end-4 md:col-start-1 md:col-end-1 md:h-fit md:flex-col md:items-stretch md:top-20 md:p-2 md:bg-transparent md:dark:bg-transparent"
+    >
       <ul class="flex flex-row gap-2 md:flex-col">
         <li
           v-for="item in menuItems"
@@ -58,28 +62,4 @@ const logout = () => {
   </div>
 </template>
 
-<style scoped lang="css">
-.fade-enter-from {
-  opacity: 0;
-}
-
-.fade-enter-to {
-  opacity: 1;
-}
-
-.fade-enter-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-leave-from {
-  opacity: 1;
-}
-
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-</style>
+<style scoped lang="css"></style>

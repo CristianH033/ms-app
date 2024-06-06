@@ -1,50 +1,46 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from 'vue-router'
-import { supabase } from './lib/supabase.client'
-import { onMounted } from 'vue'
-import type { Subscription } from '@supabase/supabase-js'
+import { onMounted, watch } from 'vue'
+import { useColorMode } from '@vueuse/core'
+import { useAuthStore } from './stores/auth'
+
+const colorMode = useColorMode({ emitAuto: true })
 
 const router = useRouter()
-let authListener: { subscription: Subscription } | null = null
 
-const listenToAuthChanges = () => {
-  const { data } = supabase.auth.onAuthStateChange((event) => {
-    console.log(event)
+const authStore = useAuthStore()
 
-    switch (event) {
-      case 'INITIAL_SESSION':
-        break
-      case 'SIGNED_IN':
-        if (router.currentRoute.value.meta?.requires_guess) {
-          router.push({ name: 'home' })
-        }
-        break
-      case 'SIGNED_OUT':
-        if (router.currentRoute.value.meta?.requires_auth) {
-          router.push({ name: 'login' })
-          cancelAuthListener()
-        }
-        break
-      case 'PASSWORD_RECOVERY':
-        break
-      case 'TOKEN_REFRESHED':
-        break
-      case 'USER_UPDATED':
-        break
-      default:
-        break
+authStore.$subscribe(() => {
+  if (authStore.isAuthenticated) {
+    if (router.currentRoute.value.query['redirect']) {
+      router.push({ path: router.currentRoute.value.query['redirect'] as string })
+    } else {
+      router.push({ name: 'home' })
     }
-  })
+  } else {
+    router.push({ name: 'login' })
+  }
+})
 
-  authListener = data
-}
+onMounted(() => {})
 
-const cancelAuthListener = () => {
-  authListener?.subscription.unsubscribe()
-}
-
-onMounted(() => {
-  listenToAuthChanges()
+watch(colorMode, () => {
+  const metaLight = document.querySelector(
+    'meta[name="theme-color"][media="(prefers-color-scheme: light)"]'
+  )
+  const metaDark = document.querySelector(
+    'meta[name="theme-color"][media="(prefers-color-scheme: dark)"]'
+  )
+  if (colorMode.value === 'dark') {
+    metaLight?.setAttribute('content', 'rgb(66, 0, 0)')
+    metaDark?.setAttribute('content', 'rgb(66, 0, 0)')
+  } else if (colorMode.value === 'light') {
+    metaLight?.setAttribute('content', 'rgb(96, 0, 0)')
+    metaDark?.setAttribute('content', 'rgb(96, 0, 0)')
+  } else if (colorMode.value === 'auto') {
+    metaLight?.setAttribute('content', 'rgb(96, 0, 0)')
+    metaDark?.setAttribute('content', 'rgb(66, 0, 0)')
+  }
 })
 </script>
 
@@ -56,7 +52,8 @@ onMounted(() => {
   </RouterView>
 </template>
 
-<style scoped lang="css">
+<style lang="css">
+/* Vue transitions */
 .fade-enter-from {
   opacity: 0;
 }
@@ -79,5 +76,33 @@ onMounted(() => {
 
 .fade-leave-active {
   transition: opacity 0.3s ease;
+}
+
+.zoom-enter-from {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.zoom-enter-to {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.zoom-enter-active {
+  transition: all 0.3s ease;
+}
+
+.zoom-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.zoom-leave-to {
+  opacity: 0;
+  transform: scale(1.1);
+}
+
+.zoom-leave-active {
+  transition: all 0.3s ease;
 }
 </style>
