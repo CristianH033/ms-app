@@ -4,9 +4,6 @@ import type { Database } from '@/types/supabase.db'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY as string
 
-console.log('VITE_SUPABASE_URL', supabaseUrl)
-console.log('VITE_SUPABASE_KEY', supabaseKey)
-
 const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
 const isAuthenticated = async () => {

@@ -41,7 +41,8 @@ export default defineConfig({
     //   }
     // }),
     compression({
-      algorithm: 'brotliCompress'
+      algorithm: 'brotliCompress',
+      deleteOriginalAssets: true
     })
   ],
   resolve: {

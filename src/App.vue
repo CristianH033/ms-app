@@ -18,6 +18,7 @@ authStore.$subscribe(() => {
       router.push({ name: 'home' })
     }
   } else {
+    authStore.logout()
     router.push({ name: 'login' })
   }
 })

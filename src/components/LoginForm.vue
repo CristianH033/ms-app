@@ -11,9 +11,15 @@ const password = ref('')
 const handleLogin = async () => {
   loading.value = true
 
-  await authStore.login(email.value, password.value)
-
-  loading.value = false
+  authStore
+    .login(email.value, password.value)
+    .then(() => {})
+    .catch((error) => {
+      console.log(error)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 </script>
 

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { singupWithEmailPassword } from '@/lib/auth'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const loading = ref(false)
 const firstName = ref('')
@@ -12,16 +14,15 @@ const password = ref('')
 const handleSignUp = async () => {
   loading.value = true
 
-  const data = await singupWithEmailPassword(
-    firstName.value,
-    lastName.value,
-    documentId.value,
-    email.value,
-    password.value
-  )
-
-  console.log(data)
-  loading.value = false
+  authStore
+    .register(firstName.value, lastName.value, documentId.value, email.value, password.value)
+    .then(() => {})
+    .catch((error) => {
+      console.log(error)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 </script>
 
