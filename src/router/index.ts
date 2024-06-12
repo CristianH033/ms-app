@@ -10,8 +10,8 @@ type asyncComponentOptions = Omit<AsyncComponentOptions<unknown>, 'loader'>
 const defaultOptions: asyncComponentOptions = {
   loadingComponent: LoadingIndicator,
   errorComponent: ErrorComponent,
-  delay: 100,
-  timeout: 100000
+  delay: 100
+  // timeout: 100000
 }
 
 const router = createRouter({
@@ -29,7 +29,7 @@ const router = createRouter({
       meta: { requires_auth: true },
       children: [
         {
-          path: '/',
+          path: '',
           name: 'home',
           component: defineAsyncComponent({
             loader: () => import('@/views/HomeView.vue'),
@@ -38,7 +38,7 @@ const router = createRouter({
           meta: { requires_auth: true }
         },
         {
-          path: '/raffles',
+          path: 'raffles',
           name: 'raffles',
           meta: { requires_auth: true },
           component: defineAsyncComponent({
@@ -47,7 +47,7 @@ const router = createRouter({
           })
         },
         {
-          path: '/raffles/:id',
+          path: 'raffles/:id',
           name: 'raffle',
           component: defineAsyncComponent({
             loader: () => import('@/views/RaffleView.vue'),
@@ -67,7 +67,7 @@ const router = createRouter({
           ]
         },
         {
-          path: '/lotteries',
+          path: 'lotteries',
           name: 'lotteries',
           meta: { requires_auth: true },
           component: defineAsyncComponent({
@@ -76,7 +76,7 @@ const router = createRouter({
           })
         },
         {
-          path: '/lotteries/:id',
+          path: 'lotteries/:id',
           name: 'lottery',
           component: defineAsyncComponent({
             loader: () => import('@/views/LotteryView.vue'),
@@ -96,7 +96,7 @@ const router = createRouter({
           ]
         },
         {
-          path: '/draws',
+          path: 'draws',
           name: 'draws',
           meta: { requires_auth: true },
           component: defineAsyncComponent({
@@ -105,7 +105,7 @@ const router = createRouter({
           })
         },
         {
-          path: '/draws/:id',
+          path: 'draws/:id',
           name: 'draw',
           component: defineAsyncComponent({
             loader: () => import('@/views/DrawView.vue'),
@@ -125,7 +125,7 @@ const router = createRouter({
           ]
         },
         {
-          path: '/sellers',
+          path: 'sellers',
           name: 'sellers',
           component: defineAsyncComponent({
             loader: () => import('@/views/SellersView.vue'),
@@ -134,7 +134,7 @@ const router = createRouter({
           meta: { requires_auth: true }
         },
         {
-          path: '/sellers/:id',
+          path: 'sellers/:id',
           name: 'seller',
           component: defineAsyncComponent({
             loader: () => import('@/views/SellerView.vue'),
@@ -154,7 +154,7 @@ const router = createRouter({
           ]
         },
         {
-          path: '/buyers',
+          path: 'buyers',
           name: 'buyers',
           component: defineAsyncComponent({
             loader: () => import('@/views/CustomersView.vue'),
@@ -163,7 +163,7 @@ const router = createRouter({
           meta: { requires_auth: true }
         },
         {
-          path: '/buyers/:id',
+          path: 'buyers/:id',
           name: 'buyer',
           component: defineAsyncComponent({
             loader: () => import('@/views/CustomerView.vue'),
@@ -183,7 +183,7 @@ const router = createRouter({
           ]
         },
         {
-          path: '/calendar',
+          path: 'calendar',
           name: 'calendar',
           component: defineAsyncComponent({
             loader: () => import('@/views/CalendarView.vue'),
@@ -192,7 +192,7 @@ const router = createRouter({
           meta: { requires_auth: true }
         },
         {
-          path: '/notifications',
+          path: 'notifications',
           name: 'notifications',
           component: defineAsyncComponent({
             loader: () => import('@/views/NotificationsView.vue'),
@@ -201,7 +201,7 @@ const router = createRouter({
           meta: { requires_auth: true }
         },
         {
-          path: '/account',
+          path: 'account',
           name: 'account',
           component: defineAsyncComponent({
             loader: () => import('@/views/AccountView.vue'),
@@ -221,7 +221,7 @@ const router = createRouter({
       redirect: { name: 'login' },
       children: [
         {
-          path: '/login',
+          path: 'login',
           name: 'login',
           component: defineAsyncComponent({
             loader: () => import('@/views/LoginView.vue'),
@@ -230,7 +230,7 @@ const router = createRouter({
           meta: { requires_auth: false, requires_guest: true }
         },
         {
-          path: '/register',
+          path: 'register',
           name: 'register',
           component: defineAsyncComponent({
             loader: () => import('@/views/RegisterView.vue'),
