@@ -3,6 +3,7 @@ import { RouterView, useRouter } from 'vue-router'
 import { onMounted, watch } from 'vue'
 import { useColorMode } from '@vueuse/core'
 import { useAuthStore } from './stores/auth'
+import { setMetaThemeColor, setRootColorScheme } from './lib/theme.utils'
 
 const colorMode = useColorMode({ emitAuto: true })
 
@@ -25,24 +26,14 @@ authStore.$subscribe(() => {
 
 onMounted(() => {})
 
-watch(colorMode, () => {
-  const metaLight = document.querySelector(
-    'meta[name="theme-color"][media="(prefers-color-scheme: light)"]'
-  )
-  const metaDark = document.querySelector(
-    'meta[name="theme-color"][media="(prefers-color-scheme: dark)"]'
-  )
-  if (colorMode.value === 'dark') {
-    metaLight?.setAttribute('content', 'rgb(66, 0, 0)')
-    metaDark?.setAttribute('content', 'rgb(66, 0, 0)')
-  } else if (colorMode.value === 'light') {
-    metaLight?.setAttribute('content', 'rgb(96, 0, 0)')
-    metaDark?.setAttribute('content', 'rgb(96, 0, 0)')
-  } else if (colorMode.value === 'auto') {
-    metaLight?.setAttribute('content', 'rgb(96, 0, 0)')
-    metaDark?.setAttribute('content', 'rgb(66, 0, 0)')
-  }
-})
+watch(
+  colorMode,
+  (value) => {
+    setMetaThemeColor(value, 'hsl(221.2 83.2% 53.3%)', 'hsl(222.2 84% 4.9)')
+    setRootColorScheme(value)
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

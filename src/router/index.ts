@@ -38,6 +38,14 @@ const router = createRouter({
           meta: { requires_auth: true }
         },
         {
+          path: 'loading-page',
+          name: 'loading-page',
+          component: defineAsyncComponent({
+            loader: () => import('@/components/LoadingIndicator.vue'),
+            ...defaultOptions
+          })
+        },
+        {
           path: 'raffles',
           name: 'raffles',
           meta: { requires_auth: true },
@@ -246,6 +254,14 @@ const router = createRouter({
       name: 'about',
       component: defineAsyncComponent({
         loader: () => import('../views/AboutView.vue'),
+        ...defaultOptions
+      })
+    },
+    {
+      path: '/loading',
+      name: 'loading',
+      component: defineAsyncComponent({
+        loader: () => import('@/components/LoadingIndicator.vue'),
         ...defaultOptions
       })
     },

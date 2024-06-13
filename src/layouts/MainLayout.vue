@@ -31,7 +31,7 @@ const logout = () => {
     class="w-screen min-h-dvh grid gap-0 grid-rows-[auto_1fr_auto] grid-cols-[1fr_1fr_1fr] auto-rows-[row] md:grid-cols-[10rem_1fr_1fr] md:grid-rows-[auto_1fr_1fr]"
   >
     <header
-      class="col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-10 p-2 h-16 flex flex-row justify-between bg-primary dark:bg-primary-dark text-on-primary dark:text-on-primary-dark"
+      class="col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-10 p-2 h-16 flex flex-row justify-between bg-primary dark:bg-background text-primary-foreground dark:text-foreground"
     >
       <div class="max-w-32 w-full h-full justify-self-start">
         <img class="w-full h-full" alt="Vue logo" src="@/assets/img/logo.svg" />
