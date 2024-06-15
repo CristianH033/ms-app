@@ -4,6 +4,7 @@ import LoadingIndicator from '@/components/LoadingIndicator.vue'
 import ErrorComponent from '@/components/ErrorComponent.vue'
 import { defineAsyncComponent, type AsyncComponentOptions } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 
 type asyncComponentOptions = Omit<AsyncComponentOptions<unknown>, 'loader'>
 
@@ -21,207 +22,216 @@ const router = createRouter({
     {
       path: '/',
       name: 'main',
+      meta: { title: 'Inicio', requires_auth: true },
       component: defineAsyncComponent({
         loader: () => import('@/layouts/MainLayout.vue'),
         ...defaultOptions
       }),
       redirect: { name: 'home' },
-      meta: { requires_auth: true },
       children: [
         {
-          path: '',
-          name: 'home',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/HomeView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true }
+          path: 'home',
+          meta: { title: 'Inicio', requires_auth: true },
+          children: [
+            {
+              path: '',
+              name: 'home',
+              meta: { title: 'Inicio', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/HomeView.vue'),
+                ...defaultOptions
+              })
+            },
+            {
+              path: 'raffles',
+              name: 'raffles',
+              meta: { title: 'Rifas', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/RafflesView.vue'),
+                ...defaultOptions
+              })
+            },
+            {
+              path: 'raffles/:id',
+              name: 'raffle',
+              meta: { title: 'Rifas', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/RaffleView.vue'),
+                ...defaultOptions
+              }),
+              children: [
+                {
+                  path: '/raffles/:id/tickets',
+                  name: 'raffle-tickets',
+                  meta: { title: 'Boletas', requires_auth: true },
+                  component: defineAsyncComponent({
+                    loader: () => import('@/components/TicketsList.vue'),
+                    ...defaultOptions
+                  })
+                }
+              ]
+            },
+            {
+              path: 'lotteries',
+              name: 'lotteries',
+              meta: { title: 'Loterías', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/LotteriesView.vue'),
+                ...defaultOptions
+              })
+            },
+            {
+              path: 'lotteries/:id',
+              name: 'lottery',
+              meta: { title: 'Loterías', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/LotteryView.vue'),
+                ...defaultOptions
+              }),
+
+              children: [
+                {
+                  path: '/lotteries/:id/draws',
+                  name: 'lottery-draws',
+                  meta: { title: 'Sorteos', requires_auth: true },
+                  component: defineAsyncComponent({
+                    loader: () => import('@/components/DrawsList.vue'),
+                    ...defaultOptions
+                  })
+                }
+              ]
+            },
+            {
+              path: 'draws',
+              name: 'draws',
+              meta: { title: 'Sorteos', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/DrawsView.vue'),
+                ...defaultOptions
+              })
+            },
+            {
+              path: 'draws/:id',
+              name: 'draw',
+              meta: { title: 'Sorteos', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/DrawView.vue'),
+                ...defaultOptions
+              }),
+              children: [
+                {
+                  path: '/draws/:id/raffles',
+                  name: 'draw-raffles',
+                  meta: { title: 'Rifas', requires_auth: true },
+                  component: defineAsyncComponent({
+                    loader: () => import('@/components/RafflesList.vue'),
+                    ...defaultOptions
+                  })
+                }
+              ]
+            },
+            {
+              path: 'sellers',
+              name: 'sellers',
+              meta: { title: 'Vendedores', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/SellersView.vue'),
+                ...defaultOptions
+              })
+            },
+            {
+              path: 'sellers/:id',
+              name: 'seller',
+              meta: { title: 'Vendedores', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/SellerView.vue'),
+                ...defaultOptions
+              }),
+              children: [
+                {
+                  path: '/sellers/:id/tickets',
+                  name: 'seller-tickets',
+                  meta: { title: 'Boletas', requires_auth: true },
+                  component: defineAsyncComponent({
+                    loader: () => import('@/components/TicketsList.vue'),
+                    ...defaultOptions
+                  })
+                }
+              ]
+            },
+            {
+              path: 'buyers',
+              name: 'buyers',
+              meta: { title: 'Compradores', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/CustomersView.vue'),
+                ...defaultOptions
+              })
+            },
+            {
+              path: 'buyers/:id',
+              name: 'buyer',
+              meta: { title: 'Compradores', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/views/CustomerView.vue'),
+                ...defaultOptions
+              }),
+              children: [
+                {
+                  path: '/buyers/:id/tickets',
+                  name: 'buyer-tickets',
+                  meta: { title: 'Boletas', requires_auth: true },
+                  component: defineAsyncComponent({
+                    loader: () => import('@/components/TicketsList.vue'),
+                    ...defaultOptions
+                  })
+                }
+              ]
+            }
+          ]
         },
         {
           path: 'loading-page',
           name: 'loading-page',
+          meta: { title: 'Cargando página', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/components/LoadingIndicator.vue'),
             ...defaultOptions
           })
         },
         {
-          path: 'raffles',
-          name: 'raffles',
-          meta: { requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/views/RafflesView.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'raffles/:id',
-          name: 'raffle',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/RaffleView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true },
-          children: [
-            {
-              path: '/raffles/:id/tickets',
-              name: 'raffle-tickets',
-              component: defineAsyncComponent({
-                loader: () => import('@/components/TicketsList.vue'),
-                ...defaultOptions
-              }),
-              meta: { requires_auth: true }
-            }
-          ]
-        },
-        {
-          path: 'lotteries',
-          name: 'lotteries',
-          meta: { requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/views/LotteriesView.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'lotteries/:id',
-          name: 'lottery',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/LotteryView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true },
-          children: [
-            {
-              path: '/lotteries/:id/draws',
-              name: 'lottery-draws',
-              component: defineAsyncComponent({
-                loader: () => import('@/components/DrawsList.vue'),
-                ...defaultOptions
-              }),
-              meta: { requires_auth: true }
-            }
-          ]
-        },
-        {
-          path: 'draws',
-          name: 'draws',
-          meta: { requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/views/DrawsView.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'draws/:id',
-          name: 'draw',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/DrawView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true },
-          children: [
-            {
-              path: '/draws/:id/raffles',
-              name: 'draw-raffles',
-              component: defineAsyncComponent({
-                loader: () => import('@/components/RafflesList.vue'),
-                ...defaultOptions
-              }),
-              meta: { requires_auth: true }
-            }
-          ]
-        },
-        {
-          path: 'sellers',
-          name: 'sellers',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/SellersView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true }
-        },
-        {
-          path: 'sellers/:id',
-          name: 'seller',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/SellerView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true },
-          children: [
-            {
-              path: '/sellers/:id/tickets',
-              name: 'seller-tickets',
-              component: defineAsyncComponent({
-                loader: () => import('@/components/TicketsList.vue'),
-                ...defaultOptions
-              }),
-              meta: { requires_auth: true }
-            }
-          ]
-        },
-        {
-          path: 'buyers',
-          name: 'buyers',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/CustomersView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true }
-        },
-        {
-          path: 'buyers/:id',
-          name: 'buyer',
-          component: defineAsyncComponent({
-            loader: () => import('@/views/CustomerView.vue'),
-            ...defaultOptions
-          }),
-          meta: { requires_auth: true },
-          children: [
-            {
-              path: '/buyers/:id/tickets',
-              name: 'buyer-tickets',
-              component: defineAsyncComponent({
-                loader: () => import('@/components/TicketsList.vue'),
-                ...defaultOptions
-              }),
-              meta: { requires_auth: true }
-            }
-          ]
-        },
-        {
           path: 'calendar',
           name: 'calendar',
+          meta: { title: 'Calendario', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/CalendarView.vue'),
             ...defaultOptions
-          }),
-          meta: { requires_auth: true }
+          })
         },
         {
           path: 'notifications',
           name: 'notifications',
+          meta: { title: 'Notificaciones', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/NotificationsView.vue'),
             ...defaultOptions
-          }),
-          meta: { requires_auth: true }
+          })
         },
         {
           path: 'account',
           name: 'account',
+          meta: { title: 'Cuenta', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/AccountView.vue'),
             ...defaultOptions
-          }),
-          meta: { requires_auth: true }
+          })
         }
       ]
     },
     {
       path: '/',
       name: 'auth',
+      meta: { title: 'Iniciar sesión', requires_auth: false, requires_guest: true },
       component: defineAsyncComponent({
         loader: () => import('@/layouts/AuthLayout.vue'),
         ...defaultOptions
@@ -231,23 +241,28 @@ const router = createRouter({
         {
           path: 'login',
           name: 'login',
+          meta: { title: 'Iniciar sesión', requires_auth: false, requires_guest: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/LoginView.vue'),
             ...defaultOptions
-          }),
-          meta: { requires_auth: false, requires_guest: true }
+          })
         },
         {
           path: 'register',
           name: 'register',
+          meta: { title: 'Registrarse', requires_auth: false, requires_guest: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/RegisterView.vue'),
             ...defaultOptions
-          }),
-          meta: { requires_auth: false, requires_guest: true }
+          })
         }
-      ],
-      meta: { requires_auth: false, requires_guest: true }
+      ]
+    },
+    {
+      path: '/empty-page',
+      name: 'empty-page',
+      meta: { title: 'Página vacía', requires_auth: false, requires_guest: false },
+      component: NotFoundErrorView
     },
     {
       path: '/about',
@@ -260,6 +275,7 @@ const router = createRouter({
     {
       path: '/loading',
       name: 'loading',
+      meta: { title: 'Cargando..', requires_auth: false, requires_guest: false },
       component: defineAsyncComponent({
         loader: () => import('@/components/LoadingIndicator.vue'),
         ...defaultOptions
@@ -268,10 +284,16 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: '404',
-      component: NotFoundErrorView,
-      meta: { requires_auth: false, requires_guest: false }
+      meta: { title: 'Página no encontrada', requires_auth: false, requires_guest: false },
+      component: NotFoundErrorView
     }
   ]
+})
+
+router.afterEach((to) => {
+  const appStore = useAppStore()
+
+  appStore.setAppTitle(to.meta.title ? `${to.meta.title as string} - MS App` : 'MS App')
 })
 
 router.beforeEach((to, from, next) => {

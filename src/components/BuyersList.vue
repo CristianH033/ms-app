@@ -13,7 +13,7 @@ const props = defineProps({
   <div>
     <ul>
       <li v-for="buyer in props.buyers" :key="buyer.id">
-        <RouterLink :to="`/buyers/${buyer.id}`">{{ buyer.name }}</RouterLink>
+        <RouterLink :to="{ name: 'buyer', params: { id: buyer.id } }">{{ buyer.name }}</RouterLink>
       </li>
     </ul>
   </div>

@@ -15,7 +15,7 @@ const handleSignUp = async () => {
   loading.value = true
 
   authStore
-    .register(firstName.value, lastName.value, documentId.value, email.value, password.value)
+    .register(firstName.value, lastName.value, email.value, password.value)
     .then(() => {})
     .catch((error) => {
       console.log(error)

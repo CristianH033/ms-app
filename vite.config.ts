@@ -42,6 +42,7 @@ export default defineConfig({
     //     type: 'module'
     //   }
     // }),
+    compression({ algorithm: 'gzip' }),
     compression({
       algorithm: 'brotliCompress',
       deleteOriginalAssets: true
@@ -51,5 +52,6 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+  esbuild: { legalComments: 'none' }
 })

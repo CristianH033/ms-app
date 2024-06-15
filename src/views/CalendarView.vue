@@ -1,5 +1,8 @@
+<script setup lang="ts">
+import { Calendar } from '@/components/ui/calendar'
+</script>
 <template>
   <div>
-    <h1>Calendar</h1>
+    <Calendar />
   </div>
 </template>

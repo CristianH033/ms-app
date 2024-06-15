@@ -5,6 +5,6 @@ import { RouterLink } from 'vue-router'
 <template>
   <div class="w-full">
     <h1>Page Not Found</h1>
-    <RouterLink to="/">Go Home</RouterLink>
+    <RouterLink :to="{ name: 'home' }">Go Home</RouterLink>
   </div>
 </template>

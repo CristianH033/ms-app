@@ -14,7 +14,7 @@ const props = defineProps({
   <div>
     <ul>
       <li v-for="draw in props.draws" :key="draw.id">
-        <RouterLink :to="`/draws/${draw.id}`">{{ draw.name }}</RouterLink>
+        <RouterLink :to="{ name: 'draw', params: { id: draw.id } }">{{ draw.name }}</RouterLink>
       </li>
     </ul>
   </div>

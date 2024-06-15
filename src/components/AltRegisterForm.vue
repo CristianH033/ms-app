@@ -23,7 +23,6 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const firstName = ref('')
 const lastName = ref('')
-const documentId = ref('')
 const email = ref('')
 const password = ref('')
 
@@ -31,7 +30,7 @@ const handleSignUp = async () => {
   loading.value = true
   // await new Promise((resolve) => setTimeout(resolve, 2000))
   authStore
-    .register(firstName.value, lastName.value, documentId.value, email.value, password.value)
+    .register(firstName.value, lastName.value, email.value, password.value)
     .then(() => {})
     .catch((error) => {
       console.log(error)
@@ -112,7 +111,9 @@ const handleSignUp = async () => {
           <Separator />
           <p class="text-left self-end text-sm text-muted-foreground">
             Ya tienes una cuenta?
-            <RouterLink class="underline underline-offset-4" to="/login">Iniciar sesión</RouterLink>
+            <RouterLink class="underline underline-offset-4" :to="{ name: 'login' }"
+              >Iniciar sesión</RouterLink
+            >
           </p>
         </CardFooter>
       </Card>

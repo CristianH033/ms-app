@@ -45,20 +45,8 @@ export const useAuthStore = defineStore('auth', {
       this.reset()
       return true
     },
-    async register(
-      firstName: string,
-      lastName: string,
-      documentId: string,
-      email: string,
-      password: string
-    ) {
-      const { user } = await singupWithEmailPassword(
-        firstName,
-        lastName,
-        documentId,
-        email,
-        password
-      )
+    async register(firstName: string, lastName: string, email: string, password: string) {
+      const { user } = await singupWithEmailPassword(firstName, lastName, email, password)
 
       this.user = {
         id: user?.id || '',

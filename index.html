@@ -6,10 +6,69 @@
     <meta name="theme-color" content="rgb(150, 50, 0)" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="rgb(50, 10, 0)" media="(prefers-color-scheme: dark)" />
 
-    <title>Vite App</title>
+    <title>MS App</title>
+
+    <style>
+      #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100dvh;
+        background-color: hsl(222.2 84% 4.9%);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="app" vaul-drawer-wrapper class="bg-background w-screen min-h-dvh h-0"></div>
+    <div id="app" vaul-drawer-wrapper class="bg-background w-screen min-h-dvh"></div>
+    <div id="loading-overlay">
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 1rem;
+        "
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="3rem"
+          height="3rem"
+          viewBox="0 0 24 24"
+          style="animation: 0.75s linear infinite spin"
+        >
+          <path
+            fill="white"
+            d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
+            opacity="0.25"
+          />
+          <circle cx="12" cy="2.5" r="1.5" fill="white"></circle>
+        </svg>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

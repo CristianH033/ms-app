@@ -166,21 +166,18 @@ export type Database = {
       }
       profiles: {
         Row: {
-          document_id: string | null
           first_name: string | null
           id: string
           image_url: string | null
           last_name: string | null
         }
         Insert: {
-          document_id?: string | null
           first_name?: string | null
           id: string
           image_url?: string | null
           last_name?: string | null
         }
         Update: {
-          document_id?: string | null
           first_name?: string | null
           id?: string
           image_url?: string | null
@@ -333,7 +330,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      sync_user_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

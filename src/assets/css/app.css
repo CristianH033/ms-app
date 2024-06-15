@@ -134,3 +134,9 @@
     padding-left: env(safe-area-inset-right);
   }
 }
+
+@layer components {
+}
+
+@layer utilities {
+}

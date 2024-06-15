@@ -1,4 +1,5 @@
 import './assets/css/app.css'
+import { removeOverlay } from './startup'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -16,3 +17,5 @@ app.use(pinia)
 app.use(router)
 
 app.mount('#app')
+
+removeOverlay()

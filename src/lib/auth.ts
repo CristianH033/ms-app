@@ -1,10 +1,7 @@
-import type { Subscription } from '@supabase/supabase-js'
 import { supabase } from './supabase.client'
 
-let authListener: { subscription: Subscription } | null = null
-
-const listenToAuthChanges = () => {
-  const { data } = supabase.auth.onAuthStateChange((event) => {
+export const listenToAuthChanges = () => {
+  const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
     console.log(event)
 
     switch (event) {
@@ -31,11 +28,7 @@ const listenToAuthChanges = () => {
     }
   })
 
-  authListener = data
-}
-
-const cancelAuthListener = () => {
-  authListener?.subscription.unsubscribe()
+  return authListener
 }
 
 export const loginWithEmailPassword = async (email: string, password: string) => {
@@ -51,7 +44,6 @@ export const loginWithEmailPassword = async (email: string, password: string) =>
 export const singupWithEmailPassword = async (
   firstName: string,
   lastName: string,
-  documentId: string,
   email: string,
   password: string
 ) => {
@@ -61,8 +53,7 @@ export const singupWithEmailPassword = async (
     options: {
       data: {
         first_name: firstName,
-        last_name: lastName,
-        document_id: documentId
+        last_name: lastName
       }
     }
   })

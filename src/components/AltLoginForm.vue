@@ -92,7 +92,9 @@ const handleLogin = async () => {
           <Separator />
           <p class="text-left self-end text-sm text-muted-foreground">
             No tienes una cuenta?
-            <RouterLink class="underline underline-offset-4" to="/register">Registrarse</RouterLink>
+            <RouterLink class="underline underline-offset-4" :to="{ name: 'register' }"
+              >Registrarse</RouterLink
+            >
           </p>
         </CardFooter>
       </Card>
