@@ -32,13 +32,7 @@ export const listenToAuthChanges = () => {
 }
 
 export const loginWithEmailPassword = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return data
+  return await supabase.auth.signInWithPassword({ email, password })
 }
 
 export const singupWithEmailPassword = async (

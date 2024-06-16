@@ -2,11 +2,11 @@ import { checkAuth, loginWithEmailPassword, logout, singupWithEmailPassword } fr
 import { defineStore } from 'pinia'
 
 type User = {
-  id: string
+  id: string | undefined
   email: string | undefined
-  first_name: string
-  last_name: string
-  document_id: string
+  first_name: string | undefined
+  last_name: string | undefined
+  document_id: string | undefined
 } | null
 
 export const useAuthStore = defineStore('auth', {
@@ -26,14 +26,21 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(email: string, password: string) {
-      const { user } = await loginWithEmailPassword(email, password)
+      const {
+        data: { user },
+        error
+      } = await loginWithEmailPassword(email, password)
+
+      if (error) {
+        throw error
+      }
 
       this.user = {
-        id: user.id,
-        email: user.email,
-        first_name: user.user_metadata.first_name,
-        last_name: user.user_metadata.last_name,
-        document_id: user.user_metadata.document_id
+        id: user?.id,
+        email: user?.email,
+        first_name: user?.user_metadata.first_name,
+        last_name: user?.user_metadata.last_name,
+        document_id: user?.user_metadata.document_id
       }
 
       this.authenticated = true
