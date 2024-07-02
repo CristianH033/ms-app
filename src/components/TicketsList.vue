@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getAllTicketsByRaffle } from '@/lib/api'
+import { getAllTicketsByRaffle } from '@/lib/api/tickets'
 import type { Tables } from '@/types/supabase.db'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'

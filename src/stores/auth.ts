@@ -1,4 +1,4 @@
-import { checkAuth, loginWithEmailPassword, logout, singupWithEmailPassword } from '@/lib/auth'
+import { checkAuth, loginWithEmailPassword, logout, singupWithEmailPassword } from '@/lib/api/auth'
 import { defineStore } from 'pinia'
 
 type User = {

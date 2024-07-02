@@ -13,7 +13,7 @@ onMounted(() => {
   <div>
     <h2>Drawing View</h2>
     <div>
-      <span>{{ draw?.name }} - {{ draw?.description }}</span>
+      <span>{{ draw?.name }}</span>
     </div>
   </div>
 </template>

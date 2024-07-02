@@ -9,6 +9,7 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/ms-app/',
   plugins: [
     Icons({ compiler: 'vue3' }),
     vue(),
@@ -42,10 +43,11 @@ export default defineConfig({
     //     type: 'module'
     //   }
     // }),
+    compression({ algorithm: 'deflate' }),
     compression({ algorithm: 'gzip' }),
     compression({
       algorithm: 'brotliCompress',
-      deleteOriginalAssets: true
+      deleteOriginalAssets: false
     })
   ],
   resolve: {

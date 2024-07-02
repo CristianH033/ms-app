@@ -47,7 +47,7 @@ const router = createRouter({
               name: 'raffles',
               meta: { title: 'Rifas', requires_auth: true },
               component: defineAsyncComponent({
-                loader: () => import('@/views/RafflesView.vue'),
+                loader: () => import('@/views/HomeView.vue'),
                 ...defaultOptions
               })
             },
@@ -131,35 +131,6 @@ const router = createRouter({
               ]
             },
             {
-              path: 'sellers',
-              name: 'sellers',
-              meta: { title: 'Vendedores', requires_auth: true },
-              component: defineAsyncComponent({
-                loader: () => import('@/views/SellersView.vue'),
-                ...defaultOptions
-              })
-            },
-            {
-              path: 'sellers/:id',
-              name: 'seller',
-              meta: { title: 'Vendedores', requires_auth: true },
-              component: defineAsyncComponent({
-                loader: () => import('@/views/SellerView.vue'),
-                ...defaultOptions
-              }),
-              children: [
-                {
-                  path: '/sellers/:id/tickets',
-                  name: 'seller-tickets',
-                  meta: { title: 'Boletas', requires_auth: true },
-                  component: defineAsyncComponent({
-                    loader: () => import('@/components/TicketsList.vue'),
-                    ...defaultOptions
-                  })
-                }
-              ]
-            },
-            {
               path: 'buyers',
               name: 'buyers',
               meta: { title: 'Compradores', requires_auth: true },
@@ -196,6 +167,44 @@ const router = createRouter({
           meta: { title: 'Cargando página', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/components/LoadingIndicator.vue'),
+            ...defaultOptions
+          })
+        },
+        {
+          path: 'sellers',
+          name: 'sellers',
+          meta: { title: 'Vendedores', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/views/SellersView.vue'),
+            ...defaultOptions
+          })
+        },
+        {
+          path: 'sellers/:id',
+          name: 'seller',
+          meta: { title: 'Vendedores', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/views/SellerView.vue'),
+            ...defaultOptions
+          }),
+          children: [
+            {
+              path: '/sellers/:id/tickets',
+              name: 'seller-tickets',
+              meta: { title: 'Boletas', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import('@/components/TicketsList.vue'),
+                ...defaultOptions
+              })
+            }
+          ]
+        },
+        {
+          path: 'form_test',
+          name: 'form_test',
+          meta: { title: 'Form test', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/components/forms/RaffleForm.vue'),
             ...defaultOptions
           })
         },
@@ -293,7 +302,7 @@ const router = createRouter({
 router.afterEach((to) => {
   const appStore = useAppStore()
 
-  appStore.setAppTitle(to.meta.title ? `${to.meta.title as string} - MS App` : 'MS App')
+  appStore.setAppTitle(to.meta.title ? `${to.meta.title as string}` : 'MS App')
 })
 
 router.beforeEach((to, from, next) => {

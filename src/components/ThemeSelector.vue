@@ -12,17 +12,14 @@ import { computed } from 'vue'
 const colorMode = useColorMode({ emitAuto: true })
 
 const lightIconComponent = computed(() => {
-  console.log('Icon light')
   return colorMode.value === 'light' ? SolarSunBoldDuotone : SolarSunLineDuotone
 })
 
 const autoIconComponent = computed(() => {
-  console.log('Icon auto')
   return colorMode.value === 'auto' ? SolarMonitorBoldDuotone : SolarMonitorLineDuotone
 })
 
 const darkIconComponent = computed(() => {
-  console.log('Icon dark')
   return colorMode.value === 'dark' ? SolarMoonBoldDuotone : SolarMoonLineDuotone
 })
 </script>

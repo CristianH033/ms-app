@@ -1,5 +1,7 @@
+import { type Config } from 'tailwindcss'
 import animate from 'tailwindcss-animate'
 import containerQueries from '@tailwindcss/container-queries'
+import plugin from 'tailwindcss'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -21,6 +23,7 @@ export default {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
+        'background-elevated': 'hsl(var(--background-elevated))',
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -55,24 +58,27 @@ export default {
         xl: 'calc(var(--radius) + 4px)',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)'
+        sm: 'calc(var(--radius) - 4px)',
+        xs: 'calc(var(--radius) - 6px)',
+        '2xs': 'calc(var(--radius) - 8px)',
+        '3xs': 'calc(var(--radius) - 10px)'
       },
       keyframes: {
         'accordion-down': {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' }
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 }
+          to: { height: '0' }
         },
         'collapsible-down': {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: 'var(--radix-collapsible-content-height)' }
         },
         'collapsible-up': {
           from: { height: 'var(--radix-collapsible-content-height)' },
-          to: { height: 0 }
+          to: { height: '0' }
         }
       },
       animation: {
@@ -84,4 +90,4 @@ export default {
     }
   },
   plugins: [animate, containerQueries]
-}
+} satisfies Config

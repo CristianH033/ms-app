@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BuyersList from '@/components/BuyersList.vue'
-import { getAllBuyers } from '@/lib/api'
+import { getAllBuyers } from '@/lib/api/buyers'
 import type { Tables } from '@/types/supabase.db'
 import { onMounted, ref } from 'vue'
 

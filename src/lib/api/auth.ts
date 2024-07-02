@@ -1,4 +1,4 @@
-import { supabase } from './supabase.client'
+import { supabase } from '../supabase.client'
 
 export const listenToAuthChanges = () => {
   const { data: authListener } = supabase.auth.onAuthStateChange((event) => {

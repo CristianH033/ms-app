@@ -32,6 +32,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
+    --background-elevated: 210 40% 96.1%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -63,6 +64,7 @@
 
   .dark {
     --background: 222.2 84% 4.9%;
+    --background-elevated: 220.8 39.7% 12.4%;
     --foreground: 210 40% 98%;
 
     --card: 222.2 84% 4.9%;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Tables } from '@/types/supabase.db'
-import { getBuyerById } from '@/lib/api'
+import { getBuyerById } from '@/lib/api/buyers'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
