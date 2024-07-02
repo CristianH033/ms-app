@@ -52,8 +52,6 @@ useIntersectionObserver(
 onMounted(async () => {
   loading.value = true
 
-  // await new Promise((resolve) => setTimeout(resolve, 5000))
-
   await getAllRaffles()
     .then((data) => {
       raffles.value = data
@@ -103,9 +101,9 @@ onMounted(async () => {
               <AlertDialogCancel as-child>
                 <Button variant="secondary">Cancelar</Button>
               </AlertDialogCancel>
-              <AlertDialogAction as-child>
-                <Button type="submit" form="raffle-form">Crear</Button>
-              </AlertDialogAction>
+              <!-- <AlertDialogAction as-child> -->
+              <Button type="submit" form="raffle-form">Crear</Button>
+              <!-- </AlertDialogAction> -->
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

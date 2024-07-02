@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import { useIntersectionObserver } from '@vueuse/core'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
+import SolarUserCrossRoundedLineDuotone from '~icons/solar/user-cross-rounded-line-duotone'
 import { computed, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
@@ -48,7 +49,6 @@ onMounted(async () => {
 
 <template>
   <div class="w-full flex flex-col items-center">
-    <div>Total boletas asignadas: {{ totalTicketsCount }}</div>
     <div ref="sentinal" class="w-full h-0"></div>
     <div class="flex flex-col w-full max-w-3xl">
       <div
@@ -64,11 +64,23 @@ onMounted(async () => {
         </div>
         <Button class="gap-2">
           <SolarAddCircleLineDuotone class="w-5 h-5" />
-          <span>Nuevo</span>
+          <span class="hidden md:inline">Nuevo</span>
         </Button>
       </div>
       <div class="flex-1 overflow-auto rounded-b-lg border border-t-0">
         <div class="divide-y">
+          <div
+            v-if="sellers.length === 0"
+            class="px-4 py-4 flex flex-col justify-center items-center gap-2"
+          >
+            <SolarUserCrossRoundedLineDuotone class="w-16 h-16" />
+            <p class="text-lg">No hay vendedores</p>
+            <div class="w-full border-t flex flex-col items-center justify-center my-4"></div>
+            <Button class="gap-2">
+              <SolarAddCircleLineDuotone class="w-5 h-5" />
+              <span>Crear vendedor</span>
+            </Button>
+          </div>
           <div v-for="seller in sellers" :key="seller.id" class="px-4 py-3 flex items-center gap-4">
             <Avatar class="w-10 h-10">
               <AvatarImage class="" :src="seller.avatar_url as string" />

@@ -4,6 +4,7 @@ import SolarLogout3LineDuotone from '~icons/solar/logout-3-line-duotone'
 import Button from '@/components/ui/button/Button.vue'
 import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
+import MdiCardsOutline from '~icons/mdi/cards-outline'
 
 const appStore = useAppStore()
 
@@ -22,7 +23,8 @@ const logout = async () => {
   >
     <div class="w-32 h-full justify-self-start flex justify-start items-center">
       <!-- <img class="w-full h-full" alt="Vue logo" src="@/assets/img/logo.svg" /> -->
-      <span>App logo</span>
+      <!-- <span>App logo</span> -->
+      <MdiCardsOutline class="w-11 h-11" />
     </div>
     <div class="flex justify-center items-center justify-self-center self-center w-full">
       <Transition name="fade" mode="out-in">
