@@ -1,0 +1,1 @@
+import{d as o,r as t,E as s,o as r,c as l,a as e,t as c}from"./index-CxGGKlaI.js";const i=e("h2",null,"Drawing View",-1),m=o({__name:"DrawView",setup(u){const a=t();return s(()=>{a.value=void 0}),(d,_)=>{var n;return r(),l("div",null,[i,e("div",null,[e("span",null,c((n=a.value)==null?void 0:n.name),1)])])}}});export{m as default};
