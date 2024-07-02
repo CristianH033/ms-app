@@ -9,7 +9,7 @@ import SolarSirenRoundedLineDuotone from '~icons/solar/siren-rounded-line-duoton
     <div class="w-full max-w-3xl flex flex-col gap-4">
       <Alert class="[&>svg~*]:pl-10">
         <SolarPulseLineDuotone class="w-8 h-8" />
-        <AlertTitle>Camnios pendientes!</AlertTitle>
+        <AlertTitle>Cambios pendientes!</AlertTitle>
         <AlertDescription>
           Hay cambios pendientes para aplicar en la base de datos.
         </AlertDescription>

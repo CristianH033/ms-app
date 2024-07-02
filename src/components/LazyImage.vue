@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ImgHTMLAttributes } from 'vue'
 import { useImage } from '@vueuse/core'
-import { thumbHashToDataURL } from 'thumbhash'
 import { Skeleton } from './ui/skeleton'
 
 const props = defineProps<{
@@ -20,11 +19,11 @@ const props = defineProps<{
 
 const { isLoading, error } = useImage({ src: props.src as string }, { delay: 1000 })
 
-const getThumbhashData = () => {
-  if (props.thumbhash) {
-    return thumbHashToDataURL(props.thumbhash)
-  }
-}
+// const getThumbhashData = () => {
+//   if (props.thumbhash) {
+//     return thumbHashToDataURL(props.thumbhash)
+//   }
+// }
 </script>
 
 <template>

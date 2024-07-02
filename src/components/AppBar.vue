@@ -37,7 +37,7 @@ const logout = async () => {
       @click="logout"
       :loading="loading"
     >
-      <SolarLogout3LineDuotone class="" />
+      <SolarLogout3LineDuotone class="w-6 h-6" />
       <span class="">Salir</span>
     </Button>
   </header>

@@ -23,7 +23,7 @@ const props = defineProps({
     </div>
     <div
       v-else-if="props.raffles.length === 0"
-      class="flex flex-col gap-4 w-full justify-center items-center"
+      class="flex flex-col gap-4 w-full justify-center items-center py-16"
     >
       <SolarBillCrossLineDuotone class="w-32 h-32 text-muted-foreground" />
       <p class="text-center text-lg text-muted-foreground">No hay rifas creadas</p>

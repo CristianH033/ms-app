@@ -6,24 +6,23 @@ import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import { useIntersectionObserver } from '@vueuse/core'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SolarUserCrossRoundedLineDuotone from '~icons/solar/user-cross-rounded-line-duotone'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
-import {
-  getAllSellersWithTickets,
-  getAllSellersWithTicketsCount,
-  type SellersWithTickets
-} from '@/lib/api/sellers'
-import { supabase } from '@/lib/supabase.client'
+import { getAllSellersWithTicketsCount } from '@/lib/api/sellers'
+import type { Tables } from '@/types/supabase.db'
 
 const isSticky = ref(false)
 
-const sellers = ref<SellersWithTickets>([])
+const sellers = ref<Tables<'sellers_with_tickets_count'>[]>([])
 
 const sentinal = ref<HTMLElement | null>(null)
 
-const totalTicketsCount = computed(() => {
-  return sellers.value?.reduce((total, seller) => total + seller.tickets.length, 0)
-})
+const avatarLetters = (name: string) => {
+  return name
+    .split(' ')
+    .map((n) => n.charAt(0))
+    .join('')
+}
 
 useIntersectionObserver(
   sentinal,
@@ -38,8 +37,8 @@ useIntersectionObserver(
 onMounted(async () => {
   getAllSellersWithTicketsCount()
     .then((data) => {
-      console.log({ data: data })
-      // sellers.value = data
+      // console.log({ data: data })
+      sellers.value = data
     })
     .catch((error) => {
       console.log(error)
@@ -81,16 +80,20 @@ onMounted(async () => {
               <span>Crear vendedor</span>
             </Button>
           </div>
-          <div v-for="seller in sellers" :key="seller.id" class="px-4 py-3 flex items-center gap-4">
+          <div
+            v-for="seller in sellers"
+            :key="seller.id!"
+            class="px-4 py-3 flex items-center gap-4"
+          >
             <Avatar class="w-10 h-10">
-              <AvatarImage class="" :src="seller.avatar_url as string" />
-              <AvatarFallback class="">{{ seller.name.charAt(0) }}</AvatarFallback>
+              <AvatarImage class="" :src="seller.avatar_url!" />
+              <AvatarFallback>{{ avatarLetters(seller.name!) }}</AvatarFallback>
             </Avatar>
             <div class="flex-1">
               <div class="font-medium capitalize">{{ seller.name }}</div>
               <div class="text-sm text-foreground/60">{{ seller.email }}</div>
             </div>
-            <Badge>{{ seller.tickets.length }}</Badge>
+            <Badge>{{ seller.total_tickets }}</Badge>
           </div>
         </div>
       </div>

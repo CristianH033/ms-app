@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getRaffleById } from '@/lib/api/raffles'
@@ -26,11 +17,7 @@ const filteredAvailable = ref(false)
 
 const search = ref('')
 
-const dialog = ref(false)
-
 const tickets = ref<Tables<'tickets'>[]>([])
-
-const selectedTicket = ref<Tables<'tickets'> | undefined>()
 
 const loading = ref(false)
 
@@ -120,26 +107,5 @@ onMounted(async () => {
         </Button>
       </div>
     </div>
-    <!-- <RouterView /> -->
-    <Dialog :open="dialog" @close="dialog = false">
-      <DialogTrigger class="self-end">
-        <Button class="gap-2">
-          <span>Open</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent
-        class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
-      >
-        <DialogHeader class="p-6 pb-4 border-b">
-          <DialogTitle>Boleta: {{ selectedTicket?.number }}</DialogTitle>
-          <DialogDescription> Cambiar estado de boleta </DialogDescription>
-        </DialogHeader>
-        <div class="px-6 py-4 overflow-y-auto"></div>
-        <DialogFooter class="p-6 pt-4 border-t">
-          <Button variant="ghost">Cancelar</Button>
-          <Button>Aplicar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   </div>
 </template>

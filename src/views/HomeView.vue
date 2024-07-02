@@ -6,22 +6,12 @@ import type { Tables } from '@/types/supabase.db'
 import { onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import RaffleForm from '../components/forms/RaffleForm.vue'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
+import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
 import Input from '@/components/ui/input/Input.vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -91,7 +81,12 @@ onMounted(async () => {
             class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
           >
             <AlertDialogHeader class="p-6 pb-4 border-b">
-              <AlertDialogTitle>Nueva Rifa</AlertDialogTitle>
+              <AlertDialogTitle>
+                <div class="flex flex-row gap-2 justify-start items-center">
+                  <SolarTicketLineDuotone class="w-8 h-8" />
+                  <span> Nueva Rifa </span>
+                </div>
+              </AlertDialogTitle>
               <AlertDialogDescription> Crea una nueva rifa </AlertDialogDescription>
             </AlertDialogHeader>
             <div class="px-6 py-4 overflow-y-auto">

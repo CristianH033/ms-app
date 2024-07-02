@@ -1,7 +1,6 @@
 import { type Config } from 'tailwindcss'
 import animate from 'tailwindcss-animate'
 import containerQueries from '@tailwindcss/container-queries'
-import plugin from 'tailwindcss'
 
 /** @type {import('tailwindcss').Config} */
 export default {
