@@ -1,40 +1,60 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getRaffleById } from '@/lib/api/raffles'
 import { getAllTicketsByRaffle } from '@/lib/api/tickets'
 import type { Tables } from '@/types/supabase.db'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Input } from '@/components/ui/input'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
+import SolarMagniferOutline from '~icons/solar/magnifer-outline'
+import { useIntersectionObserver } from '@vueuse/core'
 
 const router = useRouter()
 
 const raffle = ref<Tables<'raffles'>>()
-
-const filteredAvailable = ref(false)
-
-const search = ref('')
-
 const tickets = ref<Tables<'tickets'>[]>([])
 
+const availableFilter = ref<'all' | 'available' | 'unavailable'>('all')
+const search = ref('')
 const loading = ref(false)
+const isSticky = ref(false)
 
-// const availableTickets = computed(() => {
-//   return tickets.value.filter((ticket) => ticket.seller_id === null)
-// })
+const sentinal = ref<HTMLDivElement | null>(null)
 
 const showingTickets = computed(() => {
-  return tickets.value.filter((ticket) => {
-    return (
-      ticket.number.toLowerCase().includes(search.value.toLowerCase()) &&
-      (filteredAvailable.value ? ticket.seller_id === null : true)
-    )
-  })
-
-  // return filteredAvailable.value ? availableTickets.value : tickets.value
+  return tickets.value.filter((ticket) => inFilter(ticket) && inSearch(ticket))
 })
+
+const inSearch = (ticket: Tables<'tickets'>): boolean => {
+  return (
+    search.value.trim() === '' || ticket.number.toLowerCase().includes(search.value.toLowerCase())
+  )
+}
+
+const inFilter = (ticket: Tables<'tickets'>): boolean => {
+  switch (availableFilter.value) {
+    case 'available':
+      return ticket.seller_id === null
+    case 'unavailable':
+      return ticket.seller_id !== null
+    default:
+      return true
+  }
+}
+
+useIntersectionObserver(
+  sentinal,
+  ([{ isIntersecting }]) => {
+    isSticky.value = !isIntersecting
+  },
+  {
+    rootMargin: '-65px',
+    threshold: 1
+  }
+)
 
 onMounted(async () => {
   loading.value = true
@@ -61,51 +81,70 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full p-2 flex flex-col gap-4 items-center">
-    <!-- <div class="">
-      <span>{{ raffle?.name }} - {{ raffle?.description }}</span>
-    </div> -->
-    <input type="text" placeholder="Search" v-model="search" />
-    <div class="w-full flex flex-row justify-end">
-      <Tabs default-value="account" class="w-[400px]">
-        <Button @click="() => (filteredAvailable = !filteredAvailable)">Filtrar</Button>
-        <TabsList>
-          <TabsTrigger value="account"> Disponibles </TabsTrigger>
-          <TabsTrigger value="password"> No disponibles </TabsTrigger>
-        </TabsList>
-        <TabsContent value="account"> Make changes to your account here. </TabsContent>
-        <TabsContent value="password"> Change your password here. </TabsContent>
-      </Tabs>
-    </div>
-    <div class="@container w-full max-w-3xl">
+  <div class="w-full flex flex-col items-center">
+    <div ref="sentinal" class="w-full h-0"></div>
+    <div class="flex flex-col w-full max-w-3xl gap-4">
       <div
-        className="bg-secondary/50 border border-b-0 rounded-t-lg py-2 px-4 flex flex-row items-center justify-between"
+        class="flex flex-col sm:flex-row gap-4 transition-all duration-300 bg-background-elevated/90 backdrop-blur px-4 py-3 border rounded-lg sticky top-16 z-10"
+        :class="{
+          '!bg-background/90 @3xl/main:!bg-background-elevated/90 rounded-none @3xl/main:rounded-b-lg border-t-0 border-x-0 @3xl/main:border-x -mx-4':
+            isSticky
+        }"
       >
-        <h2 className="text-3xl py-2 ">Numeración disponible</h2>
-        <SolarTicketLineDuotone class="w-8 h-8" />
+        <div class="grow relative">
+          <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
+          <Input
+            type="text"
+            placeholder="Buscar número"
+            class="w-full pl-11 pr-4 py-2 text-sm"
+            v-model="search"
+          />
+        </div>
+
+        <Tabs default-value="all" class="w-full sm:w-auto">
+          <TabsList class="w-full">
+            <TabsTrigger value="all" @click="() => (availableFilter = 'all')"> Todo </TabsTrigger>
+            <TabsTrigger value="available" @click="() => (availableFilter = 'available')">
+              Disponibles
+            </TabsTrigger>
+            <TabsTrigger value="unavailable" @click="() => (availableFilter = 'unavailable')">
+              No disponibles
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
-      <div
-        v-if="loading"
-        className="p-2 border rounded-b-lg grid grid-cols-5 @xl:grid-cols-10 gap-x-2 gap-y-2 place-items-center"
-      >
-        <Skeleton v-for="i in 100" :key="i" class="w-14 h-14 border rounded-full" />
-      </div>
-      <div
-        className="p-2 border rounded-b-lg grid grid-cols-5 @xl:grid-cols-10 gap-x-2 gap-y-2 place-items-center"
-      >
-        <Button
-          v-for="ticket in showingTickets"
-          :key="ticket.id"
-          variant="ghost"
-          class="text-lg w-14 h-14 border rounded-full"
-          :class="{
-            'bg-destructive border border-destructive cursor-not-allowed': ticket.seller_id !== null
-          }"
-          :disabled="ticket.seller_id !== null"
+
+      <div class="w-full flex flex-col gap-0 items-stretch">
+        <div
+          className="bg-secondary/50 border border-b-0 rounded-t-lg py-2 px-4 flex flex-row items-center justify-between"
         >
-          {{ ticket.number }}
-        </Button>
+          <h2 className="text-3xl py-2 ">Numeración disponible</h2>
+          <SolarTicketLineDuotone class="w-8 h-8" />
+        </div>
+        <div
+          v-if="loading"
+          className="p-2 border rounded-b-lg grid grid-cols-5 @xl:grid-cols-10 gap-x-2 gap-y-2 place-items-center"
+        >
+          <Skeleton v-for="i in 100" :key="i" class="w-14 h-14 border rounded-full" />
+        </div>
+        <div
+          className="p-2 border rounded-b-lg grid grid-cols-5 @xl:grid-cols-10 gap-x-2 gap-y-2 place-items-center"
+        >
+          <Button
+            v-for="ticket in showingTickets"
+            :key="ticket.id"
+            variant="ghost"
+            class="text-lg w-14 h-14 border rounded-full"
+            :class="{
+              'bg-background-elevated border border-destructive': ticket.seller_id !== null
+            }"
+          >
+            {{ ticket.number }}
+          </Button>
+        </div>
       </div>
     </div>
+
+    <div class="w-full flex flex-col items-center"></div>
   </div>
 </template>

@@ -1,4 +1,10 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   graphql_public: {
@@ -124,12 +130,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'draws_lottery_id_fkey'
-            columns: ['lottery_id']
+            foreignKeyName: "draws_lottery_id_fkey"
+            columns: ["lottery_id"]
             isOneToOne: false
-            referencedRelation: 'lotteries'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "lotteries"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lotteries: {
@@ -195,19 +201,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'prizes_raffle_id_fkey'
-            columns: ['raffle_id']
+            foreignKeyName: "prizes_raffle_id_fkey"
+            columns: ["raffle_id"]
             isOneToOne: false
-            referencedRelation: 'raffles'
-            referencedColumns: ['id']
+            referencedRelation: "raffles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'prizes_raffle_id_fkey'
-            columns: ['raffle_id']
+            foreignKeyName: "prizes_raffle_id_fkey"
+            columns: ["raffle_id"]
             isOneToOne: false
-            referencedRelation: 'sellers_with_tickets_count_by_raffle'
-            referencedColumns: ['raffle_id']
-          }
+            referencedRelation: "sellers_with_tickets_count_by_raffle"
+            referencedColumns: ["raffle_id"]
+          },
         ]
       }
       profiles: {
@@ -234,12 +240,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'profiles_id_fkey'
-            columns: ['id']
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
             isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       raffles: {
@@ -275,12 +281,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'raffles_draw_id_fkey'
-            columns: ['draw_id']
+            foreignKeyName: "raffles_draw_id_fkey"
+            columns: ["draw_id"]
             isOneToOne: false
-            referencedRelation: 'draws'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "draws"
+            referencedColumns: ["id"]
+          },
         ]
       }
       sellers: {
@@ -326,8 +332,7 @@ export type Database = {
           pull_id: number | null
           raffle_id: number
           seller_id: number | null
-          sold_price: number | null
-          status: string | null
+          seller_price: number | null
           updated_at: string | null
         }
         Insert: {
@@ -339,8 +344,7 @@ export type Database = {
           pull_id?: number | null
           raffle_id: number
           seller_id?: number | null
-          sold_price?: number | null
-          status?: string | null
+          seller_price?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -352,60 +356,59 @@ export type Database = {
           pull_id?: number | null
           raffle_id?: number
           seller_id?: number | null
-          sold_price?: number | null
-          status?: string | null
+          seller_price?: number | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'tickets_buyer_id_fkey'
-            columns: ['buyer_id']
+            foreignKeyName: "tickets_buyer_id_fkey"
+            columns: ["buyer_id"]
             isOneToOne: false
-            referencedRelation: 'buyers'
-            referencedColumns: ['id']
+            referencedRelation: "buyers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_pull_id_fkey'
-            columns: ['pull_id']
+            foreignKeyName: "tickets_pull_id_fkey"
+            columns: ["pull_id"]
             isOneToOne: false
-            referencedRelation: 'tickets_pulls'
-            referencedColumns: ['id']
+            referencedRelation: "tickets_pulls"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_raffle_id_fkey'
-            columns: ['raffle_id']
+            foreignKeyName: "tickets_raffle_id_fkey"
+            columns: ["raffle_id"]
             isOneToOne: false
-            referencedRelation: 'raffles'
-            referencedColumns: ['id']
+            referencedRelation: "raffles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_raffle_id_fkey'
-            columns: ['raffle_id']
+            foreignKeyName: "tickets_raffle_id_fkey"
+            columns: ["raffle_id"]
             isOneToOne: false
-            referencedRelation: 'sellers_with_tickets_count_by_raffle'
-            referencedColumns: ['raffle_id']
+            referencedRelation: "sellers_with_tickets_count_by_raffle"
+            referencedColumns: ["raffle_id"]
           },
           {
-            foreignKeyName: 'tickets_seller_id_fkey'
-            columns: ['seller_id']
+            foreignKeyName: "tickets_seller_id_fkey"
+            columns: ["seller_id"]
             isOneToOne: false
-            referencedRelation: 'sellers'
-            referencedColumns: ['id']
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_seller_id_fkey'
-            columns: ['seller_id']
+            foreignKeyName: "tickets_seller_id_fkey"
+            columns: ["seller_id"]
             isOneToOne: false
-            referencedRelation: 'sellers_with_tickets_count'
-            referencedColumns: ['id']
+            referencedRelation: "sellers_with_tickets_count"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_seller_id_fkey'
-            columns: ['seller_id']
+            foreignKeyName: "tickets_seller_id_fkey"
+            columns: ["seller_id"]
             isOneToOne: false
-            referencedRelation: 'sellers_with_tickets_count_by_raffle'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "sellers_with_tickets_count_by_raffle"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tickets_pulls: {
@@ -435,26 +438,26 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'tickets_pulls_buyer_id_fkey'
-            columns: ['buyer_id']
+            foreignKeyName: "tickets_pulls_buyer_id_fkey"
+            columns: ["buyer_id"]
             isOneToOne: false
-            referencedRelation: 'buyers'
-            referencedColumns: ['id']
+            referencedRelation: "buyers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_pulls_raffle_id_fkey'
-            columns: ['raffle_id']
+            foreignKeyName: "tickets_pulls_raffle_id_fkey"
+            columns: ["raffle_id"]
             isOneToOne: false
-            referencedRelation: 'raffles'
-            referencedColumns: ['id']
+            referencedRelation: "raffles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tickets_pulls_raffle_id_fkey'
-            columns: ['raffle_id']
+            foreignKeyName: "tickets_pulls_raffle_id_fkey"
+            columns: ["raffle_id"]
             isOneToOne: false
-            referencedRelation: 'sellers_with_tickets_count_by_raffle'
-            referencedColumns: ['raffle_id']
-          }
+            referencedRelation: "sellers_with_tickets_count_by_raffle"
+            referencedColumns: ["raffle_id"]
+          },
         ]
       }
     }
@@ -606,12 +609,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'objects_bucketId_fkey'
-            columns: ['bucket_id']
+            foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
             isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
         ]
       }
       s3_multipart_uploads: {
@@ -647,12 +650,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 's3_multipart_uploads_bucket_id_fkey'
-            columns: ['bucket_id']
+            foreignKeyName: "s3_multipart_uploads_bucket_id_fkey"
+            columns: ["bucket_id"]
             isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
         ]
       }
       s3_multipart_uploads_parts: {
@@ -694,19 +697,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 's3_multipart_uploads_parts_bucket_id_fkey'
-            columns: ['bucket_id']
+            foreignKeyName: "s3_multipart_uploads_parts_bucket_id_fkey"
+            columns: ["bucket_id"]
             isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 's3_multipart_uploads_parts_upload_id_fkey'
-            columns: ['upload_id']
+            foreignKeyName: "s3_multipart_uploads_parts_upload_id_fkey"
+            columns: ["upload_id"]
             isOneToOne: false
-            referencedRelation: 's3_multipart_uploads'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "s3_multipart_uploads"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -809,25 +812,27 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>]
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
-    : never = never
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] & PublicSchema['Views'])
-    ? (PublicSchema['Tables'] & PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -835,18 +840,20 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends keyof PublicSchema['Tables'] | { schema: keyof Database },
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
-    : never = never
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -854,18 +861,20 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends keyof PublicSchema['Tables'] | { schema: keyof Database },
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
-    : never = never
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -873,12 +882,15 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends keyof PublicSchema['Enums'] | { schema: keyof Database },
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
-    : never = never
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
     : never
+

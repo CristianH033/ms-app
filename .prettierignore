@@ -9,6 +9,7 @@ test-results/
 playwright-report/
 
 src/components/ui/
+src/types/supabase.db.d.ts
 
 package-lock.json
 npm-debug.log

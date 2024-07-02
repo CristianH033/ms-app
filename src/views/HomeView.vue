@@ -108,19 +108,6 @@ onMounted(async () => {
         <RafflesList :raffles="raffles" :loading="loading" />
       </div>
     </div>
-    <!-- <div
-      class="max-w-3xl flex flex-row justify-between gap-4 mb-4 transition-all duration-300 bg-secondary/60 backdrop-blur px-3 py-3 border rounded-lg sticky top-16 z-10"
-      :claass="{ 'rounded-none border-t-0 border-x-0 -mx-4': isSticky }"
-      :class="{
-        'rounded-none @3xl/main:rounded-b-lg border-t-0 border-x-0 @3xl/main:border-x -mx-4':
-          isSticky
-      }"
-    >
-      <div class="grow relative max-w-2xl">
-        <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
-        <Input type="text" placeholder="Search" class="w-full pl-11 pr-4 py-2 text-sm" />
-      </div>
-    </div> -->
 
     <div class="w-full flex flex-col items-center"></div>
   </div>
