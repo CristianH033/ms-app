@@ -1,1 +1,0 @@
-import{a3 as a}from"./index-Bu8Ou5u0.js";const o=async()=>{const{data:e,error:r}=await a.from("buyers").select("*");if(r)throw new Error(r.message);return e},n=async e=>{const{data:r,error:s}=await a.from("buyers").select("*").eq("id",e).single();if(s)throw new Error(s.message);return r};export{n as a,o as g};
