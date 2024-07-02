@@ -209,15 +209,6 @@ const router = createRouter({
           })
         },
         {
-          path: 'calendar',
-          name: 'calendar',
-          meta: { title: 'Calendario', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/views/CalendarView.vue'),
-            ...defaultOptions
-          })
-        },
-        {
           path: 'notifications',
           name: 'notifications',
           meta: { title: 'Notificaciones', requires_auth: true },
