@@ -1,0 +1,1 @@
+import{a4 as r}from"./index-Ca5Xrkdd.js";r.from("sellers").select("*, tickets(*)");const l=r.from("sellers_with_tickets_count").select("*"),a=async()=>{const{data:s,error:e}=await l;if(e)throw new Error(e.message);return s},c=async s=>{const{data:e,error:t}=await r.from("sellers").select("*").eq("id",s).single();if(t)throw new Error(t.message);return e};export{c as a,a as g};
