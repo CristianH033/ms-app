@@ -57,7 +57,7 @@ const props = defineProps({
         class="grow flex flex-col items-stretch sm:items-center sm:justify-end sm:flex-row gap-y-4 gap-x-2"
       >
         <RouterLink
-          :to="{ name: 'raffle', params: { id: props.raffle.id } }"
+          :to="{ name: 'raffle-sellers', params: { id: props.raffle.id } }"
           custom
           v-slot="{ navigate }"
         >

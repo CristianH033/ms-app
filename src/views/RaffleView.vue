@@ -172,10 +172,11 @@ onMounted(async () => {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Informacion de Bono</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogTitle
+            >Informacion de Bono
+            <span class="text-2xl">{{ selectedTicketOverview?.number }}</span></DialogTitle
+          >
+          <DialogDescription> Información del vendedor... </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>

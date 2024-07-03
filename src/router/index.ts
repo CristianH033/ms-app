@@ -8,6 +8,8 @@ import { useAppStore } from '@/stores/app'
 
 type asyncComponentOptions = Omit<AsyncComponentOptions<unknown>, 'loader'>
 
+const sellersRaffleView = '@/views/SellersRaffleView.vue'
+
 const defaultOptions: asyncComponentOptions = {
   loadingComponent: LoadingIndicator,
   errorComponent: ErrorComponent,
@@ -70,6 +72,15 @@ const router = createRouter({
                   })
                 }
               ]
+            },
+            {
+              path: 'raffles/:id/sellers',
+              name: 'raffle-sellers',
+              meta: { title: 'Vendedores de la Rifa', requires_auth: true },
+              component: defineAsyncComponent({
+                loader: () => import(sellersRaffleView),
+                ...defaultOptions
+              })
             },
             {
               path: 'lotteries',
