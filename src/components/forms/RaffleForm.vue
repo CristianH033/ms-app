@@ -24,6 +24,10 @@ import SolarCloseSquareLineDuotone from '~icons/solar/close-square-line-duotone'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
 import { Textarea } from '../ui/textarea'
+import { createNewRaffleWithPrizes, type NewRaffleWithPrizes } from '@/lib/api/raffles'
+import { wait } from '@/lib/utils/promises'
+import { v4 as uuidv4 } from 'uuid'
+import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
 
 const MAX_FILE_SIZE = 5000000
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
@@ -36,23 +40,31 @@ const props = withDefaults(defineProps<Props>(), {
   withoutActions: false
 })
 
-const loading = ref(false)
+const isSubmiting = defineModel<boolean>('isSubmiting', { required: false, default: false })
 
 const draws = ref<Tables<'draws'>[]>([])
 
 const formData = ref({
-  draw_id: undefined as string | undefined,
-  name: '' as string,
-  description: '' as string,
-  image: null as File | null,
+  draw_id: '1' as string | undefined,
+  name: 'Test' as string,
+  description: 'Test' as string,
+  image_path: null as string | null,
+  thumb_hash: null as string | null,
   prizes: [
     {
-      key: 1,
-      name: '' as string,
-      prize_value: '' as string,
-      image: null as File | null
+      key: uuidv4().slice(-10),
+      name: 'test' as string,
+      prize_value: '1220' as string,
+      image: null as File | null,
+      thumb_hash: null as string | null
     }
-  ] as { key: number; name: string; prize_value: string; image: File | null }[]
+  ] as {
+    key: string
+    name: string
+    prize_value: string
+    image: File | null
+    thumb_hash: string | null
+  }[]
 })
 
 const formSchema = toTypedSchema(
@@ -78,9 +90,6 @@ const formSchema = toTypedSchema(
           name: z
             .string({ required_error: 'Nombre es requerido' })
             .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
-          description: z
-            .string({ required_error: 'La descripción es requerida' })
-            .min(3, { message: 'La descripción debe tener al menos 3 caracteres' }),
           prize_value: z
             .string({ required_error: 'El valor es requerido' })
             .transform((val) => parseFloat(val)) // Transforma el string a un número
@@ -101,12 +110,6 @@ const formSchema = toTypedSchema(
         })
       )
       .min(1),
-    start_date: z
-      .string({ required_error: 'La fecha de inicio es requerida' })
-      .datetime({ message: 'Debe ingresar una fecha válida' }),
-    end_date: z
-      .string({ required_error: 'La fecha de finalización es requerida' })
-      .datetime({ message: 'Debe ingresar una fecha válida' }),
     image: z
       .instanceof(File)
       .refine((file) => file instanceof File, {
@@ -122,8 +125,20 @@ const formSchema = toTypedSchema(
 )
 
 const form = useForm({
-  validationSchema: formSchema
+  validationSchema: formSchema,
+  initialValues: {
+    draw_id: formData.value.draw_id,
+    name: formData.value.name,
+    description: formData.value.description,
+    prizes: formData.value.prizes.map((p) => ({
+      name: p.name,
+      image: new File([], ''),
+      prize_value: p.prize_value
+    }))
+  }
 })
+
+const emit = defineEmits(['success'])
 
 const memoizedDraws = useMemoize(async () => await getAllDraws())
 
@@ -132,24 +147,17 @@ const clearCache = useDebounceFn(() => {
   memoizedDraws.clear()
 }, 30000)
 
-const prizesMaxKey = () => {
-  return Math.max(...formData.value.prizes.map((p) => p.key))
-}
-
-const prizeNextKey = () => {
-  return prizesMaxKey() + 1
-}
-
 const addPrize = () => {
   formData.value.prizes.push({
-    key: prizeNextKey(),
+    key: uuidv4().slice(-10),
     name: '',
     prize_value: '',
-    image: null
+    image: null,
+    thumb_hash: null
   })
 }
 
-const removePrize = (key: number) => {
+const removePrize = (key: string) => {
   if (formData.value.prizes.length > 1) {
     const prize = formData.value.prizes.find((p) => p.key === key)
 
@@ -159,194 +167,240 @@ const removePrize = (key: number) => {
   }
 }
 
-const handleLogin = form.handleSubmit(async (formData) => {
-  loading.value = true
-  form.setErrors({})
-  await new Promise((resolve) => setTimeout(resolve, 500))
+const submitRaffle = form.handleSubmit(
+  async (data) => {
+    isSubmiting.value = true
+    form.setErrors({})
+    await wait(10000)
 
-  console.log(JSON.stringify(formData, null, 2))
-})
+    isSubmiting.value = false
+
+    const newRaffle: NewRaffleWithPrizes = {
+      ...{
+        ...data,
+        draw_id: parseInt(data.draw_id),
+        prizes: data.prizes.map((p, indexp) => ({
+          ...p,
+          thumb_hash: formData.value.prizes[indexp].thumb_hash,
+          image_path: ''
+        })),
+        image_path: formData.value.image_path
+      },
+      thumb_hash: formData.value.thumb_hash
+    }
+
+    // console.log(newRaffle)
+
+    createNewRaffleWithPrizes(newRaffle)
+      .then((data) => {
+        console.log(data)
+        emit('success')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+      .finally(() => {
+        isSubmiting.value = false
+      })
+  },
+  ({ errors }) => {
+    const firstErrorFieldName = Object.keys(errors)[0].replace('[', '.').replace(']', '')
+    const el = document.querySelector(`[name="${firstErrorFieldName}"]`)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+)
 
 const withoutShowingActions = computed(() => {
   return props.withoutActions === '' || props.withoutActions === true
 })
 
 onMounted(async () => {
-  loading.value = true
+  isSubmiting.value = true
   await getAllDraws()
     .then((data) => (draws.value = data || []))
-    .finally(() => (loading.value = false))
+    .finally(() => (isSubmiting.value = false))
 })
 </script>
 
 <template>
   <form
-    @submit.prevent="handleLogin"
+    @submit.prevent="submitRaffle"
     class="@container/form w-full flex flex-col gap-2"
-    :aria-disabled="loading"
+    :aria-disabled="isSubmiting"
   >
-    <FormField v-slot="{ componentField }" name="name">
-      <FormItem>
-        <FormLabel>Nombre</FormLabel>
-        <FormControl>
-          <Input
-            type="text"
-            placeholder="Nombre de la Rifa"
-            v-bind="componentField"
-            v-model:model-value="formData.name"
-            required
-          />
-        </FormControl>
-        <!-- <FormDescription> This is your public display name. </FormDescription> -->
-        <div v-auto-animate>
-          <FormMessage />
-        </div>
-      </FormItem>
-    </FormField>
-    <FormField v-slot="{ componentField }" name="draw_id">
-      <FormItem>
-        <FormLabel>Sorteo</FormLabel>
-
-        <Select v-bind="componentField" v-model:model-value="formData.draw_id">
+    <fieldset :disabled="isSubmiting">
+      <FormField v-slot="{ componentField }" name="name">
+        <FormItem>
+          <FormLabel>Nombre</FormLabel>
           <FormControl>
-            <SelectTrigger>
-              <SelectValue placeholder="Elige un sorteo" />
-            </SelectTrigger>
+            <Input
+              type="text"
+              placeholder="Nombre de la Rifa"
+              v-bind="componentField"
+              v-model:model-value="formData.name"
+              required
+            />
           </FormControl>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem v-for="draw in draws" :key="draw.id" :value="draw.id.toString()">
-                <SelectItemText>{{ draw.name }}</SelectItemText>
-              </SelectItem>
-              <SelectItem value="99999">
-                <SelectItemText>Nuevo Sorteo</SelectItemText>
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <!-- <FormDescription> Elige un sorteo para la rifa </FormDescription> -->
-        <div v-auto-animate>
-          <FormMessage />
-        </div>
-      </FormItem>
-    </FormField>
-    <FormField v-slot="{ componentField }" name="description">
-      <FormItem>
-        <FormLabel>Descripción</FormLabel>
-        <FormControl>
-          <Textarea
-            type="text"
-            placeholder="Descripción de la Rifa"
-            v-bind="componentField"
-            v-model:model-value="formData.description"
-            required
-          />
-        </FormControl>
-        <!-- <FormDescription> This is your public display name. </FormDescription> -->
-        <div v-auto-animate>
-          <FormMessage />
-        </div>
-      </FormItem>
-    </FormField>
-    <FormField v-slot="{ componentField }" name="image">
-      <FormItem>
-        <FormLabel>Portada de la rifa</FormLabel>
-        <FormControl>
-          <ImageInput v-bind="componentField"></ImageInput>
-        </FormControl>
-        <!-- <FormDescription> This is your public display name. </FormDescription> -->
-        <div v-auto-animate>
-          <FormMessage />
-        </div>
-      </FormItem>
-    </FormField>
-    <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-      <fieldset v-auto-animate class="border col-span-2 rounded-md p-4 flex flex-col gap-4">
-        <legend class="text-lg font-medium flex gap-2">
-          <SolarCupStarLineDuotone class="w-8 h-8" />
-          <span>Premios</span>
-        </legend>
-        <div class="w-full relative" v-for="(prize, i) in formData.prizes" :key="prize.key">
-          <button
-            v-if="formData.prizes.length > 1"
-            type="button"
-            class="bg-background rounded-xl absolute right-0 top-0"
-            @click="removePrize(prize.key)"
-          >
-            <SolarCloseSquareLineDuotone class="w-8 h-8" />
-          </button>
-          <fieldset class="w-full border p-4 rounded-md">
-            <legend class="text-lg font-medium">Premio {{ i + 1 }}</legend>
-            <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.name'">
-              <FormItem>
-                <FormLabel>Nombre</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Nombre del premio"
-                    v-bind="componentField"
-                    v-model:model-value="prize.name"
-                    required
-                  />
-                </FormControl>
-                <!-- <FormDescription> This is your public display name. </FormDescription> -->
-                <div v-auto-animate>
-                  <FormMessage />
-                </div>
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ value, handleChange }" :name="'prizes.' + i + '.prize_value'">
-              <FormItem>
-                <FormLabel>Test currency</FormLabel>
-                <FormControl>
-                  <MoneyInput
-                    :model-value="value"
-                    @update:modelValue="(value) => handleChange(value, true)"
-                    v-model="prize.prize_value"
-                    required
-                  />
-                </FormControl>
-                <!-- <FormDescription> This is your public display name. </FormDescription> -->
-                <div v-auto-animate>
-                  <FormMessage />
-                </div>
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.image'">
-              <FormItem>
-                <FormLabel>Imagen</FormLabel>
-                <FormControl>
-                  <ImageInput v-bind="componentField" />
-                </FormControl>
-                <!-- <FormDescription> This is your public display name. </FormDescription> -->
-                <div v-auto-animate>
-                  <FormMessage />
-                </div>
-              </FormItem>
-            </FormField>
-          </fieldset>
-        </div>
-        <div class="w-full py-2 flex flex-row items-center justify-end">
-          <Button
-            variant="outline"
-            type="button"
-            class="w-full gap-2 @xl/form:w-auto"
-            @click="addPrize"
-          >
-            <SolarAddCircleLineDuotone class="w-6 h-6" />
-            <span>Agregar premio</span>
+          <!-- <FormDescription> This is your public display name. </FormDescription> -->
+          <div v-auto-animate>
+            <FormMessage />
+          </div>
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="draw_id">
+        <FormItem>
+          <FormLabel>Sorteo</FormLabel>
+
+          <Select v-bind="componentField" v-model:model-value="formData.draw_id">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Elige un sorteo" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem v-for="draw in draws" :key="draw.id" :value="draw.id.toString()">
+                  <SelectItemText>{{ draw.name }}</SelectItemText>
+                </SelectItem>
+                <SelectItem value="99999">
+                  <SelectItemText>Nuevo Sorteo</SelectItemText>
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <!-- <FormDescription> Elige un sorteo para la rifa </FormDescription> -->
+          <div v-auto-animate>
+            <FormMessage />
+          </div>
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="description">
+        <FormItem>
+          <FormLabel>Descripción</FormLabel>
+          <FormControl>
+            <Textarea
+              type="text"
+              placeholder="Descripción de la Rifa"
+              v-bind="componentField"
+              v-model:model-value="formData.description"
+              required
+            />
+          </FormControl>
+          <!-- <FormDescription> This is your public display name. </FormDescription> -->
+          <div v-auto-animate>
+            <FormMessage />
+          </div>
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="image">
+        <FormItem>
+          <FormLabel>Portada de la rifa</FormLabel>
+          <FormControl>
+            <ImageInput
+              v-bind="componentField"
+              v-model:base64ThumbHash="formData.thumb_hash"
+            ></ImageInput>
+          </FormControl>
+          <!-- <FormDescription> This is your public display name. </FormDescription> -->
+          <div v-auto-animate>
+            <FormMessage />
+          </div>
+        </FormItem>
+      </FormField>
+      <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+        <fieldset v-auto-animate class="border col-span-2 rounded-md p-4 flex flex-col gap-4">
+          <legend class="text-lg font-medium flex gap-2">
+            <SolarCupStarLineDuotone class="w-8 h-8" />
+            <span>Premios</span>
+          </legend>
+          <div class="w-full relative" v-for="(prize, i) in formData.prizes" :key="prize.key">
+            <button
+              v-if="formData.prizes.length > 1"
+              type="button"
+              class="bg-background rounded-xl absolute right-0 top-0"
+              @click="removePrize(prize.key)"
+            >
+              <SolarCloseSquareLineDuotone class="w-8 h-8" />
+            </button>
+            <fieldset class="w-full border p-4 rounded-md">
+              <legend class="text-lg font-medium">Premio {{ i + 1 }}</legend>
+              <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.name'">
+                <FormItem>
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Nombre del premio"
+                      v-bind="componentField"
+                      v-model:model-value="prize.name"
+                      required
+                    />
+                  </FormControl>
+                  <!-- <FormDescription> This is your public display name. </FormDescription> -->
+                  <div v-auto-animate>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ value, handleChange }" :name="'prizes.' + i + '.prize_value'">
+                <FormItem>
+                  <FormLabel>Test currency</FormLabel>
+                  <FormControl>
+                    <MoneyInput
+                      :model-value="value"
+                      @update:modelValue="(value) => handleChange(value, true)"
+                      v-model="prize.prize_value"
+                      required
+                    />
+                  </FormControl>
+                  <!-- <FormDescription> This is your public display name. </FormDescription> -->
+                  <div v-auto-animate>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.image'">
+                <FormItem>
+                  <FormLabel>Imagen</FormLabel>
+                  <FormControl>
+                    <ImageInput
+                      v-bind="componentField"
+                      v-model:base64ThumbHash="prize.thumb_hash"
+                    />
+                  </FormControl>
+                  <!-- <FormDescription> This is your public display name. </FormDescription> -->
+                  <div v-auto-animate>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              </FormField>
+            </fieldset>
+          </div>
+          <div class="w-full py-2 flex flex-row items-center justify-end">
+            <Button
+              variant="outline"
+              type="button"
+              class="w-full gap-2 @xl/form:w-auto"
+              @click="addPrize"
+            >
+              <SolarAddCircleLineDuotone class="w-6 h-6" />
+              <span>Agregar premio</span>
+            </Button>
+          </div>
+        </fieldset>
+      </div>
+      <slot name="actions" v-if="!withoutShowingActions" v-bind="{ isSubmiting }">
+        <FormItem class="w-full py-2 flex flex-row items-center justify-end">
+          <Button v-auto-animate type="submit" class="w-full gap-2 @xl/form:w-auto">
+            <SvgSpinnersDotRevolve v-if="isSubmiting" class="h-6 w-6" />
+            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <span>Crear</span>
           </Button>
-        </div>
-      </fieldset>
-    </div>
-    <slot name="actions" v-if="!withoutShowingActions" v-bind="{ loading }">
-      <FormItem class="w-full py-2 flex flex-row items-center justify-end">
-        <Button type="submit" class="w-full gap-2 @xl/form:w-auto">
-          <SolarAddCircleLineDuotone class="w-6 h-6" />
-          <span>Crear</span>
-        </Button>
-      </FormItem>
-    </slot>
+        </FormItem>
+      </slot>
+    </fieldset>
   </form>
 </template>
 

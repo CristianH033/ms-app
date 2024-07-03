@@ -1,8 +1,21 @@
 import type { Tables } from '@/types/supabase.db'
 import { supabase } from '../supabase.client'
+import type { QueryData } from '@supabase/supabase-js'
 
-export interface NewRaffleWithPrizes extends Omit<Tables<'raffles'>, 'id'> {
-  prizes: Omit<Tables<'prizes'>, 'id'>[]
+export interface NewRaffleWithPrizes
+  extends Omit<Tables<'raffles'>, 'id' | 'created_at' | 'updated_at'> {
+  prizes: Omit<Tables<'prizes'>, 'id' | 'raffle_id' | 'created_at' | 'updated_at'>[]
+}
+
+interface RaffleInsertResult {
+  raffle_id?: number
+  prizes_count?: number
+  error?: string
+}
+
+interface RpcParams {
+  raffle_data: Omit<NewRaffleWithPrizes, 'prizes'>
+  prizes_data: NewRaffleWithPrizes['prizes']
 }
 
 export const getAllRaffles = async (): Promise<Tables<'raffles'>[]> => {
@@ -52,12 +65,18 @@ export const getRaffleById = async (id: number): Promise<Tables<'raffles'> | und
   return raffle
 }
 
-export const createNewRaffle = async (raffle: NewRaffleWithPrizes) => {
-  const { data, error } = await supabase.from('raffles').insert(raffle)
+export const createNewRaffleWithPrizes = async (
+  raffleData: NewRaffleWithPrizes
+): Promise<RaffleInsertResult | null> => {
+  const { prizes, ...raffleDetails } = raffleData
 
-  if (error) {
-    throw new Error(error.message)
-  }
+  const { data, error } = (await supabase.rpc('create_raffle_with_prizes', {
+    raffle_data: raffleDetails,
+    prizes_data: prizes
+    //})) as QueryData<RaffleInsertResult>
+  })) as { data: RaffleInsertResult | null; error: Error | null }
+
+  if (error) throw error
 
   return data
 }

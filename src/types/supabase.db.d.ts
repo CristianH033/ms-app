@@ -143,7 +143,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: number
-          image_url: string | null
+          image_path: string | null
           name: string
           thumb_hash: string | null
           updated_at: string | null
@@ -152,7 +152,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: number
-          image_url?: string | null
+          image_path?: string | null
           name: string
           thumb_hash?: string | null
           updated_at?: string | null
@@ -161,7 +161,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: number
-          image_url?: string | null
+          image_path?: string | null
           name?: string
           thumb_hash?: string | null
           updated_at?: string | null
@@ -172,7 +172,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: number
-          image_url: string | null
+          image_path: string | null
           name: string
           prize_value: number | null
           raffle_id: number
@@ -182,7 +182,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: number
-          image_url?: string | null
+          image_path?: string | null
           name: string
           prize_value?: number | null
           raffle_id: number
@@ -192,7 +192,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: number
-          image_url?: string | null
+          image_path?: string | null
           name?: string
           prize_value?: number | null
           raffle_id?: number
@@ -220,21 +220,21 @@ export type Database = {
         Row: {
           first_name: string | null
           id: string
-          image_url: string | null
+          image_path: string | null
           last_name: string | null
           thumb_hash: string | null
         }
         Insert: {
           first_name?: string | null
           id: string
-          image_url?: string | null
+          image_path?: string | null
           last_name?: string | null
           thumb_hash?: string | null
         }
         Update: {
           first_name?: string | null
           id?: string
-          image_url?: string | null
+          image_path?: string | null
           last_name?: string | null
           thumb_hash?: string | null
         }
@@ -254,7 +254,7 @@ export type Database = {
           description: string | null
           draw_id: number
           id: number
-          image_url: string | null
+          image_path: string | null
           name: string
           thumb_hash: string | null
           updated_at: string | null
@@ -264,7 +264,7 @@ export type Database = {
           description?: string | null
           draw_id: number
           id?: number
-          image_url?: string | null
+          image_path?: string | null
           name: string
           thumb_hash?: string | null
           updated_at?: string | null
@@ -274,7 +274,7 @@ export type Database = {
           description?: string | null
           draw_id?: number
           id?: number
-          image_url?: string | null
+          image_path?: string | null
           name?: string
           thumb_hash?: string | null
           updated_at?: string | null
@@ -493,6 +493,13 @@ export type Database = {
       }
     }
     Functions: {
+      create_raffle_with_prizes: {
+        Args: {
+          raffle_data: Json
+          prizes_data: Json
+        }
+        Returns: Json
+      }
       sync_user_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined

@@ -21,13 +21,13 @@ const props = defineProps({
 <template>
   <Card class="overflow-hidden">
     <div class="w-full h-60">
-      <UseImage class="w-full h-full object-cover" :src="props.raffle.image_url || ''">
+      <UseImage class="w-full h-full object-cover" :src="props.raffle.image_path || ''">
         <template #loading>
           <Skeleton class="w-full h-full rounded-none" />
         </template>
         <template #error>
           <div class="w-full h-full flex justify-center items-center">
-            <SolarCupStarLineDuotone class="w-6 h-6" />
+            <SolarCupStarLineDuotone class="w-24 h-24" />
           </div>
         </template>
       </UseImage>

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import RaffleForm from '../components/forms/RaffleForm.vue'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
+import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
 import Input from '@/components/ui/input/Input.vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import {
@@ -22,8 +23,10 @@ import {
 } from '@/components/ui/alert-dialog'
 
 const loading = ref(false)
+const submiting = ref(false)
 const search = ref('')
 const raffles = ref<Tables<'raffles'>[]>([])
+const raffleFormOpen = ref(false)
 
 const isSticky = ref(false)
 
@@ -46,9 +49,18 @@ useIntersectionObserver(
   }
 )
 
-onMounted(async () => {
-  loading.value = true
+const closeRaffleForm = () => {
+  raffleFormOpen.value = false
+}
 
+const onSucess = async () => {
+  closeRaffleForm()
+  // reload raffles
+  await fetchRaffles()
+}
+
+const fetchRaffles = async () => {
+  loading.value = true
   await getAllRaffles()
     .then((data) => {
       raffles.value = data
@@ -59,6 +71,10 @@ onMounted(async () => {
     .finally(() => {
       loading.value = false
     })
+}
+
+onMounted(async () => {
+  await fetchRaffles()
 })
 </script>
 
@@ -83,7 +99,7 @@ onMounted(async () => {
             class="w-full pl-11 pr-4 py-2 text-sm"
           />
         </div>
-        <AlertDialog>
+        <AlertDialog :open="raffleFormOpen" v-on:update:open="(value) => (raffleFormOpen = value)">
           <AlertDialogTrigger asChild>
             <Button class="gap-2">
               <SolarAddCircleLineDuotone class="w-5 h-5" />
@@ -102,15 +118,31 @@ onMounted(async () => {
               </AlertDialogTitle>
               <AlertDialogDescription> Crea una nueva rifa </AlertDialogDescription>
             </AlertDialogHeader>
-            <div class="px-6 py-4 overflow-y-auto">
-              <RaffleForm withoutActions id="raffle-form" />
+            <div class="px-6 py-4 overflow-y-auto relative">
+              <RaffleForm
+                withoutActions
+                id="raffle-form"
+                v-model:isSubmiting="submiting"
+                v-on:success="onSucess"
+              />
             </div>
             <AlertDialogFooter class="p-6 pt-4 border-t gap-2">
               <AlertDialogCancel as-child>
-                <Button variant="secondary">Cancelar</Button>
+                <Button variant="secondary" type="button" :disabled="submiting">Cancelar</Button>
               </AlertDialogCancel>
               <!-- <AlertDialogAction as-child> -->
-              <Button type="submit" form="raffle-form">Crear</Button>
+              <!-- <Button type="submit" form="raffle-form" :disabled="submiting">Crear</Button> -->
+              <Button
+                class="gap-3"
+                v-auto-animate
+                form="raffle-form"
+                type="submit"
+                :disabled="submiting"
+              >
+                <SvgSpinnersDotRevolve v-if="submiting" class="h-6 w-6" />
+                <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+                <span>Crear</span>
+              </Button>
               <!-- </AlertDialogAction> -->
             </AlertDialogFooter>
           </AlertDialogContent>
