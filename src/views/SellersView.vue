@@ -6,7 +6,7 @@ import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import { useIntersectionObserver } from '@vueuse/core'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SolarUserCrossRoundedLineDuotone from '~icons/solar/user-cross-rounded-line-duotone'
-import { defineAsyncComponent, onMounted, ref, type AsyncComponentOptions } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, type AsyncComponentOptions } from 'vue'
 import { Button } from '@/components/ui/button'
 import { getAllSellersWithTicketsCount } from '@/lib/api/sellers'
 import type { Tables } from '@/types/supabase.db'
@@ -26,9 +26,14 @@ import ErrorComponent from '@/components/ErrorComponent.vue'
 
 const isSticky = ref(false)
 const isLoading = ref(false)
+const search = ref('')
 const sellers = ref<Tables<'sellers_with_tickets_count'>[]>([])
 
 const sentinal = ref<HTMLElement | null>(null)
+
+const sellersFiltered = computed(() => {
+  return sellers.value.filter((s) => s.name!.toLowerCase().includes(search.value.toLowerCase()))
+})
 
 type asyncComponentOptions = Omit<AsyncComponentOptions<unknown>, 'loader'>
 
@@ -95,7 +100,13 @@ onMounted(async () => {
       >
         <div class="grow relative">
           <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
-          <Input type="text" placeholder="Search" class="w-full pl-11 pr-4 py-2 text-sm" />
+          <Input
+            type="text"
+            v-model="search"
+            autocomplete="off"
+            placeholder="Search"
+            class="w-full pl-11 pr-4 py-2 text-sm"
+          />
         </div>
         <AlertDialog>
           <AlertDialogTrigger as-child>
@@ -125,7 +136,7 @@ onMounted(async () => {
             <LoadingIndicator class="my-12" />
           </div>
           <div
-            v-else-if="sellers.length === 0"
+            v-else-if="sellersFiltered.length === 0"
             class="px-4 py-4 flex flex-col justify-center items-center gap-2"
           >
             <SolarUserCrossRoundedLineDuotone class="w-16 h-16" />
@@ -136,20 +147,22 @@ onMounted(async () => {
               <span>Crear vendedor</span>
             </Button>
           </div>
-          <div
-            v-for="seller in sellers"
-            :key="seller.id!"
-            class="px-4 py-3 flex items-center gap-4"
-          >
-            <Avatar class="w-10 h-10">
-              <AvatarImage class="" :src="seller.avatar_url || ''" />
-              <AvatarFallback>{{ avatarLetters(seller.name!) }}</AvatarFallback>
-            </Avatar>
-            <div class="flex-1">
-              <div class="font-medium capitalize">{{ seller.name }}</div>
-              <div class="text-sm text-foreground/60">{{ seller.email }}</div>
+          <div class="divide-y">
+            <div
+              v-for="seller in sellersFiltered"
+              :key="seller.id!"
+              class="px-4 py-3 flex items-center gap-4"
+            >
+              <Avatar class="w-10 h-10">
+                <AvatarImage class="" :src="seller.avatar_url || ''" />
+                <AvatarFallback>{{ avatarLetters(seller.name!) }}</AvatarFallback>
+              </Avatar>
+              <div class="flex-1">
+                <div class="font-medium capitalize">{{ seller.name }}</div>
+                <div class="text-sm text-foreground/60">{{ seller.email }}</div>
+              </div>
+              <Badge>{{ seller.total_tickets }}</Badge>
             </div>
-            <Badge>{{ seller.total_tickets }}</Badge>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import RafflesList from '@/components/RafflesList.vue'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import { getAllRaffles } from '@/lib/api/raffles'
 import type { Tables } from '@/types/supabase.db'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import RaffleForm from '../components/forms/RaffleForm.vue'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
@@ -22,11 +22,18 @@ import {
 } from '@/components/ui/alert-dialog'
 
 const loading = ref(false)
+const search = ref('')
 const raffles = ref<Tables<'raffles'>[]>([])
 
 const isSticky = ref(false)
 
 const sentinal = ref<HTMLDivElement | null>(null)
+
+const rafflesFiltered = computed(() => {
+  return raffles.value.filter((raffle) => {
+    return raffle.name.toLowerCase().includes(search.value.toLowerCase())
+  })
+})
 
 useIntersectionObserver(
   sentinal,
@@ -68,7 +75,13 @@ onMounted(async () => {
       >
         <div class="grow relative">
           <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
-          <Input type="text" placeholder="Search" class="w-full pl-11 pr-4 py-2 text-sm" />
+          <Input
+            type="text"
+            v-model="search"
+            autocomplete="off"
+            placeholder="Search"
+            class="w-full pl-11 pr-4 py-2 text-sm"
+          />
         </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -105,7 +118,7 @@ onMounted(async () => {
       </div>
 
       <div class="w-full flex flex-col gap-4 items-center">
-        <RafflesList :raffles="raffles" :loading="loading" />
+        <RafflesList :raffles="rafflesFiltered" :loading="loading" />
       </div>
     </div>
 
