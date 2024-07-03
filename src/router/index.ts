@@ -220,11 +220,11 @@ const router = createRouter({
           })
         },
         {
-          path: 'seller-form-test',
-          name: 'seller-form-test',
-          meta: { title: 'Form test', requires_auth: true },
+          path: 'file_test',
+          name: 'file_test',
+          meta: { title: 'Upload Form test', requires_auth: true },
           component: defineAsyncComponent({
-            loader: () => import('@/components/forms/SellerForm.vue'),
+            loader: () => import('@/components/forms/UploadFileForm.vue'),
             ...defaultOptions
           })
         },

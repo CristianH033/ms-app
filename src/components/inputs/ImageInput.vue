@@ -3,6 +3,7 @@ import { ref, type HTMLAttributes } from 'vue'
 import SolarCloseCircleLineDuotone from '~icons/solar/close-circle-line-duotone'
 import { cn } from '@/lib/utils'
 import { useVModel } from '@vueuse/core'
+import { fileToBase64ThumbHash } from '@/lib/utils/thumbHash'
 
 const imgPreview = ref<string | null>(null)
 const input = ref<HTMLInputElement | null>(null)
@@ -11,7 +12,11 @@ const props = defineProps<{
   defaultValue?: string | number
   modelValue?: string | number | File
   class?: HTMLAttributes['class']
+  name?: HTMLInputElement['name']
+  accept?: HTMLInputElement['accept']
 }>()
+
+const base64ThumbHash = defineModel<string | null>('base64ThumbHash', { required: false })
 
 const emits = defineEmits<{
   (e: 'update:modelValue', payload: string | number): void
@@ -22,17 +27,21 @@ const modelValue = useVModel(props, 'modelValue', emits, {
   defaultValue: props.defaultValue
 })
 
-const onFileChange = (e: Event) => {
+const onFileChange = async (e: Event) => {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
   if (file) {
     imgPreview.value = URL.createObjectURL(file)
+    base64ThumbHash.value = await fileToBase64ThumbHash(file)
+  } else {
+    base64ThumbHash.value = null
   }
 }
 
 const clearInput = () => {
   imgPreview.value = null
   modelValue.value = ''
+  base64ThumbHash.value = null
   if (input.value) {
     input.value.files = null
     input.value.value = ''
@@ -67,6 +76,7 @@ const clearInput = () => {
           props.class
         )
       "
+      :name="props.name"
       type="file"
       accept="image/*"
       @change="onFileChange"

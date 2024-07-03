@@ -25,7 +25,7 @@ import LoadingIndicator from '@/components/LoadingIndicator.vue'
 import ErrorComponent from '@/components/ErrorComponent.vue'
 
 const isSticky = ref(false)
-
+const isLoading = ref(false)
 const sellers = ref<Tables<'sellers_with_tickets_count'>[]>([])
 
 const sentinal = ref<HTMLElement | null>(null)
@@ -47,10 +47,13 @@ const formComponent = defineAsyncComponent({
 })
 
 const avatarLetters = (name: string) => {
+  // max 2 letters
   return name
     .split(' ')
     .map((n) => n.charAt(0))
+    .slice(0, 2)
     .join('')
+    .toUpperCase()
 }
 
 useIntersectionObserver(
@@ -64,13 +67,17 @@ useIntersectionObserver(
 )
 
 onMounted(async () => {
+  isLoading.value = true
+
   getAllSellersWithTicketsCount()
     .then((data) => {
-      // console.log({ data: data })
       sellers.value = data
     })
     .catch((error) => {
       console.log(error)
+    })
+    .finally(() => {
+      isLoading.value = false
     })
 })
 </script>
@@ -114,8 +121,11 @@ onMounted(async () => {
       </div>
       <div class="flex-1 overflow-auto rounded-b-lg border border-t-0">
         <div class="divide-y">
+          <div v-if="isLoading" class="px-4 py-4 flex flex-col justify-center items-center gap-2">
+            <LoadingIndicator class="my-12" />
+          </div>
           <div
-            v-if="sellers.length === 0"
+            v-else-if="sellers.length === 0"
             class="px-4 py-4 flex flex-col justify-center items-center gap-2"
           >
             <SolarUserCrossRoundedLineDuotone class="w-16 h-16" />
@@ -132,7 +142,7 @@ onMounted(async () => {
             class="px-4 py-3 flex items-center gap-4"
           >
             <Avatar class="w-10 h-10">
-              <AvatarImage class="" :src="seller.avatar_url!" />
+              <AvatarImage class="" :src="seller.avatar_url || ''" />
               <AvatarFallback>{{ avatarLetters(seller.name!) }}</AvatarFallback>
             </Avatar>
             <div class="flex-1">
