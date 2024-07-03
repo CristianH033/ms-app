@@ -209,6 +209,15 @@ const router = createRouter({
           })
         },
         {
+          path: 'seller-form-test',
+          name: 'seller-form-test',
+          meta: { title: 'Form test', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/components/forms/SellerForm.vue'),
+            ...defaultOptions
+          })
+        },
+        {
           path: 'notifications',
           name: 'notifications',
           meta: { title: 'Notificaciones', requires_auth: true },

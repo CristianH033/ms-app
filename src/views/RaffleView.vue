@@ -5,24 +5,36 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getRaffleById } from '@/lib/api/raffles'
 import { getAllTicketsByRaffle } from '@/lib/api/tickets'
 import type { Tables } from '@/types/supabase.db'
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import { useIntersectionObserver } from '@vueuse/core'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 
 const router = useRouter()
 
 const raffle = ref<Tables<'raffles'>>()
 const tickets = ref<Tables<'tickets'>[]>([])
+const selectedTicketOverview = ref<Tables<'tickets'> | null>(null)
 
 const availableFilter = ref<'all' | 'available' | 'unavailable'>('all')
 const search = ref('')
 const loading = ref(false)
 const isSticky = ref(false)
+const openOverviewDialog = ref(false)
 
 const sentinal = ref<HTMLDivElement | null>(null)
+const overviewDialog = ref<typeof Dialog | null>(null)
 
 const showingTickets = computed(() => {
   return tickets.value.filter((ticket) => inFilter(ticket) && inSearch(ticket))
@@ -43,6 +55,13 @@ const inFilter = (ticket: Tables<'tickets'>): boolean => {
     default:
       return true
   }
+}
+
+const openTicketOverview = (ticket: Tables<'tickets'>) => {
+  selectedTicketOverview.value = ticket
+  nextTick(() => {
+    openOverviewDialog.value = true
+  })
 }
 
 useIntersectionObserver(
@@ -138,6 +157,7 @@ onMounted(async () => {
             :class="{
               'bg-background-elevated border border-destructive': ticket.seller_id !== null
             }"
+            @click="openTicketOverview(ticket)"
           >
             {{ ticket.number }}
           </Button>
@@ -145,6 +165,25 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="w-full flex flex-col items-center"></div>
+    <Dialog
+      ref="overviewDialog"
+      :open="openOverviewDialog"
+      v-on:update:open="(open) => (openOverviewDialog = open)"
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Informacion de Bono</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+          <DialogClose as-child>
+            <Button type="button" variant="secondary"> Cerrar </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
