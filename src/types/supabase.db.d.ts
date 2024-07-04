@@ -204,6 +204,13 @@ export type Database = {
             foreignKeyName: "prizes_raffle_id_fkey"
             columns: ["raffle_id"]
             isOneToOne: false
+            referencedRelation: "raffle_stats"
+            referencedColumns: ["raffle_id"]
+          },
+          {
+            foreignKeyName: "prizes_raffle_id_fkey"
+            columns: ["raffle_id"]
+            isOneToOne: false
             referencedRelation: "raffles"
             referencedColumns: ["id"]
           },
@@ -287,6 +294,13 @@ export type Database = {
             referencedRelation: "draws"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "raffles_draw_id_fkey"
+            columns: ["draw_id"]
+            isOneToOne: false
+            referencedRelation: "raffle_stats"
+            referencedColumns: ["draw_id"]
+          },
         ]
       }
       raffles_sellers: {
@@ -315,6 +329,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "raffles_sellers_raffle_id_fkey"
+            columns: ["raffle_id"]
+            isOneToOne: false
+            referencedRelation: "raffle_stats"
+            referencedColumns: ["raffle_id"]
+          },
           {
             foreignKeyName: "raffles_sellers_raffle_id_fkey"
             columns: ["raffle_id"]
@@ -445,6 +466,13 @@ export type Database = {
             foreignKeyName: "tickets_raffle_id_fkey"
             columns: ["raffle_id"]
             isOneToOne: false
+            referencedRelation: "raffle_stats"
+            referencedColumns: ["raffle_id"]
+          },
+          {
+            foreignKeyName: "tickets_raffle_id_fkey"
+            columns: ["raffle_id"]
+            isOneToOne: false
             referencedRelation: "raffles"
             referencedColumns: ["id"]
           },
@@ -522,6 +550,13 @@ export type Database = {
             foreignKeyName: "tickets_pulls_raffle_id_fkey"
             columns: ["raffle_id"]
             isOneToOne: false
+            referencedRelation: "raffle_stats"
+            referencedColumns: ["raffle_id"]
+          },
+          {
+            foreignKeyName: "tickets_pulls_raffle_id_fkey"
+            columns: ["raffle_id"]
+            isOneToOne: false
             referencedRelation: "raffles"
             referencedColumns: ["id"]
           },
@@ -536,6 +571,24 @@ export type Database = {
       }
     }
     Views: {
+      raffle_stats: {
+        Row: {
+          available_tickets: number | null
+          description: string | null
+          draw_drawn_at: string | null
+          draw_id: number | null
+          draw_name: string | null
+          image_path: string | null
+          raffle_created_at: string | null
+          raffle_id: number | null
+          raffle_name: string | null
+          raffle_updated_at: string | null
+          taken_tickets: number | null
+          thumb_hash: string | null
+          total_tickets: number | null
+        }
+        Relationships: []
+      }
       sellers_by_raffle: {
         Row: {
           avatar_url: string | null
@@ -555,6 +608,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "raffles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raffles_sellers_raffle_id_fkey"
+            columns: ["raffle_id"]
+            isOneToOne: false
+            referencedRelation: "raffle_stats"
+            referencedColumns: ["raffle_id"]
           },
           {
             foreignKeyName: "raffles_sellers_raffle_id_fkey"

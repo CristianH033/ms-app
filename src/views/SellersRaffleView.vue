@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getRaffleById } from '@/lib/api/raffles'
 import { getAllSellers, getAllSellersWithTicketsCountByRaffleId } from '@/lib/api/sellers'
 import type { Tables } from '@/types/supabase.db'
 import { onMounted, ref } from 'vue'
@@ -18,23 +17,27 @@ import { useRouter } from 'vue-router'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
 import AddSellerToRaffleForm from '@/components/forms/AddSellerToRaffleForm.vue'
+import { supabase } from '@/lib/supabase.client'
+import { format, parse } from '@formkit/tempo'
 
 const router = useRouter()
-const raffle = ref<Tables<'raffles'> | undefined>()
+const raffle = ref<Tables<'raffle_stats'> | undefined>()
 const sellers = ref<Tables<'sellers'>[]>([])
 const raffleSellers = ref<Tables<'sellers_with_tickets_count'>[]>([])
+const drawnAt = ref<string>('')
 const isLoading = ref(false)
 const openFormModal = ref(false)
 
 const raffleId = router.currentRoute.value.params.id
 
-const fetchRaffle = async () => {
-  await getRaffleById(Number(raffleId))
-    .then((data) => {
-      raffle.value = data
-    })
-    .catch((error) => {
-      console.error(error)
+const fetchRaffleStats = async () => {
+  await supabase
+    .from('raffle_stats')
+    .select('*')
+    .eq('raffle_id', raffleId)
+    .single()
+    .then((result) => {
+      raffle.value = result.data!
     })
 }
 
@@ -72,9 +75,15 @@ const closeAndFetchRaffleSellers = async () => {
 }
 
 onMounted(async () => {
-  await fetchRaffle()
+  // await fetchRaffle()
+  await fetchRaffleStats()
   await fetchSellers()
   await fetchRaffleSellers()
+
+  const date = parse(raffle.value?.draw_drawn_at!, 'YYYY-MM-DDTHH:mm:ss')
+  const formattedDate = format(date, 'YYYY/MM/DD')
+
+  drawnAt.value = formattedDate
 })
 </script>
 
@@ -82,15 +91,17 @@ onMounted(async () => {
   <div class="w-full flex flex-col items-center gap-4">
     <Card class="w-full">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle class="text-sm font-medium">
-          <p class="text-lg font-bold">{{ raffle?.name }}</p>
+        <CardTitle class="text-lg font-medium">
+          <p class="text-2xl font-bold">{{ raffle?.raffle_name }}</p>
           <p>{{ raffle?.description }}</p>
+          <p>Juega con: {{ raffle?.draw_name }} - ({{ drawnAt }})</p>
         </CardTitle>
         <SolarCupStarLineDuotone class="w-6 h-6" />
       </CardHeader>
       <CardContent>
-        <div class="text-2xl font-bold">1000 boletas</div>
-        <p class="text-xs text-muted-foreground">0 asignadas</p>
+        <div class="text-xl font-bold">{{ raffle?.total_tickets }} boletas</div>
+        <p class="text-xs text-muted-foreground">{{ raffle?.available_tickets }} Disponibles</p>
+        <p class="text-xs text-muted-foreground">{{ raffle?.taken_tickets }} asignadas</p>
       </CardContent>
     </Card>
     <SellersList :sellers="raffleSellers" :isLoading="isLoading">
