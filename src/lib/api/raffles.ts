@@ -1,10 +1,11 @@
 import type { Tables } from '@/types/supabase.db'
 import { supabase } from '../supabase.client'
-import type { QueryData } from '@supabase/supabase-js'
 
 export interface NewRaffleWithPrizes
   extends Omit<Tables<'raffles'>, 'id' | 'created_at' | 'updated_at'> {
   prizes: Omit<Tables<'prizes'>, 'id' | 'raffle_id' | 'created_at' | 'updated_at'>[]
+  number_of_tickets: number
+  ticket_price: number
 }
 
 interface RaffleInsertResult {
@@ -13,10 +14,10 @@ interface RaffleInsertResult {
   error?: string
 }
 
-interface RpcParams {
-  raffle_data: Omit<NewRaffleWithPrizes, 'prizes'>
-  prizes_data: NewRaffleWithPrizes['prizes']
-}
+// interface RpcParams {
+//   raffle_data: Omit<NewRaffleWithPrizes, 'prizes'>
+//   prizes_data: NewRaffleWithPrizes['prizes']
+// }
 
 export const getAllRaffles = async (): Promise<Tables<'raffles'>[]> => {
   const { data: raffles, error } = await supabase.from('raffles').select('*')

@@ -1,8 +1,121 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>
-    <h1>Sellers Raffle View</h1>
+  <div class="p-4 rounded-md mx-auto">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h1 class="text-2xl font-bold">Toyota Prado</h1>
+        <h2 class="text-xl">Juan Carlos Sánchez</h2>
+        <p>3222885970</p>
+      </div>
+      <div class="text-right">
+        <p>13 de Jul</p>
+        <p>$500000</p>
+      </div>
+    </div>
+    <div class="space-y-4">
+      <div class="flex items-center gap-4 border p-4 rounded-md">
+        <h3 class="text-xl font-bold">0</h3>
+        <div class="flex flex-wrap gap-2">
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            001
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            060
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            093
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            083
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            002
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            012
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            +
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 border p-4 rounded-md">
+        <h3 class="text-xl font-bold">1</h3>
+        <div class="flex gap-2">
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            101
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            160
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            114
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 border p-4 rounded-md">
+        <h3 class="text-xl font-bold">2</h3>
+        <div class="flex gap-2">
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            201
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            260
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            293
+          </button>
+        </div>
+      </div>
+      <div class="w-full h-32"></div>
+      <div class="flex items-center gap-4 border p-4 rounded-md">
+        <h3 class="text-xl font-bold">Pulles</h3>
+        <div class="flex gap-2">
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-green-700 rounded-md"
+          >
+            12
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-green-700 rounded-md"
+          >
+            14
+          </button>
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
+          >
+            +
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

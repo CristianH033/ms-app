@@ -13,6 +13,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectItemText,
+  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '../ui/select'
@@ -28,6 +29,18 @@ import { createNewRaffleWithPrizes, type NewRaffleWithPrizes } from '@/lib/api/r
 import { wait } from '@/lib/utils/promises'
 import { v4 as uuidv4 } from 'uuid'
 import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '../ui/alert-dialog'
+import DrawForm from './DrawForm.vue'
 
 const MAX_FILE_SIZE = 5000000
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
@@ -45,16 +58,18 @@ const isSubmiting = defineModel<boolean>('isSubmiting', { required: false, defau
 const draws = ref<Tables<'draws'>[]>([])
 
 const formData = ref({
-  draw_id: '1' as string | undefined,
-  name: 'Test' as string,
-  description: 'Test' as string,
+  draw_id: '' as string | undefined,
+  name: '' as string,
+  description: '' as string,
   image_path: null as string | null,
   thumb_hash: null as string | null,
+  number_of_tickets: 1000 as number,
+  ticket_price: '0' as string,
   prizes: [
     {
       key: uuidv4().slice(-10),
-      name: 'test' as string,
-      prize_value: '1220' as string,
+      name: '' as string,
+      prize_value: '0' as string,
       image: null as File | null,
       thumb_hash: null as string | null
     }
@@ -84,6 +99,15 @@ const formSchema = toTypedSchema(
     description: z
       .string({ required_error: 'La descripción es requerida' })
       .min(3, { message: 'La descripción debe tener al menos 3 caracteres' }),
+    number_of_tickets: z.number({ required_error: 'El numero de tickets es requerido' }).min(100, {
+      message: 'El numero de tickets debe ser mayor o igual a 100'
+    }),
+    ticket_price: z
+      .string({ required_error: 'El valor es requerido' })
+      .transform((val) => parseFloat(val)) // Transforma el string a un número
+      .refine((val) => !isNaN(val) && val >= 1, {
+        message: 'El valor debe ser un número mayor o igual a 1'
+      }),
     prizes: z
       .array(
         z.object({
@@ -125,17 +149,7 @@ const formSchema = toTypedSchema(
 )
 
 const form = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    draw_id: formData.value.draw_id,
-    name: formData.value.name,
-    description: formData.value.description,
-    prizes: formData.value.prizes.map((p) => ({
-      name: p.name,
-      image: new File([], ''),
-      prize_value: p.prize_value
-    }))
-  }
+  validationSchema: formSchema
 })
 
 const emit = defineEmits(['success'])
@@ -216,11 +230,29 @@ const withoutShowingActions = computed(() => {
   return props.withoutActions === '' || props.withoutActions === true
 })
 
-onMounted(async () => {
+const openDrawsFormModal = ref(false)
+
+const closeRaffleForm = () => {
+  openDrawsFormModal.value = false
+}
+
+const onSucess = async () => {
+  closeRaffleForm()
+  // reload raffles
+  await fetchDraws()
+}
+
+const fetchDraws = async () => {
   isSubmiting.value = true
   await getAllDraws()
-    .then((data) => (draws.value = data || []))
+    .then((data) => (draws.value = data!))
     .finally(() => (isSubmiting.value = false))
+
+  console.log(draws.value)
+}
+
+onMounted(async () => {
+  await fetchDraws()
 })
 </script>
 
@@ -255,17 +287,38 @@ onMounted(async () => {
 
           <Select v-bind="componentField" v-model:model-value="formData.draw_id">
             <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Elige un sorteo" />
-              </SelectTrigger>
+              <div class="flex flex-row gap-2">
+                <SelectTrigger>
+                  <SelectValue placeholder="Elige un sorteo" />
+                </SelectTrigger>
+                <AlertDialog
+                  :open="openDrawsFormModal"
+                  v-on:update:open="(value) => (openDrawsFormModal = value)"
+                >
+                  <AlertDialogTrigger as-child>
+                    <Button variant="outline" type="button">
+                      <SolarAddCircleLineDuotone class="w-6 h-6" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Crear nuevo sorteo</AlertDialogTitle>
+                      <DrawForm v-on:success="onSucess" v-on:cancel="closeRaffleForm" />
+                    </AlertDialogHeader>
+                    <!-- <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter> -->
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </FormControl>
             <SelectContent>
               <SelectGroup>
+                <SelectLabel>Sorteos</SelectLabel>
+                <div class="p-4" v-if="draws.length === 0" value="">No hay sorteos</div>
                 <SelectItem v-for="draw in draws" :key="draw.id" :value="draw.id.toString()">
-                  <SelectItemText>{{ draw.name }}</SelectItemText>
-                </SelectItem>
-                <SelectItem value="99999">
-                  <SelectItemText>Nuevo Sorteo</SelectItemText>
+                  {{ draw.name }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -285,6 +338,42 @@ onMounted(async () => {
               placeholder="Descripción de la Rifa"
               v-bind="componentField"
               v-model:model-value="formData.description"
+              required
+            />
+          </FormControl>
+          <!-- <FormDescription> This is your public display name. </FormDescription> -->
+          <div v-auto-animate>
+            <FormMessage />
+          </div>
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ componentField }" name="number_of_tickets">
+        <FormItem>
+          <FormLabel>Número de Bonos:</FormLabel>
+          <FormControl>
+            <Input
+              type="number"
+              inputmode="numeric"
+              placeholder="Nombre de la Rifa"
+              v-bind="componentField"
+              v-model:model-value="formData.number_of_tickets"
+              required
+            />
+          </FormControl>
+          <!-- <FormDescription> This is your public display name. </FormDescription> -->
+          <div v-auto-animate>
+            <FormMessage />
+          </div>
+        </FormItem>
+      </FormField>
+      <FormField v-slot="{ value, handleChange }" name="ticket_price">
+        <FormItem>
+          <FormLabel>Costo del Bono</FormLabel>
+          <FormControl>
+            <MoneyInput
+              :model-value="value"
+              @update:modelValue="(value) => handleChange(value, true)"
+              v-model="formData.ticket_price"
               required
             />
           </FormControl>
@@ -346,7 +435,7 @@ onMounted(async () => {
               </FormField>
               <FormField v-slot="{ value, handleChange }" :name="'prizes.' + i + '.prize_value'">
                 <FormItem>
-                  <FormLabel>Test currency</FormLabel>
+                  <FormLabel>Valor del premio</FormLabel>
                   <FormControl>
                     <MoneyInput
                       :model-value="value"

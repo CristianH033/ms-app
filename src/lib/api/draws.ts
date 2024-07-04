@@ -20,3 +20,17 @@ export const getDrawById = async (id: number): Promise<Tables<'draws'> | undefin
 
   return draw
 }
+
+export const createNewDraw = async (drawData: {
+  lottery_id: number
+  name: string
+  drawn_at: string
+}): Promise<boolean> => {
+  const { error } = await supabase.from('draws').insert(drawData)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return true
+}

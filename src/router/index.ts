@@ -78,7 +78,7 @@ const router = createRouter({
               name: 'raffle-sellers',
               meta: { title: 'Vendedores de la Rifa', requires_auth: true },
               component: defineAsyncComponent({
-                loader: () => import(sellersRaffleView),
+                loader: () => import('@/views/SellersRaffleView.vue'),
                 ...defaultOptions
               })
             },
@@ -216,6 +216,15 @@ const router = createRouter({
           meta: { title: 'Form test', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/components/forms/RaffleForm.vue'),
+            ...defaultOptions
+          })
+        },
+        {
+          path: 'form_test_draw',
+          name: 'form_test_draw',
+          meta: { title: 'Form test draw', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/components/forms/DrawForm.vue'),
             ...defaultOptions
           })
         },
