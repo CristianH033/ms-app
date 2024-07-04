@@ -236,6 +236,15 @@ const router = createRouter({
           })
         },
         {
+          path: 'form_test_seller',
+          name: 'form_test_seller',
+          meta: { title: 'Form test add', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/components/forms/SellerForm.vue'),
+            ...defaultOptions
+          })
+        },
+        {
           path: 'form_test_add/:id',
           name: 'form_test_add',
           meta: { title: 'Form test add', requires_auth: true },

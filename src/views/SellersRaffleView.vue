@@ -19,6 +19,7 @@ import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
 import AddSellerToRaffleForm from '@/components/forms/AddSellerToRaffleForm.vue'
 import { supabase } from '@/lib/supabase.client'
 import { format, parse } from '@formkit/tempo'
+import SolarAltArrowRightLineDuotone from '~icons/solar/alt-arrow-right-line-duotone'
 
 const router = useRouter()
 const raffle = ref<Tables<'raffle_stats'> | undefined>()
@@ -143,6 +144,18 @@ onMounted(async () => {
           <SolarAddCircleLineDuotone class="w-5 h-5" />
           <span>Agregar venddor a esta rifa</span>
         </Button>
+      </template>
+      <template #itemAction="{ seller }">
+        <RouterLink
+          custom
+          v-slot="{ navigate }"
+          :to="{ name: 'raffle-seller', params: { id: raffleId, seller_id: seller.id } }"
+        >
+          <Button class="gap-2" type="button" variant="outline" @click="navigate">
+            <!-- <span>Ver boletas</span> -->
+            <SolarAltArrowRightLineDuotone class="w-6 h-6" />
+          </Button>
+        </RouterLink>
       </template>
     </SellersList>
   </div>

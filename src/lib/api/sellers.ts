@@ -4,7 +4,10 @@ import type { QueryData } from '@supabase/supabase-js'
 
 // Queries
 const SellerWithTicketsQuery = supabase.from('sellers').select(`*, tickets(*)`)
-const sellersWithTicketsCountQuery = supabase.from('sellers_with_tickets_count').select('*')
+const sellersWithTicketsCountQuery = supabase
+  .from('sellers_with_tickets_count')
+  .select('*')
+  .order('name', { ascending: true })
 const sellersWithTicketsCountByRaffleQuery = supabase
   .from('sellers_with_tickets_count_by_raffle')
   .select('*')
@@ -73,6 +76,31 @@ export const getSellerById = async (id: number): Promise<Tables<'sellers'> | und
 
   if (error) {
     throw new Error(error.message)
+  }
+
+  return seller
+}
+
+export const createSeller = async (data: {
+  name: string
+  email: string | null
+  phone: string
+  avatar_url: string | null
+  thumb_hash: string | null
+}): Promise<Tables<'sellers'> | undefined> => {
+  const { data: seller, error } = await supabase
+    .from('sellers')
+    .insert({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      avatar_url: data.avatar_url,
+      thumb_hash: data.thumb_hash
+    })
+    .single()
+
+  if (error) {
+    throw error
   }
 
   return seller

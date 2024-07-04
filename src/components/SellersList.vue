@@ -106,6 +106,7 @@ useIntersectionObserver(
               <div class="text-sm text-foreground/60">{{ seller.phone }}</div>
             </div>
             <Badge>{{ seller.total_tickets }}</Badge>
+            <slot name="itemAction" :seller="seller"> </slot>
           </div>
         </div>
       </div>
