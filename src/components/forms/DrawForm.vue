@@ -26,7 +26,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemText,
   SelectLabel,
   SelectTrigger,
   SelectValue

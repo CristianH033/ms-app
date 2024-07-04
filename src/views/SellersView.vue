@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import SolarMagniferOutline from '~icons/solar/magnifer-outline'
-import { useIntersectionObserver } from '@vueuse/core'
-import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
-import SolarUserCrossRoundedLineDuotone from '~icons/solar/user-cross-rounded-line-duotone'
-import { computed, defineAsyncComponent, onMounted, ref, type AsyncComponentOptions } from 'vue'
-import { Button } from '@/components/ui/button'
+import { defineAsyncComponent, onMounted, ref, type AsyncComponentOptions } from 'vue'
 import { getAllSellersWithTicketsCount } from '@/lib/api/sellers'
 import type { Tables } from '@/types/supabase.db'
+import SellersList from '@/components/SellersList.vue'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,19 +14,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
-import LoadingIndicator from '@/components/LoadingIndicator.vue'
+import { Button } from '@/components/ui/button'
+import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import ErrorComponent from '@/components/ErrorComponent.vue'
+import LoadingIndicator from '@/components/LoadingIndicator.vue'
 
-const isSticky = ref(false)
 const isLoading = ref(false)
-const search = ref('')
 const sellers = ref<Tables<'sellers_with_tickets_count'>[]>([])
 
-const sentinal = ref<HTMLElement | null>(null)
-
-const sellersFiltered = computed(() => {
-  return sellers.value.filter((s) => s.name!.toLowerCase().includes(search.value.toLowerCase()))
-})
+const openFormModal = ref(false)
 
 type asyncComponentOptions = Omit<AsyncComponentOptions<unknown>, 'loader'>
 
@@ -50,26 +39,6 @@ const formComponent = defineAsyncComponent({
   loader: () => import(path),
   ...defaultOptions
 })
-
-const avatarLetters = (name: string) => {
-  // max 2 letters
-  return name
-    .split(' ')
-    .map((n) => n.charAt(0))
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
-
-useIntersectionObserver(
-  sentinal,
-  ([{ isIntersecting }]) => {
-    isSticky.value = !isIntersecting
-  },
-  {
-    rootMargin: '-65px'
-  }
-)
 
 onMounted(async () => {
   isLoading.value = true
@@ -89,26 +58,9 @@ onMounted(async () => {
 
 <template>
   <div class="w-full flex flex-col items-center">
-    <div ref="sentinal" class="w-full h-0"></div>
-    <div class="flex flex-col w-full max-w-3xl">
-      <div
-        class="flex flex-row gap-4 transition-all duration-300 bg-background-elevated/90 backdrop-blur px-4 py-3 border rounded-lg rounded-b-none sticky top-16 z-10"
-        :class="{
-          '!bg-background/90 @3xl/main:!bg-background-elevated/90 rounded-none @3xl/main:rounded-b-lg border-t-0 border-x-0 @3xl/main:border-x -mx-4':
-            isSticky
-        }"
-      >
-        <div class="grow relative">
-          <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
-          <Input
-            type="text"
-            v-model="search"
-            autocomplete="off"
-            placeholder="Search"
-            class="w-full pl-11 pr-4 py-2 text-sm"
-          />
-        </div>
-        <AlertDialog>
+    <SellersList :sellers="sellers" :isLoading="isLoading">
+      <template #actionButton>
+        <AlertDialog :open="openFormModal" v-on:update:open="(value) => (openFormModal = value)">
           <AlertDialogTrigger as-child>
             <Button class="gap-2">
               <SolarAddCircleLineDuotone class="w-5 h-5" />
@@ -129,43 +81,15 @@ onMounted(async () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
-      <div class="flex-1 overflow-auto rounded-b-lg border border-t-0">
-        <div class="divide-y">
-          <div v-if="isLoading" class="px-4 py-4 flex flex-col justify-center items-center gap-2">
-            <LoadingIndicator class="my-12" />
-          </div>
-          <div
-            v-else-if="sellersFiltered.length === 0"
-            class="px-4 py-4 flex flex-col justify-center items-center gap-2"
-          >
-            <SolarUserCrossRoundedLineDuotone class="w-16 h-16" />
-            <p class="text-lg">No hay vendedores</p>
-            <div class="w-full border-t flex flex-col items-center justify-center my-4"></div>
-            <Button class="gap-2">
-              <SolarAddCircleLineDuotone class="w-5 h-5" />
-              <span>Crear vendedor</span>
-            </Button>
-          </div>
-          <div class="divide-y">
-            <div
-              v-for="seller in sellersFiltered"
-              :key="seller.id!"
-              class="px-4 py-3 flex items-center gap-4"
-            >
-              <Avatar class="w-10 h-10">
-                <AvatarImage class="" :src="seller.avatar_url || ''" />
-                <AvatarFallback>{{ avatarLetters(seller.name!) }}</AvatarFallback>
-              </Avatar>
-              <div class="flex-1">
-                <div class="font-medium capitalize">{{ seller.name }}</div>
-                <div class="text-sm text-foreground/60">{{ seller.email }}</div>
-              </div>
-              <Badge>{{ seller.total_tickets }}</Badge>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </template>
+      <template #actionForEmpty>
+        <Button class="gap-2" @click="openFormModal = true">
+          <SolarAddCircleLineDuotone class="w-5 h-5" />
+          <span>Crear vendedor</span>
+        </Button>
+      </template>
+    </SellersList>
   </div>
 </template>
+
+<style scoped></style>

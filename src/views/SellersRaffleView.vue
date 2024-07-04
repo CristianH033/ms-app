@@ -1,121 +1,85 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import SellersList from '@/components/SellersList.vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { getAllSellersWithTicketsCountByRaffleId } from '@/lib/api/sellers'
+import type { Tables } from '@/types/supabase.db'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
+
+const router = useRouter()
+
+const sellers = ref<Tables<'sellers_with_tickets_count_by_raffle'>[]>([])
+const isLoading = ref(false)
+const openFormModal = ref(false)
+
+const fetchSellers = async () => {
+  isLoading.value = true
+  const id = router.currentRoute.value.params.id
+  getAllSellersWithTicketsCountByRaffleId(Number(id))
+    .then((data) => {
+      sellers.value = data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
+}
+
+onMounted(async () => {
+  await fetchSellers()
+})
+</script>
 
 <template>
-  <div class="p-4 rounded-md mx-auto">
-    <div class="flex justify-between items-center mb-4">
-      <div>
-        <h1 class="text-2xl font-bold">Toyota Prado</h1>
-        <h2 class="text-xl">Juan Carlos Sánchez</h2>
-        <p>3222885970</p>
-      </div>
-      <div class="text-right">
-        <p>13 de Jul</p>
-        <p>$500000</p>
-      </div>
-    </div>
-    <div class="space-y-4">
-      <div class="flex items-center gap-4 border p-4 rounded-md">
-        <h3 class="text-xl font-bold">0</h3>
-        <div class="flex flex-wrap gap-2">
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            001
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            060
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            093
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            083
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            002
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            012
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            +
-          </button>
-        </div>
-      </div>
-      <div class="flex items-center gap-4 border p-4 rounded-md">
-        <h3 class="text-xl font-bold">1</h3>
-        <div class="flex gap-2">
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            101
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            160
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            114
-          </button>
-        </div>
-      </div>
-      <div class="flex items-center gap-4 border p-4 rounded-md">
-        <h3 class="text-xl font-bold">2</h3>
-        <div class="flex gap-2">
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            201
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            260
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            293
-          </button>
-        </div>
-      </div>
-      <div class="w-full h-32"></div>
-      <div class="flex items-center gap-4 border p-4 rounded-md">
-        <h3 class="text-xl font-bold">Pulles</h3>
-        <div class="flex gap-2">
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-green-700 rounded-md"
-          >
-            12
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-green-700 rounded-md"
-          >
-            14
-          </button>
-          <button
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gray-700 rounded-md"
-          >
-            +
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="w-full flex flex-col items-center">
+    <SellersList :sellers="sellers" :isLoading="isLoading">
+      <template #actionButton>
+        <AlertDialog :open="openFormModal" v-on:update:open="(value) => (openFormModal = value)">
+          <AlertDialogTrigger as-child>
+            <Button class="gap-2">
+              <SolarAddCircleLineDuotone class="w-5 h-5" />
+              <span class="hidden md:inline">Agregar</span>
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Agregar vendedor</AlertDialogTitle>
+              <AlertDialogDescription>
+                Agrega un nuevo vendedor a esta rifa
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div class="grid gap-4 py-4">Agregar vendedores a esta rifa</div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction>Agregar</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </template>
+      <template #emptyText>
+        <p>No hay vendedores en esta rifa</p>
+      </template>
+      <template #actionForEmpty>
+        <Button class="gap-2" @click="openFormModal = true">
+          <SolarAddCircleLineDuotone class="w-5 h-5" />
+          <span>Agregar venddor a esta rifa</span>
+        </Button>
+      </template>
+    </SellersList>
   </div>
 </template>
 

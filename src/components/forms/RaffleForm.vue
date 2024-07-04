@@ -12,7 +12,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemText,
   SelectLabel,
   SelectTrigger,
   SelectValue
@@ -31,11 +30,7 @@ import { v4 as uuidv4 } from 'uuid'
 import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger
