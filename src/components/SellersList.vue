@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import LoadingIndicator from '@/components/LoadingIndicator.vue'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import SolarUserCrossRoundedLineDuotone from '~icons/solar/user-cross-rounded-line-duotone'
+import { avatarLetters } from '@/lib/utils/strings'
 
 type Seller = {
   avatar_url: string | null | undefined
@@ -41,16 +42,6 @@ const sellersFiltered = computed(() => {
   return props.sellers.filter((s) => s.name!.toLowerCase().includes(search.value.toLowerCase()))
 })
 
-const avatarLetters = (name: string) => {
-  // max 2 letters
-  return name
-    .split(' ')
-    .map((n) => n.charAt(0))
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
-
 useIntersectionObserver(
   sentinal,
   ([{ isIntersecting }]) => {
@@ -78,14 +69,14 @@ useIntersectionObserver(
           type="text"
           v-model="search"
           autocomplete="off"
-          placeholder="Search"
+          placeholder="Buscar"
           class="w-full pl-11 pr-4 py-2 text-sm"
         />
       </div>
       <slot name="actionButton"> </slot>
     </div>
     <div class="flex-1 overflow-auto rounded-b-lg border border-t-0">
-      <div class="divide-y">
+      <div class="">
         <div v-if="isLoading" class="px-4 py-4 flex flex-col justify-center items-center gap-2">
           <LoadingIndicator class="my-12" />
         </div>
@@ -112,7 +103,7 @@ useIntersectionObserver(
             </Avatar>
             <div class="flex-1">
               <div class="font-medium capitalize">{{ seller.name }}</div>
-              <div class="text-sm text-foreground/60">{{ seller.email }}</div>
+              <div class="text-sm text-foreground/60">{{ seller.phone }}</div>
             </div>
             <Badge>{{ seller.total_tickets }}</Badge>
           </div>

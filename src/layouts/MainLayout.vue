@@ -6,7 +6,7 @@ import NavMenu from '@/components/NavMenu.vue'
 
 <template>
   <div
-    class="w-full min-h-dvh grid gap-0 grid-rows-[auto_1fr_auto] grid-cols-[1fr_1fr_1fr] auto-rows-[row] md:grid-cols-[auto_1fr_1fr] md:grid-rows-[auto_1fr_1fr]"
+    class="w-full min-h-dvh grid gap-0 grid-rows-[auto_1fr_auto] grid-cols-[1fr_1fr_1fr] print:grid-cols-[auto_1fr] auto-rows-[row] md:grid-cols-[auto_1fr_1fr] md:grid-rows-[auto_1fr_1fr]"
   >
     <AppBar />
     <main
@@ -14,11 +14,11 @@ import NavMenu from '@/components/NavMenu.vue'
     >
       <RouterView v-slot="{ Component, route }">
         <Transition name="fade" mode="out-in">
-          <component :is="Component" :key="route.name" />
+          <component :is="Component" :key="route.name" :raffleId="1" />
         </Transition>
       </RouterView>
     </main>
-    <NavMenu />
+    <NavMenu class="print:hidden" />
   </div>
 </template>
 

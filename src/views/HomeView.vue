@@ -95,7 +95,7 @@ onMounted(async () => {
             type="text"
             v-model="search"
             autocomplete="off"
-            placeholder="Search"
+            placeholder="Buscar"
             class="w-full pl-11 pr-4 py-2 text-sm"
           />
         </div>

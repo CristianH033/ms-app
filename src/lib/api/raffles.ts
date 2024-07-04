@@ -81,3 +81,24 @@ export const createNewRaffleWithPrizes = async (
 
   return data
 }
+
+export const assignSelletToRaffle = async (
+  raffleId: number,
+  sellerId: number,
+  ticket_price: number
+) => {
+  const { data, error } = await supabase
+    .from('raffles_sellers')
+    .insert({
+      raffle_id: raffleId,
+      seller_id: sellerId,
+      ticket_price: ticket_price
+    })
+    .select()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}

@@ -19,7 +19,7 @@ const logout = async () => {
 
 <template>
   <header
-    class="col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-20 px-4 py-2 h-16 flex flex-row justify-between gap-4 bg-background/90 text-foreground backdrop-blur border-b"
+    class="print:hidden col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-20 px-4 py-2 h-16 flex flex-row justify-between gap-4 bg-background/90 text-foreground backdrop-blur border-b"
   >
     <div class="w-32 h-full justify-self-start flex justify-start items-center">
       <!-- <img class="w-full h-full" alt="Vue logo" src="@/assets/img/logo.svg" /> -->

@@ -236,6 +236,15 @@ const router = createRouter({
           })
         },
         {
+          path: 'form_test_add/:id',
+          name: 'form_test_add',
+          meta: { title: 'Form test add', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/components/forms/AddSellerToRaffleForm.vue'),
+            ...defaultOptions
+          })
+        },
+        {
           path: 'file_test',
           name: 'file_test',
           meta: { title: 'Upload Form test', requires_auth: true },
