@@ -17,6 +17,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { numberToCurrency } from '@/lib/utils/strings'
+import { OnLongPress } from '@vueuse/components'
 
 const router = useRouter()
 
@@ -31,8 +32,10 @@ const availableTickets = ref<Tables<'tickets'>[]>([])
 const sellerTickets = ref<Tables<'tickets'>[]>([])
 const selectedTickets = ref<Number[] | null>(null)
 const selectDialogOpen = ref(false)
+const removeDialogOpen = ref(false)
 const isLoading = ref(false)
 const selectedGroup = ref<string>('')
+const selectedTicketToRemove = ref<Tables<'tickets'> | null>(null)
 
 const ticketsGrouped = computed(() => {
   // Get unique first chacters from tickets
@@ -179,6 +182,26 @@ const assingSeletedTickets = async () => {
   selectDialogOpen.value = false
 }
 
+const removeSellerTicket = async (ticketId: number) => {
+  isLoading.value = true
+  const { error } = await supabase.from('tickets').update({ seller_id: null }).eq('id', ticketId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  getRaffleSellerInfo()
+  getAvailableTickets()
+  getSellerTickets()
+  isLoading.value = false
+  removeDialogOpen.value = false
+}
+
+const openRemoveDialog = (ticket: Tables<'tickets'>) => {
+  removeDialogOpen.value = true
+  selectedTicketToRemove.value = ticket
+}
+
 onMounted(() => {
   getRaffleStats()
   getSeller()
@@ -214,14 +237,21 @@ onMounted(() => {
           <h3 class="text-7xl">{{ group.group }}</h3>
         </div>
         <div class="flex flex-wrap gap-2">
-          <Button
+          <OnLongPress
             v-for="ticket in group.sellerTickets"
             :key="ticket.id"
-            variant="ghost"
-            class="print:bg-black print:text-white text-lg w-14 h-14 print:w-8 print:h-8 border rounded-full print:text-xs"
+            as="button"
+            class="ml-2 button small"
+            @trigger="openRemoveDialog(ticket)"
           >
-            {{ ticket.number }}
-          </Button>
+            <Button
+              variant="ghost"
+              @contextmenu.prevent="openRemoveDialog(ticket)"
+              class="text-lg w-14 h-14 print:w-8 print:h-8 border rounded-full print:text-xs flex-col justify-center items-center"
+            >
+              <span class="pointer-events-none">{{ ticket.number }}</span>
+            </Button>
+          </OnLongPress>
           <Button
             @click="openDialogForGroup(group.group)"
             variant="ghost"
@@ -237,8 +267,12 @@ onMounted(() => {
       <div class="flex items-center gap-4 border p-4 rounded-md">
         <div class="flex gap-2">
           <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
-          <Button variant="ghost" class="text-lg w-14 h-14 border bg-green-700 rounded-md">
-            14
+          <Button
+            variant="ghost"
+            @contextmenu.prevent="selectDialogOpen = true"
+            class="user-select-none text-lg w-14 h-14 border bg-green-700 rounded-md"
+          >
+            <span class="pointer-events-none user-select-none">14</span>
           </Button>
           <Button variant="ghost" class="print:hidden text-lg w-14 h-14 border"> + </Button>
         </div>
@@ -295,6 +329,52 @@ onMounted(() => {
             <SvgSpinnersDotRevolve v-if="isLoading" class="h-6 w-6" />
             <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
             <span>Asignar</span>
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    <AlertDialog :open="removeDialogOpen" v-on:update:open="(value) => (removeDialogOpen = value)">
+      <AlertDialogContent
+        class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+      >
+        <AlertDialogHeader class="p-6 pb-4 border-b">
+          <AlertDialogTitle>
+            <div class="flex flex-row gap-2 justify-start items-center">
+              <SolarTicketLineDuotone class="w-8 h-8" />
+              <span> Remover Boleta </span>
+            </div>
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta acción removerá la boleta de este vendedor
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div class="flex flex-row gap-2 justify-center items-center p-4">
+          <Button
+            variant="ghost"
+            class="text-4xl w-32 h-32 border rounded-full"
+            :disabled="isLoading"
+          >
+            {{ selectedTicketToRemove?.number }}
+          </Button>
+        </div>
+        <AlertDialogFooter class="p-6 pt-4 border-t gap-2">
+          <AlertDialogCancel as-child>
+            <Button variant="secondary" type="button" :disabled="isLoading">Cancelar</Button>
+          </AlertDialogCancel>
+          <!-- <AlertDialogAction as-child> -->
+          <!-- <Button type="submit" form="raffle-form" :disabled="submiting">Crear</Button> -->
+          <Button
+            @click="removeSellerTicket(selectedTicketToRemove?.id as number)"
+            class="gap-3"
+            v-auto-animate
+            form="raffle-form"
+            type="button"
+            variant="destructive"
+            :disabled="isLoading"
+          >
+            <SvgSpinnersDotRevolve v-if="isLoading" class="h-6 w-6" />
+            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <span>Remover</span>
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
