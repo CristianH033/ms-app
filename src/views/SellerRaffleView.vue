@@ -266,14 +266,14 @@ onMounted(() => {
       <h3 class="text-xl break-before-page">Pulles</h3>
       <div class="flex items-center gap-4 border p-4 rounded-md">
         <div class="flex gap-2">
-          <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
+          <!-- <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
           <Button
             variant="ghost"
             @contextmenu.prevent="selectDialogOpen = true"
             class="user-select-none text-lg w-14 h-14 border bg-green-700 rounded-md"
           >
             <span class="pointer-events-none user-select-none">14</span>
-          </Button>
+          </Button> -->
           <Button variant="ghost" class="print:hidden text-lg w-14 h-14 border"> + </Button>
         </div>
       </div>
