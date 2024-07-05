@@ -4,9 +4,6 @@ import { supabase } from '@/lib/supabase.client'
 import type { Tables } from '@/types/supabase.db'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { format, parse } from '@formkit/tempo'
-import { Input } from '@/components/ui/input'
-import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
@@ -75,12 +72,6 @@ const dialogGroupTickets = computed(() => {
     ? availableTickets.value.filter((ticket) => ticket.number[0] === selectedGroup.value)
     : []
 })
-
-const formatDate = (date: string | undefined, formatString: string = 'YYYY/MM/DD') => {
-  if (!date) return
-
-  return format(parse(date, 'YYYY-MM-DDTHH:mm:ss'), formatString)
-}
 
 const openDialogForGroup = (group: string) => {
   selectedGroup.value = group

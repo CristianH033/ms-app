@@ -18,8 +18,8 @@ import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
 import AddSellerToRaffleForm from '@/components/forms/AddSellerToRaffleForm.vue'
 import { supabase } from '@/lib/supabase.client'
-import { format, parse } from '@formkit/tempo'
 import SolarAltArrowRightLineDuotone from '~icons/solar/alt-arrow-right-line-duotone'
+import { formatDate } from '@/lib/utils/dates'
 
 const router = useRouter()
 const raffle = ref<Tables<'raffle_stats'> | undefined>()
@@ -81,10 +81,7 @@ onMounted(async () => {
   await fetchSellers()
   await fetchRaffleSellers()
 
-  const date = parse(raffle.value?.draw_drawn_at!, 'YYYY-MM-DDTHH:mm:ss')
-  const formattedDate = format(date, 'YYYY/MM/DD')
-
-  drawnAt.value = formattedDate
+  drawnAt.value = formatDate(raffle.value?.draw_drawn_at!)!
 })
 </script>
 
