@@ -54,18 +54,18 @@ const isSubmiting = defineModel<boolean>('isSubmiting', { required: false, defau
 const draws = ref<Tables<'draws'>[]>([])
 
 const formData = ref({
-  draw_id: '1' as string | undefined,
-  name: 'Test' as string,
-  description: 'Test' as string,
+  draw_id: undefined as string | undefined,
+  name: '' as string,
+  description: '' as string,
   image_path: null as string | null,
   thumb_hash: null as string | null,
   number_of_tickets: 1000 as number,
-  ticket_price: '120000' as string,
+  ticket_price: '' as string,
   prizes: [
     {
       key: uuidv4().slice(-10),
-      name: 'test' as string,
-      prize_value: '10000' as string,
+      name: '' as string,
+      prize_value: '' as string,
       image: null as File | null,
       thumb_hash: null as string | null
     }
@@ -165,17 +165,7 @@ const formSchema = toTypedSchema(
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
-    name: formData.value.name,
-    description: formData.value.description,
-    number_of_tickets: formData.value.number_of_tickets,
-    ticket_price: formData.value.ticket_price,
-    draw_id: formData.value.draw_id,
-    prizes: [
-      {
-        ...formData.value.prizes[0],
-        image: new File([], '')
-      }
-    ]
+    number_of_tickets: formData.value.number_of_tickets
   }
 })
 
