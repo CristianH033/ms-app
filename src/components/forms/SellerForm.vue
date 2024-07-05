@@ -32,7 +32,9 @@ const error = ref<string | null>(null)
 
 const formSchema = toTypedSchema(
   z.object({
-    name: z.string({ required_error: 'El nombre es requerido' }),
+    name: z
+      .string({ required_error: 'El nombre es requerido' })
+      .transform((s) => s.toLocaleLowerCase()),
     email: z.string().email({ message: 'Email invalido' }).optional().or(z.literal('')),
     phone: z.string({ required_error: 'El teléfono es requerido' }).refine(
       (val) => {

@@ -144,6 +144,7 @@ onMounted(async () => {
                   v-for="seller in sellers"
                   :key="seller.id"
                   :value="seller.id.toString()"
+                  class="capitalize"
                 >
                   {{ seller.name }} - {{ seller.phone }}
                 </SelectItem>
