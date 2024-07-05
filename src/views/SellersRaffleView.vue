@@ -94,7 +94,7 @@ onMounted(async () => {
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-lg font-medium">
           <p class="text-2xl font-bold">{{ raffle?.raffle_name }}</p>
-          <p>{{ raffle?.description }}</p>
+          <!-- <p>{{ raffle?.description }}</p> -->
           <p>Juega con: {{ raffle?.draw_name }} - ({{ drawnAt }})</p>
         </CardTitle>
         <SolarCupStarLineDuotone class="w-6 h-6" />

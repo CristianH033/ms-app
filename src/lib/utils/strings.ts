@@ -9,3 +9,10 @@ export const avatarLetters = (name: string) => {
 }
 
 export const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
+
+export const numberToCurrency = (num: number) => {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP'
+  }).format(num)
+}

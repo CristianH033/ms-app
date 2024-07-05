@@ -1,70 +1,199 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { computed, onMounted, ref } from 'vue'
+import { supabase } from '@/lib/supabase.client'
+import type { Tables } from '@/types/supabase.db'
+import { computed, nextTick, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { format, parse } from '@formkit/tempo'
+import { Input } from '@/components/ui/input'
+import SolarMagniferOutline from '~icons/solar/magnifer-outline'
+import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
+import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
+import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog'
+import { numberToCurrency } from '@/lib/utils/strings'
 
-const tickets = ref<
-  {
-    id: number
-    number: string
-  }[]
->([])
+const router = useRouter()
+
+// raffles/:id/sellers/:seller_id
+const raffleId = router.currentRoute.value.params.id
+const sellerId = router.currentRoute.value.params.seller_id
+
+const raffle = ref<Tables<'raffle_stats'>>()
+const seller = ref<Tables<'sellers'>>()
+const raffleSellerInfo = ref<Tables<'raffles_sellers'>>()
+const availableTickets = ref<Tables<'tickets'>[]>([])
+const sellerTickets = ref<Tables<'tickets'>[]>([])
+const selectedTickets = ref<Number[] | null>(null)
+const selectDialogOpen = ref(false)
+const isLoading = ref(false)
+const selectedGroup = ref<string>('')
 
 const ticketsGrouped = computed(() => {
   // Get unique first chacters from tickets
-  const uniqueFirstChars = Array.from(new Set(tickets.value.map((ticket) => ticket.number[0])))
+  const uniqueFirstChars = Array.from(
+    new Set(sellerTickets.value.map((ticket) => ticket.number[0]))
+  )
 
-  return uniqueFirstChars.map((firstChar) => {
+  const groups = uniqueFirstChars.map((firstChar) => {
     return {
       group: firstChar,
-      tickets: tickets.value.filter((ticket) => ticket.number[0] === firstChar)
+      sellerTickets: sellerTickets.value.filter((ticket) => ticket.number[0] === firstChar)
     }
+  }) as { group: string; sellerTickets: Tables<'tickets'>[] }[]
+
+  const defaultGroups = [
+    { group: '0', sellerTickets: [] },
+    { group: '1', sellerTickets: [] },
+    { group: '2', sellerTickets: [] },
+    { group: '3', sellerTickets: [] },
+    { group: '4', sellerTickets: [] },
+    { group: '5', sellerTickets: [] },
+    { group: '6', sellerTickets: [] },
+    { group: '7', sellerTickets: [] },
+    { group: '8', sellerTickets: [] },
+    { group: '9', sellerTickets: [] }
+  ] as { group: string; sellerTickets: Tables<'tickets'>[] }[]
+
+  return defaultGroups.map((group) => {
+    const foundGroup = groups.find((g) => g.group === group.group)
+    return foundGroup || group
   })
 })
 
-// const fill = (numbers: number = 200, groups: number = 10) => {
-//   for (let i = 0; i < 20; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+const dialogGroupTickets = computed(() => {
+  console.log(selectedGroup.value)
+  return selectedGroup.value
+    ? availableTickets.value.filter((ticket) => ticket.number[0] === selectedGroup.value)
+    : []
+})
 
-//   for (let i = 100; i < 120; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+const formatDate = (date: string | undefined, formatString: string = 'YYYY/MM/DD') => {
+  if (!date) return
 
-//   for (let i = 200; i < 220; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+  return format(parse(date, 'YYYY-MM-DDTHH:mm:ss'), formatString)
+}
 
-//   for (let i = 300; i < 320; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+const openDialogForGroup = (group: string) => {
+  selectedGroup.value = group
+  nextTick(() => {
+    selectDialogOpen.value = true
+  })
+}
 
-//   for (let i = 400; i < 420; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+const addToSelected = (ticket: Tables<'tickets'>) => {
+  if (selectedTickets.value?.includes(ticket.id)) {
+    selectedTickets.value = selectedTickets.value?.filter((id) => id !== ticket.id)
+  } else {
+    selectedTickets.value = [...(selectedTickets.value ?? []), ticket.id]
+  }
+}
 
-//   for (let i = 500; i < 520; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+const isSelected = (ticket: Tables<'tickets'>) => {
+  return selectedTickets.value?.includes(ticket.id)
+}
 
-//   for (let i = 600; i < 620; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+const getRaffleStats = async () => {
+  const { data, error } = await supabase
+    .from('raffle_stats')
+    .select('*')
+    .eq('raffle_id', raffleId)
+    .single()
 
-//   for (let i = 700; i < 720; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+  if (error) {
+    throw new Error(error.message)
+  }
 
-//   for (let i = 800; i < 820; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
+  raffle.value = data
+}
 
-//   for (let i = 900; i < 920; i++) {
-//     tickets.value.push({ id: i, number: zeroPad(i, 3) })
-//   }
-// }
+const getSeller = async () => {
+  const { data, error } = await supabase.from('sellers').select('*').eq('id', sellerId).single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  seller.value = data
+}
+
+const getSellerTickets = async () => {
+  const { data, error } = await supabase
+    .from('tickets')
+    .select('*')
+    .eq('raffle_id', raffleId)
+    .eq('seller_id', sellerId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  sellerTickets.value = data
+}
+
+const getAvailableTickets = async () => {
+  const { data, error } = await supabase
+    .from('tickets')
+    .select('*')
+    .eq('raffle_id', raffleId)
+    .is('seller_id', null)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  availableTickets.value = data
+}
+
+const getRaffleSellerInfo = async () => {
+  const { data, error } = await supabase
+    .from('raffles_sellers')
+    .select('*')
+    .eq('raffle_id', raffleId)
+    .eq('seller_id', sellerId)
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  raffleSellerInfo.value = data
+}
+
+const assingSeletedTickets = async () => {
+  isLoading.value = true
+  const { error } = await supabase
+    .from('tickets')
+    .update({ seller_id: Number(sellerId) })
+    .in('id', selectedTickets.value?.map((id) => Number(id)) as number[])
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  getRaffleSellerInfo()
+  getAvailableTickets()
+  getSellerTickets()
+
+  isLoading.value = false
+
+  selectDialogOpen.value = false
+}
 
 onMounted(() => {
-  // fill()
+  getRaffleStats()
+  getSeller()
+  getRaffleSellerInfo()
+  getSellerTickets()
+  getAvailableTickets()
 })
 </script>
 
@@ -72,13 +201,16 @@ onMounted(() => {
   <div class="p-4 rounded-md mx-auto">
     <div class="flex justify-between items-center mb-4">
       <div>
-        <h1 class="text-2xl font-bold">Toyota Prado</h1>
-        <h2 class="text-xl">Juan Carlos Sánchez</h2>
-        <p>3222885970</p>
+        <h1 class="text-2xl font-bold">{{ raffle?.raffle_name }}</h1>
+        <h2 class="text-xl uppercase">{{ seller?.name }}</h2>
+        <p>{{ seller?.phone }}</p>
       </div>
-      <div class="text-right">
-        <p>13 de Jul</p>
-        <p>$500000</p>
+      <div class="text-right max-w-80">
+        <!-- <p>{{ formatDate(raffle?.draw_drawn_at!) }}</p> -->
+        <p>{{ numberToCurrency(raffleSellerInfo?.ticket_price!) }}</p>
+        <p>
+          {{ raffle?.description }}
+        </p>
       </div>
     </div>
     <div class="space-y-4">
@@ -87,40 +219,95 @@ onMounted(() => {
         :key="group.group"
         class="flex items-center gap-4 print:gap-1 border p-4 print:p-1 rounded-md break-before-auto"
       >
-        <h3 class="text-6xl mx-4">{{ group.group }}</h3>
+        <div class="tabular-nums self-start">
+          <h3 class="text-7xl">{{ group.group }}</h3>
+        </div>
         <div class="flex flex-wrap gap-2">
           <Button
-            v-for="ticket in group.tickets"
+            v-for="ticket in group.sellerTickets"
             :key="ticket.id"
             variant="ghost"
-            class="text-lg w-14 h-14 print:w-8 print:h-8 border rounded-full print:text-xs"
+            class="print:bg-black print:text-white text-lg w-14 h-14 print:w-8 print:h-8 border rounded-full print:text-xs"
           >
             {{ ticket.number }}
           </Button>
-          <Button variant="secondary" class="print:hidden text-lg w-14 h-14 border rounded-full">
+          <Button
+            @click="openDialogForGroup(group.group)"
+            variant="ghost"
+            class="print:hidden text-lg w-14 h-14 border rounded-full"
+          >
             +
           </Button>
         </div>
       </div>
+      <pre>{{ selectDialogOpen }}</pre>
       <div class="w-full h-16"></div>
       <h3 class="text-xl break-before-page">Pulles</h3>
       <div class="flex items-center gap-4 border p-4 rounded-md">
         <div class="flex gap-2">
-          <Button variant="ghost" class="text-lg w-14 h-14 border bg-green-700 rounded-md">
-            12
-          </Button>
+          <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
           <Button variant="ghost" class="text-lg w-14 h-14 border bg-green-700 rounded-md">
             14
           </Button>
-          <Button
-            variant="ghost"
-            class="print:hidden text-lg w-14 h-14 border bg-gray-700 rounded-md"
-          >
-            +
-          </Button>
+          <Button variant="ghost" class="print:hidden text-lg w-14 h-14 border"> + </Button>
         </div>
       </div>
     </div>
+    <AlertDialog :open="selectDialogOpen" v-on:update:open="(value) => (selectDialogOpen = value)">
+      <AlertDialogContent
+        class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+      >
+        <AlertDialogHeader class="p-6 pb-4 border-b">
+          <AlertDialogTitle>
+            <div class="flex flex-row gap-2 justify-start items-center">
+              <SolarTicketLineDuotone class="w-8 h-8" />
+              <span> Asignar Boletas </span>
+            </div>
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Seleccione una o más boletas para asignarlas a este vendedor
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div class="px-6 py-4 overflow-y-auto relative max-h-[55dvh]">
+          <div
+            className="w-full max-w-3xl grid grid-cols-5 md:grid-cols-10 gap-x-2 gap-y-2 place-items-center"
+          >
+            <Button
+              v-for="ticket in dialogGroupTickets"
+              :key="ticket.id"
+              variant="ghost"
+              class="text-lg w-14 h-14 border rounded-full"
+              :class="{
+                'bg-green-600 hover:bg-green-700': isSelected(ticket)
+              }"
+              @click="addToSelected(ticket)"
+              :disabled="isLoading"
+            >
+              {{ ticket.number }}
+            </Button>
+          </div>
+        </div>
+        <AlertDialogFooter class="p-6 pt-4 border-t gap-2">
+          <AlertDialogCancel as-child>
+            <Button variant="secondary" type="button" :disabled="isLoading">Cancelar</Button>
+          </AlertDialogCancel>
+          <!-- <AlertDialogAction as-child> -->
+          <!-- <Button type="submit" form="raffle-form" :disabled="submiting">Crear</Button> -->
+          <Button
+            @click="assingSeletedTickets"
+            class="gap-3"
+            v-auto-animate
+            form="raffle-form"
+            type="submit"
+            :disabled="isLoading"
+          >
+            <SvgSpinnersDotRevolve v-if="isLoading" class="h-6 w-6" />
+            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <span>Asignar</span>
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
 

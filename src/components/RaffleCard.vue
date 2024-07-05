@@ -38,7 +38,7 @@ const props = defineProps({
         <SolarCupStarLineDuotone class="w-6 h-6" />
       </div>
       <CardDescription>
-        <span> Juega con el sorteo: xxx </span>
+        <span> Poner Fecha </span>
       </CardDescription>
     </CardHeader>
     <CardContent>
