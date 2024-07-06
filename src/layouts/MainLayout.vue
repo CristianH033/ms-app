@@ -14,7 +14,7 @@ import NavMenu from '@/components/NavMenu.vue'
     >
       <RouterView v-slot="{ Component, route }">
         <Transition name="fade" mode="out-in">
-          <component :is="Component" :key="route.name" :raffleId="1" />
+          <component :is="Component" :key="route.name" />
         </Transition>
       </RouterView>
     </main>

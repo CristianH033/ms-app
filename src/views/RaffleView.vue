@@ -11,15 +11,8 @@ import { Input } from '@/components/ui/input'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
 import SolarMagniferOutline from '~icons/solar/magnifer-outline'
 import { useIntersectionObserver } from '@vueuse/core'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogFooter } from '@/components/ui/dialog'
+import TicketInfo from '@/components/TicketInfo.vue'
 
 const router = useRouter()
 
@@ -174,14 +167,14 @@ onMounted(async () => {
       v-on:update:open="(open) => (openOverviewDialog = open)"
     >
       <DialogContent>
-        <DialogHeader>
+        <!-- <DialogHeader>
           <DialogTitle
             >Informacion de Bono
             <span class="text-2xl">{{ selectedTicketOverview?.number }}</span></DialogTitle
           >
           <DialogDescription> Información del vendedor... </DialogDescription>
-        </DialogHeader>
-
+        </DialogHeader> -->
+        <TicketInfo :ticketId="selectedTicketOverview?.id!" />
         <DialogFooter>
           <DialogClose as-child>
             <Button type="button" variant="secondary"> Cerrar </Button>
