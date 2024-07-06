@@ -15,7 +15,7 @@
 
   :root {
     color-scheme: light dark;
-    @apply box-border;
+    @apply box-border print:!m-0 print:!p-0 print:[font-size:11pt];
   }
 
   :root,
@@ -26,10 +26,11 @@
 
   @page {
     size: legal;
-    margin: 25mm 25mm 25mm 25mm;
+    margin: 5mm 5mm 5mm 5mm;
   }
 
   body {
+    @apply print:!w-[8.5in] print:!h-[14in] print:mx-auto;
     @apply w-screen min-h-dvh bg-primary dark:bg-background overflow-x-hidden overscroll-contain text-foreground;
   }
 }
@@ -46,7 +47,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 221 83% 42%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -78,7 +79,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 200 100% 68%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;

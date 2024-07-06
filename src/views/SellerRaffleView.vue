@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { numberToCurrency } from '@/lib/utils/strings'
 import { OnLongPress } from '@vueuse/components'
+import { formatDate } from '@vueuse/core'
 
 const router = useRouter()
 
@@ -65,6 +66,7 @@ const ticketsGrouped = computed(() => {
 
   return defaultGroups.map((group) => {
     const foundGroup = groups.find((g) => g.group === group.group)
+    foundGroup?.sellerTickets.sort((a, b) => Number(a.number) - Number(b.number))
     return foundGroup || group
   })
 })
@@ -215,15 +217,18 @@ onMounted(() => {
   <div class="p-4 rounded-md mx-auto">
     <div class="flex justify-between items-center mb-4">
       <div>
-        <h1 class="text-2xl font-bold">{{ raffle?.raffle_name }}</h1>
-        <h2 class="text-xl uppercase">{{ seller?.name }}</h2>
+        <h1 class="text-primary text-2xl font-bold uppercase">{{ raffle?.raffle_name }}</h1>
+        <h2 class="text-2xl font-bold uppercase">{{ seller?.name }}</h2>
         <p>{{ seller?.phone }}</p>
       </div>
       <div class="text-right max-w-80">
         <!-- <p>{{ formatDate(raffle?.draw_drawn_at!) }}</p> -->
         <p>{{ numberToCurrency(raffleSellerInfo?.ticket_price!) }}</p>
-        <p>
-          {{ raffle?.description }}
+        <p>{{ raffle?.lottery_name }}</p>
+        <p class="capitalize">
+          {{
+            formatDate(new Date(Date.parse(raffle?.draw_drawn_at!)), 'dddd DD [de] MMMM [de] YYYY')
+          }}
         </p>
       </div>
     </div>
@@ -231,10 +236,12 @@ onMounted(() => {
       <div
         v-for="group in ticketsGrouped"
         :key="group.group"
-        class="flex items-center gap-4 print:gap-1 border p-4 print:p-1 rounded-md break-before-auto"
+        class="flex items-center gap-4 print:gap-1 border p-4 print:p-2 rounded-md break-before-auto"
       >
-        <div class="tabular-nums self-start">
-          <h3 class="text-7xl">{{ group.group }}</h3>
+        <div
+          class="tabular-nums flex flex-row justify-center items-center self-start print:self-center print:w-32"
+        >
+          <h3 class="text-7xl text-primary print:text-7xl">{{ group.group }}</h3>
         </div>
         <div class="flex flex-wrap gap-2">
           <OnLongPress
@@ -247,7 +254,7 @@ onMounted(() => {
             <Button
               variant="ghost"
               @contextmenu.prevent="openRemoveDialog(ticket)"
-              class="text-lg w-14 h-14 print:w-8 print:h-8 border rounded-full print:text-xs flex-col justify-center items-center"
+              class="border-primary print:min-w-10 print:min-h-10 print:w-10 print:h-10 print:text-sm print:font-extrabold print:rounded-md text-lg min-w-14 min-h-14 w-14 h-14 border rounded-full flex-col justify-center items-center"
             >
               <span class="pointer-events-none">{{ ticket.number }}</span>
             </Button>
@@ -261,11 +268,17 @@ onMounted(() => {
           </Button>
         </div>
       </div>
-      <pre>{{ selectDialogOpen }}</pre>
-      <div class="w-full h-16"></div>
-      <h3 class="text-xl break-before-page">Pulles</h3>
       <div class="flex items-center gap-4 border p-4 rounded-md">
-        <div class="flex gap-2">
+        <h3 class="font-extrabold text-3xl text-primary">POOL</h3>
+        <div class="flex flex-row flex-wrap gap-2">
+          <Button
+            v-for="i in 14"
+            :key="i"
+            variant="ghost"
+            class="print:min-w-10 print:min-h-10 print:w-10 print:h-10 user-select-none text-lg w-14 h-14 border rounded-md border-primary"
+          >
+            <span class="pointer-events-none user-select-none">{{ i + 1 }}</span>
+          </Button>
           <!-- <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
           <Button
             variant="ghost"
@@ -379,6 +392,7 @@ onMounted(() => {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+    <header class="hidden print:block print:!fixed print:top-0">SÁNCHEZ INVERSIONES</header>
   </div>
 </template>
 

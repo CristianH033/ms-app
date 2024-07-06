@@ -52,6 +52,9 @@ SELECT
     d.id AS draw_id,
     d.name AS draw_name,
     d.drawn_at AS draw_drawn_at,
+    l.name AS lottery_name,
+    l.image_path AS lottery_image_path,
+    l.thumb_hash AS lottery_thumb_hash,
     COUNT(t.id) AS total_tickets,
     COUNT(t.id) FILTER (WHERE t.seller_id IS NULL) AS available_tickets,
     COUNT(t.id) FILTER (WHERE t.seller_id IS NOT NULL) AS taken_tickets
@@ -59,8 +62,10 @@ FROM
     raffles r
 JOIN
     draws d ON r.draw_id = d.id
+JOIN
+    lotteries l ON d.lottery_id = l.id
 LEFT JOIN 
     tickets t ON r.id = t.raffle_id
 GROUP BY 
     r.id, r.name, r.description, r.image_path, r.thumb_hash, r.created_at, r.updated_at,
-    d.id, d.name, d.drawn_at;
+    d.id, d.name, d.drawn_at, l.name, l.image_path , l.thumb_hash;

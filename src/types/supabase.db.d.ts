@@ -579,6 +579,9 @@ export type Database = {
           draw_id: number | null
           draw_name: string | null
           image_path: string | null
+          lottery_image_path: string | null
+          lottery_name: string | null
+          lottery_thumb_hash: string | null
           raffle_created_at: string | null
           raffle_id: number | null
           raffle_name: string | null

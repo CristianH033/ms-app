@@ -166,7 +166,9 @@ onMounted(async () => {
       :open="openOverviewDialog"
       v-on:update:open="(open) => (openOverviewDialog = open)"
     >
-      <DialogContent>
+      <DialogContent
+        class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+      >
         <!-- <DialogHeader>
           <DialogTitle
             >Informacion de Bono
@@ -174,8 +176,8 @@ onMounted(async () => {
           >
           <DialogDescription> Información del vendedor... </DialogDescription>
         </DialogHeader> -->
-        <TicketInfo :ticketId="selectedTicketOverview?.id!" />
-        <DialogFooter>
+        <TicketInfo class="p-6" :ticketId="selectedTicketOverview?.id!" />
+        <DialogFooter class="p-6 pt-0">
           <DialogClose as-child>
             <Button type="button" variant="secondary"> Cerrar </Button>
           </DialogClose>

@@ -29,7 +29,8 @@ onMounted(() => {})
 watch(
   colorMode,
   (value) => {
-    setMetaThemeColor(value, 'hsl(221.2 83.2% 53.3%)', 'hsl(222.2 84% 4.9)')
+    // 'hsl(221 83% 42%)', 'hsl(200 100% 68%)'
+    setMetaThemeColor(value, 'hsl(221 83% 42%)', 'hsl(222.2 84% 4.9)')
     setRootColorScheme(value)
   },
   { immediate: true }
