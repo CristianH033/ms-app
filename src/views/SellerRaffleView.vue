@@ -239,7 +239,7 @@ onMounted(() => {
         class="flex items-center gap-4 print:gap-1 border p-4 print:p-2 rounded-md break-before-auto"
       >
         <div
-          class="tabular-nums flex flex-row justify-center items-center self-start print:self-center print:w-32"
+          class="tabular-nums flex flex-row justify-center items-center self-start print:self-center"
         >
           <h3 class="text-7xl text-primary print:text-7xl">{{ group.group }}</h3>
         </div>
