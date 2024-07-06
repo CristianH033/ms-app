@@ -271,14 +271,14 @@ onMounted(() => {
       <div class="flex items-center gap-4 border p-4 rounded-md">
         <h3 class="font-extrabold text-3xl text-primary">POOL</h3>
         <div class="flex flex-row flex-wrap gap-2">
-          <Button
+          <!-- <Button
             v-for="i in 14"
             :key="i"
             variant="ghost"
             class="print:min-w-10 print:min-h-10 print:w-10 print:h-10 user-select-none text-lg w-14 h-14 border rounded-md border-primary"
           >
             <span class="pointer-events-none user-select-none">{{ i + 1 }}</span>
-          </Button>
+          </Button> -->
           <!-- <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
           <Button
             variant="ghost"
