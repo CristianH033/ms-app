@@ -1,0 +1,1 @@
+import{d as s,o as r,j as t,w as n,y as p,z as l,A as c,e as i,ao as d}from"./index-Chp61eov.js";const _=s({__name:"AlertDialogTrigger",props:{asChild:{type:Boolean},as:{}},setup(e){const a=e;return(o,f)=>(r(),t(i(d),l(c(a)),{default:n(()=>[p(o.$slots,"default")]),_:3},16))}});export{_};
