@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import LazyImage from '@/components/LazyImage.vue'
-import TicketInfo from '@/components/TicketInfo.vue'
 import type { Tables } from '@/types/supabase.db'
 import { supabase } from '@/lib/supabase.client'
 
