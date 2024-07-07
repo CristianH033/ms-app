@@ -247,7 +247,7 @@ onBeforeUnmount(() => {
         </p>
       </div>
     </div>
-    <div class="space-y-4">
+    <div class="space-y-4 print:my-0">
       <div
         v-for="group in ticketsGrouped"
         :key="group.group"
@@ -284,7 +284,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
       <div class="w-full flex flex-col print:flex-row gap-4">
-        <div class="w-full flex items-center gap-4 border p-4 rounded-md">
+        <div class="w-full flex items-center gap-4 border p-4 print:p-2 rounded-md">
           <h3 class="font-extrabold text-3xl text-primary">POOL</h3>
           <div class="flex flex-row flex-wrap gap-2">
             <!-- <Button
@@ -300,7 +300,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="flex justify-end">
           <div
-            class="flex flex-row print:flex-col items-center border rounded-md p-4 gap-4 text-right"
+            class="flex flex-row print:flex-col items-center border rounded-md p-4 print:p-2 gap-4 print:gap-2 text-right"
           >
             <p class="font-semibold text-lg">TOTAL</p>
             <p class="text-4xl font-extrabold text-primary">{{ totalSellerTickets }}</p>
