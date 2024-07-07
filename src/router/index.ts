@@ -74,7 +74,7 @@ const router = createRouter({
             {
               path: 'raffles/:id/sellers',
               name: 'raffle-sellers',
-              meta: { title: 'Vendedores de la Rifa', requires_auth: true },
+              meta: { title: 'Vendedores', requires_auth: true },
               component: defineAsyncComponent({
                 loader: () => import('@/views/SellersRaffleView.vue'),
                 ...defaultOptions
@@ -83,7 +83,7 @@ const router = createRouter({
             {
               path: 'raffles/:id/sellers/:seller_id',
               name: 'raffle-seller',
-              meta: { title: 'Vendedor de la Rifa', requires_auth: true },
+              meta: { title: 'Vendedor', requires_auth: true },
               component: defineAsyncComponent({
                 loader: () => import('@/views/SellerRaffleView.vue'),
                 ...defaultOptions
@@ -218,51 +218,6 @@ const router = createRouter({
           ]
         },
         {
-          path: 'form_test',
-          name: 'form_test',
-          meta: { title: 'Form test', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/components/forms/RaffleForm.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'form_test_draw',
-          name: 'form_test_draw',
-          meta: { title: 'Form test draw', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/components/forms/DrawForm.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'form_test_seller',
-          name: 'form_test_seller',
-          meta: { title: 'Form test add', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/components/forms/SellerForm.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'form_test_add/:id',
-          name: 'form_test_add',
-          meta: { title: 'Form test add', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/components/forms/AddSellerToRaffleForm.vue'),
-            ...defaultOptions
-          })
-        },
-        {
-          path: 'file_test',
-          name: 'file_test',
-          meta: { title: 'Upload Form test', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/components/forms/UploadFileForm.vue'),
-            ...defaultOptions
-          })
-        },
-        {
           path: 'notifications',
           name: 'notifications',
           meta: { title: 'Notificaciones', requires_auth: true },
@@ -277,6 +232,15 @@ const router = createRouter({
           meta: { title: 'Cuenta', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/AccountView.vue'),
+            ...defaultOptions
+          })
+        },
+        {
+          path: 'test-load-image',
+          name: 'test-load-image',
+          meta: { title: 'Cargar imagen', requires_auth: true },
+          component: defineAsyncComponent({
+            loader: () => import('@/views/TestView.vue'),
             ...defaultOptions
           })
         }
