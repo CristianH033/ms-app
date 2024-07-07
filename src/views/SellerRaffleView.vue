@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase.client'
 import type { Tables } from '@/types/supabase.db'
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
@@ -19,8 +19,11 @@ import {
 import { numberToCurrency } from '@/lib/utils/strings'
 import { OnLongPress } from '@vueuse/components'
 import { formatDate } from '@vueuse/core'
+import { useTitle } from '@vueuse/core'
 
 const router = useRouter()
+
+const title = useTitle()
 
 // raffles/:id/sellers/:seller_id
 const raffleId = router.currentRoute.value.params.id
@@ -69,6 +72,10 @@ const ticketsGrouped = computed(() => {
     foundGroup?.sellerTickets.sort((a, b) => Number(a.number) - Number(b.number))
     return foundGroup || group
   })
+})
+
+const totalSellerTickets = computed(() => {
+  return sellerTickets.value.length
 })
 
 const dialogGroupTickets = computed(() => {
@@ -204,12 +211,20 @@ const openRemoveDialog = (ticket: Tables<'tickets'>) => {
   selectedTicketToRemove.value = ticket
 }
 
-onMounted(() => {
-  getRaffleStats()
-  getSeller()
-  getRaffleSellerInfo()
-  getSellerTickets()
-  getAvailableTickets()
+const originalDocumentTitle = title.value
+
+onMounted(async () => {
+  await getRaffleStats()
+  await getSeller()
+  await getRaffleSellerInfo()
+  await getSellerTickets()
+  await getAvailableTickets()
+
+  title.value = `${seller.value?.name?.toUpperCase()} - SANCHEZ INVERSIONES`
+})
+
+onBeforeUnmount(() => {
+  title.value = originalDocumentTitle
 })
 </script>
 
@@ -268,26 +283,28 @@ onMounted(() => {
           </Button>
         </div>
       </div>
-      <div class="flex items-center gap-4 border p-4 rounded-md">
-        <h3 class="font-extrabold text-3xl text-primary">POOL</h3>
-        <div class="flex flex-row flex-wrap gap-2">
-          <!-- <Button
-            v-for="i in 14"
-            :key="i"
-            variant="ghost"
-            class="print:min-w-10 print:min-h-10 print:w-10 print:h-10 user-select-none text-lg w-14 h-14 border rounded-md border-primary"
+      <div class="w-full flex flex-col print:flex-row gap-4">
+        <div class="w-full flex items-center gap-4 border p-4 rounded-md">
+          <h3 class="font-extrabold text-3xl text-primary">POOL</h3>
+          <div class="flex flex-row flex-wrap gap-2">
+            <!-- <Button
+              v-for="i in 12"
+              :key="i"
+              variant="ghost"
+              class="print:min-w-10 print:min-h-10 print:w-10 print:h-10 user-select-none text-lg w-14 h-14 border rounded-md border-primary"
+            >
+              <span class="pointer-events-none user-select-none">{{ i }}</span>
+            </Button> -->
+            <Button variant="ghost" class="print:hidden text-lg w-14 h-14 border"> + </Button>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <div
+            class="flex flex-row print:flex-col items-center border rounded-md p-4 gap-4 text-right"
           >
-            <span class="pointer-events-none user-select-none">{{ i + 1 }}</span>
-          </Button> -->
-          <!-- <Button class="text-lg w-14 h-14 border bg-green-700 rounded-md"> 12 </Button>
-          <Button
-            variant="ghost"
-            @contextmenu.prevent="selectDialogOpen = true"
-            class="user-select-none text-lg w-14 h-14 border bg-green-700 rounded-md"
-          >
-            <span class="pointer-events-none user-select-none">14</span>
-          </Button> -->
-          <Button variant="ghost" class="print:hidden text-lg w-14 h-14 border"> + </Button>
+            <p class="font-semibold text-lg">TOTAL</p>
+            <p class="text-4xl font-extrabold text-primary">{{ totalSellerTickets }}</p>
+          </div>
         </div>
       </div>
     </div>

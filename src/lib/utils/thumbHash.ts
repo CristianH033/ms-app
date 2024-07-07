@@ -44,6 +44,10 @@ export const fileToBase64ThumbHash = async (file: File) => {
   return thumbHashToBase64
 }
 
-export const base64ThumbHasToDataURL = (thumbHash: string) => {
+export const binaryThumbHashToDataURL = (binaryThumbHash: Uint8Array) => {
+  return thumbHashToDataURL(binaryThumbHash)
+}
+
+export const base64ThumbHashToDataURL = (thumbHash: string) => {
   return thumbHashToDataURL(thumbHashFromBase64(thumbHash))
 }
