@@ -17,6 +17,21 @@ export const blobToFile = async (blob: Blob, fileName: string): Promise<File> =>
   return new File([blob], fileName, { type: blob.type })
 }
 
+export const blobToBase64 = async (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+      } else {
+        reject(new Error('Failed to convert to base64'))
+      }
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  })
+}
+
 export const urlToBase64 = async (url: string): Promise<string> => {
   try {
     const { blob } = await urlToData(url)

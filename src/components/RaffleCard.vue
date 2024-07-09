@@ -6,8 +6,8 @@ import type { Tables } from '@/types/supabase.db'
 import SolarPenNewSquareLineDuotone from '~icons/solar/pen-new-square-line-duotone'
 import SolarUserSpeakLineDuotone from '~icons/solar/user-speak-line-duotone'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
-import { UseImage } from '@vueuse/components'
-import { Skeleton } from './ui/skeleton'
+import LazyImg from './LazyImg.vue'
+import { getFileAsBase64 } from '@/lib/api/storage'
 
 const props = defineProps({
   raffle: {
@@ -21,16 +21,11 @@ const props = defineProps({
 <template>
   <Card class="overflow-hidden">
     <div class="w-full h-60">
-      <UseImage class="w-full h-full object-cover" :src="props.raffle.image_path || ''">
-        <template #loading>
-          <Skeleton class="w-full h-full rounded-none" />
-        </template>
-        <template #error>
-          <div class="w-full h-full flex justify-center items-center">
-            <SolarCupStarLineDuotone class="w-24 h-24" />
-          </div>
-        </template>
-      </UseImage>
+      <LazyImg
+        class="w-full h-full object-cover"
+        :src="getFileAsBase64(props.raffle.image_path!)"
+        :thumbHash="props.raffle.thumb_hash"
+      />
     </div>
     <CardHeader>
       <div class="w-full flex flex-row justify-between">
