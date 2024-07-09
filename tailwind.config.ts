@@ -79,13 +79,19 @@ export default {
         'collapsible-up': {
           from: { height: 'var(--radix-collapsible-content-height)' },
           to: { height: '0' }
+        },
+        brightness: {
+          '0%': { filter: 'brightness(1.1)' },
+          '50%': { filter: 'brightness(0.9)' },
+          '100%': { filter: 'brightness(1.1)' }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'collapsible-down': 'collapsible-down 0.2s ease-in-out',
-        'collapsible-up': 'collapsible-up 0.2s ease-in-out'
+        'collapsible-up': 'collapsible-up 0.2s ease-in-out',
+        brightness: 'brightness 2s ease-in-out infinite'
       }
     }
   },

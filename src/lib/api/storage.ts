@@ -17,8 +17,8 @@ export const uploadFile = async (file: File, name: string) => {
   return data
 }
 
-export const getFile = async (path: string) => {
-  const { data, error } = await supabase.storage.from('raffles').download(path)
+export const getFile = async (path: string, bucket: string = '') => {
+  const { data, error } = await supabase.storage.from(bucket).download(path)
 
   if (error) {
     console.log(error)

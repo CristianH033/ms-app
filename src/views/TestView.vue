@@ -1,86 +1,50 @@
 <script setup lang="ts">
-import LazyImage from '@/components/LazyImage.vue'
-import type { Tables } from '@/types/supabase.db'
-import { supabase } from '@/lib/supabase.client'
-
-import { onMounted, ref } from 'vue'
+import LazyImg from '@/components/LazyImg.vue'
+import { onMounted, ref, type ImgHTMLAttributes } from 'vue'
 import { Button } from '@/components/ui/button'
-
-const raffles = ref<Tables<'raffles'>[]>([])
+import { randomDataSetValues } from '@/lib/utils/img.dataset'
 
 const show = ref(false)
+const ready = ref(false)
 
-const urlToBase64 = async (url: string): Promise<string> => {
-  try {
-    // Fetch la imagen
-    const response = await fetch(url)
-
-    // Convertir la respuesta a un Blob
-    const blob = await response.blob()
-
-    // Crear un FileReader para leer el Blob
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          resolve(reader.result)
-        } else {
-          reject(new Error('Failed to convert to base64'))
-        }
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    })
-  } catch (error) {
-    console.error('Error converting URL to base64:', error)
-    throw error
-  }
-}
-
-const getSubabaseFile = async (bucket: string, path: string) => {
-  const { data, error } = await supabase.storage.from('').download(path)
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return URL.createObjectURL(data)
-}
-
-// const testData = ref<string>('')
+const images = ref<
+  {
+    src: string | ImgHTMLAttributes['src'] | Promise<string>
+    thumbhash?: string
+    width?: number
+    height?: number
+    ratio?: 'square' | 'landscape' | 'portrait'
+  }[]
+>([])
 
 onMounted(async () => {
-  // testData.value = await urlToBase64('https://placehold.co/5000/png')
-  const { data, error } = await supabase
-    .from('raffles')
-    .select('*')
-    .order('id', { ascending: true })
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  raffles.value = data
+  images.value = randomDataSetValues()
+  ready.value = true
 })
 </script>
 <template>
   <div class="w-full flex flex-col items-center gap-4">
-    <ul class="flex flex-col gap-2">
-      <li v-for="raffle in raffles" :key="raffle.id">
-        <p>{{ raffle.image_path }}</p>
-        <p class="text-xs">{{ raffle.thumb_hash }}</p>
-      </li>
-    </ul>
     <Button @click="show = !show">Show/hide</Button>
-    <div class="w-64" v-if="show">
-      <LazyImage
-        class="w-full aspect-auto"
-        :src="getSubabaseFile('raffles', raffle.image_path!)"
-        v-for="raffle in raffles"
-        :key="raffle.id"
-      />
+    <div
+      class="w-full grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] auto-rows-[100px] grid-flow-dense gap-4"
+      v-if="show"
+    >
+      <div
+        v-for="(image, i) in images"
+        :key="i"
+        class="rounded-md border overflow-hidden"
+        :class="{
+          'col-span-3 row-span-2': image.ratio === 'landscape',
+          'row-span-3 col-span-2': image.ratio === 'portrait',
+          'row-span-3 col-span-3': image.ratio === 'square' && i % 3 === 0,
+          'row-span-2 col-span-2': image.ratio === 'square' && i % 2 === 0,
+          'row-span-1 col-span-1': image.ratio === 'square' && i % 1 === 0
+        }"
+      >
+        <LazyImg :src="image.src" :thumbHash="image.thumbhash" class="w-full h-full object-cover" />
+      </div>
     </div>
-    <!-- <TicketInfo :ticket-id="'53'" class="border border-dashed rounded-md p-4" /> -->
+    <p>ready: {{ ready }}</p>
   </div>
 </template>
 

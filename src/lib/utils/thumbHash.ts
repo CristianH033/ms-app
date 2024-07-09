@@ -1,4 +1,11 @@
 import { rgbaToThumbHash, thumbHashToDataURL } from 'thumbhash'
+import { urlToData } from './fetch'
+
+export const urlToBinaryThumbHash = async (url: string) => {
+  const { blob, fileName } = await urlToData(url)
+
+  return fileToBinaryThumbHash(new File([blob], fileName, { type: blob.type }))
+}
 
 export const fileToBinaryThumbHash = async (file: File) => {
   const image = new Image()
@@ -35,6 +42,13 @@ export const base64ToBinary = (base64: string) =>
 export const thumbHashFromBase64 = (thumbHash: string): Uint8Array => {
   const thumbHashFromBase64 = base64ToBinary(thumbHash)
   return thumbHashFromBase64
+}
+
+export const urlToBase64BinaryThumbHash = async (url: string) => {
+  const binaryThumbHash = await urlToBinaryThumbHash(url)
+  const thumbHashToBase64 = await binaryToBase64(binaryThumbHash)
+
+  return thumbHashToBase64
 }
 
 export const fileToBase64ThumbHash = async (file: File) => {

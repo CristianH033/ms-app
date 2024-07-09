@@ -58,18 +58,7 @@ const router = createRouter({
               component: defineAsyncComponent({
                 loader: () => import('@/views/RaffleView.vue'),
                 ...defaultOptions
-              }),
-              children: [
-                {
-                  path: '/raffles/:id/tickets',
-                  name: 'raffle-tickets',
-                  meta: { title: 'Boletas', requires_auth: true },
-                  component: defineAsyncComponent({
-                    loader: () => import('@/components/TicketsList.vue'),
-                    ...defaultOptions
-                  })
-                }
-              ]
+              })
             },
             {
               path: 'raffles/:id/sellers',
@@ -147,46 +136,8 @@ const router = createRouter({
                   })
                 }
               ]
-            },
-            {
-              path: 'buyers',
-              name: 'buyers',
-              meta: { title: 'Compradores', requires_auth: true },
-              component: defineAsyncComponent({
-                loader: () => import('@/views/CustomersView.vue'),
-                ...defaultOptions
-              })
-            },
-            {
-              path: 'buyers/:id',
-              name: 'buyer',
-              meta: { title: 'Compradores', requires_auth: true },
-              component: defineAsyncComponent({
-                loader: () => import('@/views/CustomerView.vue'),
-                ...defaultOptions
-              }),
-              children: [
-                {
-                  path: '/buyers/:id/tickets',
-                  name: 'buyer-tickets',
-                  meta: { title: 'Boletas', requires_auth: true },
-                  component: defineAsyncComponent({
-                    loader: () => import('@/components/TicketsList.vue'),
-                    ...defaultOptions
-                  })
-                }
-              ]
             }
           ]
-        },
-        {
-          path: 'loading-page',
-          name: 'loading-page',
-          meta: { title: 'Cargando página', requires_auth: true },
-          component: defineAsyncComponent({
-            loader: () => import('@/components/LoadingIndicator.vue'),
-            ...defaultOptions
-          })
         },
         {
           path: 'sellers',
@@ -236,8 +187,8 @@ const router = createRouter({
           })
         },
         {
-          path: 'test-load-image',
-          name: 'test-load-image',
+          path: 'tests',
+          name: 'tests',
           meta: { title: 'Cargar imagen', requires_auth: true },
           component: defineAsyncComponent({
             loader: () => import('@/views/TestView.vue'),
