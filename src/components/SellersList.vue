@@ -22,10 +22,16 @@ type Seller = {
   updated_at: string | null | undefined
 }
 
+type SellerFilterPredicate = (s: Seller) => boolean
+
+type SellerSortPredicate = (a: Seller, b: Seller) => number
+
 const props = withDefaults(
   defineProps<{
     sellers: Seller[]
     isLoading?: boolean
+    sortBy?: SellerSortPredicate
+    filterBy?: SellerFilterPredicate
   }>(),
   {
     sellers: (): Seller[] => [],
@@ -39,7 +45,19 @@ const search = ref('')
 const sentinal = ref<HTMLElement | null>(null)
 
 const sellersFiltered = computed(() => {
-  return props.sellers.filter((s) => s.name!.toLowerCase().includes(search.value.toLowerCase()))
+  let filteredSearch = props.sellers.filter((s) =>
+    s.name!.toLowerCase().includes(search.value.toLowerCase())
+  )
+
+  if (props.filterBy) {
+    filteredSearch = filteredSearch.filter(props.filterBy)
+  }
+
+  if (props.sortBy) {
+    filteredSearch.sort(props.sortBy)
+  }
+
+  return filteredSearch
 })
 
 useIntersectionObserver(

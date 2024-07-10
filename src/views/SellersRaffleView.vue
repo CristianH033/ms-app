@@ -102,7 +102,11 @@ onMounted(async () => {
         <p class="text-xs text-muted-foreground">{{ raffle?.taken_tickets }} asignadas</p>
       </CardContent>
     </Card>
-    <SellersList :sellers="raffleSellers" :isLoading="isLoading">
+    <SellersList
+      :sellers="raffleSellers"
+      :isLoading="isLoading"
+      :sort-by="(a, b) => (b.total_tickets || 0) - (a.total_tickets || 0)"
+    >
       <template #actionButton>
         <AlertDialog :open="openFormModal" v-on:update:open="(value) => (openFormModal = value)">
           <AlertDialogTrigger as-child>
