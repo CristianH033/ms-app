@@ -1,10 +1,89 @@
+<script lang="ts">
+const skeletonClass = 'flex flex-col justify-center items-center rounded-md p-4'
+const errorPlaceholderClass =
+  'flex flex-col justify-center items-center border border-dashed border-destructive rounded-md p-4 text-center text-destructive'
+const imgPlaceholderClass = 'animate-brightness'
+
+export const defaultPlaceholderComponent = defineComponent({
+  props: { class: { type: String, default: '' } },
+  setup(props) {
+    return () => h(Skeleton, { class: cn(skeletonClass, props.class) })
+  }
+})
+
+export const imgPlaceholderComponent = defineComponent({
+  props: {
+    src: { type: String, default: '' },
+    class: { type: String, default: '' },
+    style: { type: String, default: '' },
+    alt: { type: String, default: '' },
+    title: { type: String, default: '' },
+    crossorigin: { type: String, default: '' },
+    sizes: { type: String, default: '' },
+    srcset: { type: String, default: '' }
+  },
+  setup(props) {
+    return () =>
+      h('img', {
+        src: props.src,
+        class: cn(imgPlaceholderClass, props.class),
+        style: props.style,
+        alt: props.alt,
+        title: props.title,
+        crossorigin: props.crossorigin,
+        sizes: props.sizes,
+        srcset: props.srcset
+      })
+  }
+})
+
+export const defaultErrorPlaceholderComponent = defineComponent({
+  props: { class: { type: String, default: '' } },
+  setup(props) {
+    return () =>
+      h('div', { class: cn(errorPlaceholderClass, props.class) }, [
+        h(SolarLinkBrokenLineDuotone, { class: 'w-3/5 min-w-[3rem] max-w-[5rem] h-auto' })
+      ])
+  }
+})
+
+export const imgErrorPlaceholderComponent = defineComponent({
+  props: {
+    src: { type: String, default: '' },
+    class: { type: String, default: '' },
+    style: { type: String, default: '' },
+    alt: { type: String, default: '' },
+    title: { type: String, default: '' }
+  },
+  setup(props) {
+    return () =>
+      h('img', {
+        src: props.src,
+        class: props.class,
+        style: props.style,
+        alt: props.alt,
+        title: props.title
+      })
+  }
+})
+</script>
+
 <script setup lang="ts">
-import { computed, defineComponent, h, ref, type Component, type ImgHTMLAttributes } from 'vue'
-import { useAsyncState, useImage } from '@vueuse/core'
-import { Skeleton } from './ui/skeleton'
-import { base64ThumbHashToDataURL, binaryThumbHashToDataURL } from '@/lib/utils/thumbHash'
-import SolarLinkBrokenLineDuotone from '~icons/solar/link-broken-line-duotone'
 import { cn } from '@/lib/utils'
+import { base64ThumbHashToDataURL, binaryThumbHashToDataURL } from '@/lib/utils/thumbHash'
+import { useAsyncState, useImage } from '@vueuse/core'
+import {
+  computed,
+  defineComponent,
+  h,
+  onMounted,
+  ref,
+  type Component,
+  type ComponentPublicInstance,
+  type ImgHTMLAttributes
+} from 'vue'
+import SolarLinkBrokenLineDuotone from '~icons/solar/link-broken-line-duotone'
+import { Skeleton } from './ui/skeleton'
 
 type Base64DataURL = `data:image/png;base64,${string}`
 
@@ -25,43 +104,13 @@ const props = withDefaults(
     delay?: number
   }>(),
   {
-    placeholder: defineComponent({
-      props: {
-        class: {
-          type: String,
-          default: ''
-        }
-      },
-      setup(props) {
-        return () =>
-          h(Skeleton, {
-            class: cn('flex flex-col justify-center items-center rounded-md p-4', props.class)
-          })
-      }
-    }),
-    errorPlaceholder: defineComponent({
-      props: {
-        class: {
-          type: String,
-          default: ''
-        }
-      },
-      setup(props) {
-        return () =>
-          h(
-            'div',
-            {
-              class: cn(
-                'flex flex-col justify-center items-center border border-dashed border-destructive rounded-md p-4 text-center text-destructive',
-                props.class
-              )
-            },
-            [h(SolarLinkBrokenLineDuotone, { class: 'w-3/5 min-w-[3rem] max-w-[5rem] h-auto' })]
-          )
-      }
-    })
+    placeholder: defaultPlaceholderComponent,
+    errorPlaceholder: defaultErrorPlaceholderComponent
   }
 )
+
+// Definimos el tipo para la referencia del elemento
+const placeHolderElement = ref<ComponentPublicInstance | null>(null)
 
 const { isLoading, src, error } = (() => {
   const isLoading = ref<boolean>(false)
@@ -103,7 +152,7 @@ const { isLoading, src, error } = (() => {
   }
 })()
 
-const thumbHashUrlData = computed(() => {
+const thumbHashDataURL = computed(() => {
   if (props.thumbHash) {
     if (typeof props.thumbHash === 'string') {
       return base64ThumbHashToDataURL(props.thumbHash)
@@ -118,9 +167,17 @@ const thumbHashUrlData = computed(() => {
   return undefined
 })
 
-const loadingSrcValue = computed(() => {
-  if (thumbHashUrlData.value) {
-    return thumbHashUrlData.value
+const placeHolderComponent = computed(() => {
+  if (props.thumbHash || typeof props.placeholder === 'string') {
+    return imgPlaceholderComponent
+  }
+
+  return props.placeholder
+})
+
+const placeholderSrc = computed(() => {
+  if (thumbHashDataURL.value) {
+    return thumbHashDataURL.value
   }
 
   if (typeof props.placeholder === 'string') {
@@ -130,80 +187,72 @@ const loadingSrcValue = computed(() => {
   return undefined
 })
 
-const errorSrcValue = computed(() => {
+const errorComponent = computed(() => {
   if (typeof props.errorPlaceholder === 'string') {
-    return props.errorPlaceholder
+    return imgErrorPlaceholderComponent
   }
 
-  return undefined
+  return props.errorPlaceholder
 })
 
-const srcValue = computed(() => {
+const loadedSrcValue = computed(() => {
   if (src.value instanceof HTMLImageElement) {
     return src.value.src
   }
 
-  if (typeof src.value === 'string') {
-    return src.value
+  return src.value
+})
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        onViewport()
+      }
+    })
+  },
+  {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.5
   }
+)
 
-  return undefined
-})
+const onViewport = () => {
+  console.log('El elemento está en el viewport')
+  // stop observing
+  placeHolderElement.value?.$el && observer.unobserve(placeHolderElement.value?.$el!)
+  // deregister observer
+  observer.disconnect()
+}
 
-const showPlaceholderAsComponent = computed(() => {
-  const show = typeof props.placeholder === 'object' && !thumbHashUrlData.value
-
-  return show
-})
-
-const showErrorPlaceholderAsComponent = computed(() => {
-  const show = typeof props.errorPlaceholder === 'object'
-
-  return show
+onMounted(() => {
+  observer.observe(placeHolderElement.value?.$el)
 })
 </script>
 
 <template>
   <!-- LOADING -->
   <component
-    v-if="isLoading && showPlaceholderAsComponent"
-    :is="placeholder"
+    v-if="isLoading"
+    :is="placeHolderComponent"
+    :src="placeholderSrc"
     :class="props.class"
     :style="props.style"
-  />
-  <img
-    v-else-if="isLoading && !showPlaceholderAsComponent"
-    :src="loadingSrcValue"
-    :class="cn('animate-brightness', props.class)"
-    :style="props.style"
-    :alt="props.alt"
-    :title="props.title"
-    :crossorigin="props.crossorigin"
-    :sizes="props.sizes"
-    :srcset="props.srcset"
+    ref="placeHolderElement"
   />
   <!-- ERROR -->
   <component
-    v-else-if="error && showErrorPlaceholderAsComponent"
-    :is="errorPlaceholder"
+    v-else-if="error"
+    :is="errorComponent"
+    :src="typeof props.errorPlaceholder === 'string' ? props.errorPlaceholder : undefined"
     :class="props.class"
     :style="props.style"
-  />
-  <img
-    v-else-if="error && !showErrorPlaceholderAsComponent"
-    :src="errorSrcValue"
-    :class="props.class"
-    :style="props.style"
-    :alt="props.alt"
-    :title="props.title"
-    :crossorigin="props.crossorigin"
-    :sizes="props.sizes"
-    :srcset="props.srcset"
   />
   <!-- IMG -->
   <img
     v-else
-    :src="srcValue"
+    :src="loadedSrcValue!"
     :class="props.class"
     :style="props.style"
     :alt="props.alt"

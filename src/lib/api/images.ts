@@ -9,6 +9,8 @@ interface QueryParams {
     limit?: number
   }
   search?: string
+  brokenratio?: number
+  thumbhashratio?: number
 }
 
 interface Image {
@@ -136,6 +138,14 @@ class ImageApi {
 
     if (params.search) {
       parts.push(`q=${encodeURIComponent(params.search)}`)
+    }
+
+    if (params.brokenratio) {
+      parts.push(`_brokenratio=${encodeURIComponent(params.brokenratio)}`)
+    }
+
+    if (params.thumbhashratio) {
+      parts.push(`_thumbhashratio=${encodeURIComponent(params.thumbhashratio)}`)
     }
 
     return parts.length > 0 ? `?${parts.join('&')}` : ''
