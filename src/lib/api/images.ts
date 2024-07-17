@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosResponse } from 'axios'
+type fetchPriority = 'high' | 'low' | 'auto'
 
 interface QueryParams {
   filter?: Record<string, any>
@@ -23,42 +23,88 @@ interface Image {
 }
 
 class ImageApi {
-  private api: AxiosInstance
+  private baseURL: string
 
   constructor(baseURL: string = 'http://localhost:3000') {
-    this.api = axios.create({
-      baseURL,
+    this.baseURL = baseURL
+  }
+
+  private async fetchWithPriority(
+    url: string,
+    options: RequestInit & { priority?: 'high' | 'low' | 'auto' }
+  ): Promise<Response> {
+    const { priority, ...fetchOptions } = options
+    if (priority) {
+      ;(fetchOptions as any).priority = priority
+    }
+    const response = await fetch(url, fetchOptions)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return response
+  }
+
+  async index(params: QueryParams = {}, priority: fetchPriority = 'auto'): Promise<Image[]> {
+    const queryParams = this.buildQueryParams(params)
+    const response = await this.fetchWithPriority(`${this.baseURL}/images${queryParams}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/vnd.api+json',
         Accept: 'application/vnd.api+json'
-      }
+      },
+      priority: priority
     })
+    return response.json()
   }
 
-  // Método index con opciones de filtrado, ordenación, paginación y búsqueda
-  async index(params: QueryParams = {}): Promise<AxiosResponse<Image[], any>> {
-    const queryParams = this.buildQueryParams(params)
-    return this.api.get(`/images${queryParams}`)
+  async show(id: string, priority: fetchPriority = 'auto'): Promise<Image> {
+    const response = await this.fetchWithPriority(`${this.baseURL}/images/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json'
+      },
+      priority
+    })
+    return response.json()
   }
 
-  // Método show
-  async show(id: string): Promise<AxiosResponse<Image, any>> {
-    return this.api.get(`/images/${id}`)
+  async create(data: any, priority: fetchPriority = 'auto'): Promise<any> {
+    const response = await this.fetchWithPriority(`${this.baseURL}/images`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json'
+      },
+      body: JSON.stringify({ data }),
+      priority
+    })
+    return response.json()
   }
 
-  // Método create
-  async create(data: any): Promise<any> {
-    return this.api.post('/images', { data })
+  async update(id: string, data: any, priority: fetchPriority = 'auto'): Promise<any> {
+    const response = await this.fetchWithPriority(`${this.baseURL}/images/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json'
+      },
+      body: JSON.stringify({ data }),
+      priority
+    })
+    return response.json()
   }
 
-  // Método update
-  async update(id: string, data: any): Promise<any> {
-    return this.api.patch(`/images/${id}`, { data })
-  }
-
-  // Método delete
-  async delete(id: string): Promise<any> {
-    return this.api.delete(`/images/${id}`)
+  async delete(id: string, priority: fetchPriority = 'auto'): Promise<any> {
+    const response = await this.fetchWithPriority(`${this.baseURL}/images/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json'
+      },
+      priority
+    })
+    return response.json()
   }
 
   private buildQueryParams(params: QueryParams): string {
@@ -83,7 +129,6 @@ class ImageApi {
 
     if (params.page) {
       parts.push(`_page=${params.page.number}`)
-
       if (params.page.limit) {
         parts.push(`_limit=${params.page.limit}`)
       }

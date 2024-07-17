@@ -13,6 +13,41 @@ export const urlToData = async (url: string): Promise<{ blob: Blob; fileName: st
   return { blob: await response.blob(), fileName }
 }
 
+export interface ImageOptions {
+  src: string
+  srcset?: string
+  sizes?: string
+  alt?: string
+  class?: string
+  loading?: HTMLImageElement['loading']
+  crossorigin?: string
+  referrerPolicy?: HTMLImageElement['referrerPolicy']
+}
+
+export const loadImage = async (options: ImageOptions): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const { src, srcset, sizes, class: clazz, loading, crossorigin, referrerPolicy } = options
+
+    img.src = src
+
+    if (srcset) img.srcset = srcset
+
+    if (sizes) img.sizes = sizes
+
+    if (clazz) img.className = clazz
+
+    if (loading) img.loading = loading
+
+    if (crossorigin) img.crossOrigin = crossorigin
+
+    if (referrerPolicy) img.referrerPolicy = referrerPolicy
+
+    img.onload = () => resolve(img)
+    img.onerror = reject
+  })
+}
+
 export const blobToFile = async (blob: Blob, fileName: string): Promise<File> => {
   return new File([blob], fileName, { type: blob.type })
 }
