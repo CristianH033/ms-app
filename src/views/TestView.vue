@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import LazyImg from '@/components/LazyImg.vue'
-import { onMounted, ref, type ImgHTMLAttributes } from 'vue'
 import ImageApi from '@/lib/api/images'
-import Button from '@/components/ui/button/Button.vue'
+import { onMounted, ref, type ImgHTMLAttributes } from 'vue'
 
 const imageApi = new ImageApi()
 
 const currentPage = ref(1)
+
+const loadMoreEl = ref<HTMLDivElement | null>(null)
 
 const images = ref<
   {
@@ -24,16 +25,33 @@ const loadNextItems = () => {
 }
 
 const loadItems = async () => {
-  const data = await imageApi.index(
-    { page: { number: currentPage.value, limit: 30 }, brokenratio: 0.2, thumbhashratio: 0.2 },
-    'high'
-  )
+  const data = await imageApi.index({ page: { number: currentPage.value, limit: 30 } }, 'high')
 
   images.value = [...images.value, ...data]
 }
 
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        onViewport()
+      }
+    })
+  },
+  {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.5
+  }
+)
+
+const onViewport = () => {
+  console.log('El elemento está en el viewport')
+  loadNextItems()
+}
+
 onMounted(async () => {
-  loadItems()
+  loadItems().then(() => observer.observe(loadMoreEl.value!))
 })
 </script>
 <template>
@@ -59,9 +77,7 @@ onMounted(async () => {
         />
       </div>
     </div>
-    <div class="w-full flex flex-col items-center justify-center">
-      <Button @click="loadNextItems">Load more</Button>
-    </div>
+    <div class="w-full h-16 flex flex-col items-center justify-center" ref="loadMoreEl"></div>
   </div>
 </template>
 

@@ -71,7 +71,6 @@ export const imgErrorPlaceholderComponent = defineComponent({
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
 import { base64ThumbHashToDataURL, binaryThumbHashToDataURL } from '@/lib/utils/thumbHash'
-import { useAsyncState, useImage } from '@vueuse/core'
 import {
   computed,
   defineComponent,
@@ -80,16 +79,39 @@ import {
   ref,
   type Component,
   type ComponentPublicInstance,
-  type ImgHTMLAttributes
+  type ImgHTMLAttributes,
+  type Ref
 } from 'vue'
 import SolarLinkBrokenLineDuotone from '~icons/solar/link-broken-line-duotone'
 import { Skeleton } from './ui/skeleton'
 
 type Base64DataURL = `data:image/png;base64,${string}`
 
+interface LoaderState {
+  data: Ref<string | null>
+  error: Ref<unknown | null | string>
+  isLoading: Ref<boolean>
+  isReady: Ref<boolean>
+}
+
+interface ImageOptions {
+  src: string
+  srcset?: string
+  sizes?: string
+  alt?: string
+  class?: string
+  loading?: HTMLImageElement['loading']
+  crossorigin?: string
+  referrerPolicy?: HTMLImageElement['referrerPolicy']
+}
+
+interface LoaderOptions extends Omit<ImageOptions, 'src'>, LoaderState {
+  src: ImgHTMLAttributes['src'] | Promise<string>
+}
+
 const props = withDefaults(
   defineProps<{
-    src?: ImgHTMLAttributes['src'] | Promise<string>
+    src: ImgHTMLAttributes['src'] | Promise<string>
     thumbHash?: Uint8Array | string | null | undefined
     placeholder?: ImgHTMLAttributes['src'] | Base64DataURL | Component
     errorPlaceholder?: ImgHTMLAttributes['src'] | Base64DataURL | Component
@@ -101,6 +123,7 @@ const props = withDefaults(
     crossorigin?: ImgHTMLAttributes['crossorigin']
     sizes?: ImgHTMLAttributes['sizes']
     srcset?: ImgHTMLAttributes['srcset']
+    referrerPolicy?: HTMLImageElement['referrerPolicy']
     delay?: number
   }>(),
   {
@@ -109,48 +132,12 @@ const props = withDefaults(
   }
 )
 
-// Definimos el tipo para la referencia del elemento
 const placeHolderElement = ref<ComponentPublicInstance | null>(null)
 
-const { isLoading, src, error } = (() => {
-  const isLoading = ref<boolean>(false)
-  const src = ref<ImgHTMLAttributes['src'] | Base64DataURL | null>(null)
-  const error = ref<unknown | null | string>(null)
-
-  // if props.src is ImgHTMLAttributes['src'] then use vueuse/core/useImage
-  if (typeof props.src === 'string') {
-    const { isLoading, error, state } = useImage({ src: props.src })
-    return {
-      isLoading,
-      src: state,
-      error
-    }
-  }
-
-  if (props.src instanceof Promise) {
-    console.log('props.src instanceof Promise')
-    const {
-      state: src,
-      isLoading,
-      error
-    } = useAsyncState(
-      props.src.then((src) => src),
-      null
-    )
-
-    return {
-      isLoading,
-      src,
-      error
-    }
-  }
-
-  return {
-    isLoading,
-    src,
-    error
-  }
-})()
+const data = ref<string | null>(null)
+const error = ref<unknown | null | string>(null)
+const isLoading = ref<boolean>(true)
+const isReady = ref<boolean>(false)
 
 const thumbHashDataURL = computed(() => {
   if (props.thumbHash) {
@@ -196,12 +183,83 @@ const errorComponent = computed(() => {
 })
 
 const loadedSrcValue = computed(() => {
-  if (src.value instanceof HTMLImageElement) {
-    return src.value.src
+  return data.value
+})
+
+const loadImg = (loaderOptions: LoaderOptions) => {
+  const { src, data, error, isLoading, isReady, ...imageOptions } = loaderOptions
+
+  if (src instanceof Promise) {
+    loadPromise(src, { data, error, isLoading, isReady })
   }
 
-  return src.value
-})
+  if (typeof src === 'string') {
+    loadImgFromURL({ src, ...imageOptions }, { data, error, isLoading, isReady })
+  }
+}
+
+const loadPromise = (promise: Promise<string>, state: LoaderState) => {
+  const { data, error, isLoading, isReady } = state
+  isLoading.value = true
+  promise
+    .then((src) => {
+      data.value = src
+      isLoading.value = false
+      isReady.value = true
+    })
+    .catch((err) => {
+      error.value = err
+      isLoading.value = false
+      isReady.value = true
+    })
+    .finally(() => {
+      isLoading.value = false
+      isReady.value = true
+    })
+}
+
+const loadImgFromURL = (imageOptions: ImageOptions, state: LoaderState) => {
+  const { data, error, isLoading, isReady } = state
+  isLoading.value = true
+  data.value = null
+  error.value = null
+  isReady.value = false
+  loadImage(imageOptions)
+    .then((img) => {
+      data.value = img.src
+    })
+    .catch((err) => {
+      error.value = err
+    })
+    .finally(() => {
+      isLoading.value = false
+      isReady.value = true
+    })
+}
+
+const loadImage = async (options: ImageOptions): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const { src, srcset, sizes, class: className, loading, crossorigin, referrerPolicy } = options
+
+    img.src = src
+
+    if (srcset) img.srcset = srcset
+
+    if (sizes) img.sizes = sizes
+
+    if (className) img.className = className
+
+    if (loading) img.loading = loading
+
+    if (crossorigin) img.crossOrigin = crossorigin
+
+    if (referrerPolicy) img.referrerPolicy = referrerPolicy
+
+    img.onload = () => resolve(img)
+    img.onerror = reject
+  })
+}
 
 const observer = new IntersectionObserver(
   (entries) => {
@@ -220,6 +278,20 @@ const observer = new IntersectionObserver(
 
 const onViewport = () => {
   console.log('El elemento está en el viewport')
+  loadImg({
+    src: props.src,
+    data,
+    error,
+    isLoading,
+    isReady,
+    alt: props.alt,
+    class: props.class,
+    crossorigin: props.crossorigin,
+    referrerPolicy: props.referrerPolicy,
+    loading: props.loading,
+    sizes: props.sizes,
+    srcset: props.srcset
+  })
   // stop observing
   placeHolderElement.value?.$el && observer.unobserve(placeHolderElement.value?.$el!)
   // deregister observer
