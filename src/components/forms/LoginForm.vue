@@ -130,7 +130,7 @@ const handleLogin = form.handleSubmit(async (formData) => {
             <span>Iniciar sesión</span>
           </Button>
           <Separator />
-          <p class="text-left self-end text-sm text-muted-foreground">
+          <p class="self-end text-left text-sm text-muted-foreground">
             No tienes una cuenta?
             <RouterLink class="underline underline-offset-4" :to="{ name: 'register' }"
               >Registrarse</RouterLink

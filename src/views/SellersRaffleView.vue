@@ -86,7 +86,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-4">
+  <div class="flex w-full flex-col items-center gap-4">
     <Card class="w-full">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-lg font-medium">
@@ -94,7 +94,7 @@ onMounted(async () => {
           <!-- <p>{{ raffle?.description }}</p> -->
           <p>Juega con: {{ raffle?.draw_name }} - ({{ drawnAt }})</p>
         </CardTitle>
-        <SolarCupStarLineDuotone class="w-6 h-6" />
+        <SolarCupStarLineDuotone class="h-6 w-6" />
       </CardHeader>
       <CardContent>
         <div class="text-xl font-bold">{{ raffle?.total_tickets }} boletas</div>
@@ -111,18 +111,18 @@ onMounted(async () => {
         <AlertDialog :open="openFormModal" v-on:update:open="(value) => (openFormModal = value)">
           <AlertDialogTrigger as-child>
             <Button class="gap-2">
-              <SolarAddCircleLineDuotone class="w-5 h-5" />
+              <SolarAddCircleLineDuotone class="h-5 w-5" />
               <span class="hidden md:inline">Agregar</span>
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent
-            class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+            class="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg p-0 transition-[opacity,_transform]"
           >
-            <AlertDialogHeader class="p-4 border-b">
+            <AlertDialogHeader class="border-b p-4">
               <AlertDialogTitle>Agregar vendedor</AlertDialogTitle>
               <AlertDialogDescription class="mt-4"> </AlertDialogDescription>
             </AlertDialogHeader>
-            <div class="overflow-y-auto relative p-4">
+            <div class="relative overflow-y-auto p-4">
               <AddSellerToRaffleForm
                 :raffle-id="Number(raffleId)"
                 v-on:cancel="() => (openFormModal = false)"
@@ -142,7 +142,7 @@ onMounted(async () => {
       </template>
       <template #actionForEmpty>
         <Button class="gap-2" @click="openFormModal = true">
-          <SolarAddCircleLineDuotone class="w-5 h-5" />
+          <SolarAddCircleLineDuotone class="h-5 w-5" />
           <span>Agregar venddor a esta rifa</span>
         </Button>
       </template>
@@ -154,7 +154,7 @@ onMounted(async () => {
         >
           <Button class="gap-2" type="button" variant="outline" @click="navigate">
             <!-- <span>Ver boletas</span> -->
-            <SolarAltArrowRightLineDuotone class="w-6 h-6" />
+            <SolarAltArrowRightLineDuotone class="h-6 w-6" />
           </Button>
         </RouterLink>
       </template>

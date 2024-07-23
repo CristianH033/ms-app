@@ -72,50 +72,50 @@ useIntersectionObserver(
 </script>
 
 <template>
-  <div class="flex flex-col w-full max-w-3xl">
-    <div ref="sentinal" class="w-full h-0"></div>
+  <div class="flex w-full max-w-3xl flex-col">
+    <div ref="sentinal" class="h-0 w-full"></div>
     <div
-      class="flex flex-row gap-4 transition-all duration-300 bg-background-elevated/90 backdrop-blur px-4 py-3 border rounded-lg rounded-b-none sticky top-16 z-10"
+      class="sticky top-16 z-10 flex flex-row gap-4 rounded-lg rounded-b-none border bg-background-elevated/90 px-4 py-3 backdrop-blur transition-all duration-300"
       :class="{
-        '!bg-background/90 @3xl/main:!bg-background-elevated/90 rounded-none @3xl/main:rounded-b-lg border-t-0 border-x-0 @3xl/main:border-x -mx-4':
+        '-mx-4 rounded-none border-x-0 border-t-0 !bg-background/90 @3xl/main:rounded-b-lg @3xl/main:border-x @3xl/main:!bg-background-elevated/90':
           isSticky
       }"
     >
-      <div class="grow relative">
-        <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
+      <div class="relative grow">
+        <SolarMagniferOutline class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
         <Input
           type="text"
           v-model="search"
           autocomplete="off"
           placeholder="Buscar"
-          class="w-full pl-11 pr-4 py-2 text-sm"
+          class="w-full py-2 pl-11 pr-4 text-sm"
         />
       </div>
       <slot name="actionButton"> </slot>
     </div>
     <div class="flex-1 overflow-auto rounded-b-lg border border-t-0">
       <div class="">
-        <div v-if="isLoading" class="px-4 py-4 flex flex-col justify-center items-center gap-2">
+        <div v-if="isLoading" class="flex flex-col items-center justify-center gap-2 px-4 py-4">
           <LoadingIndicator class="my-12" />
         </div>
         <div
           v-else-if="sellersFiltered.length === 0"
-          class="px-4 py-4 flex flex-col justify-center items-center gap-2"
+          class="flex flex-col items-center justify-center gap-2 px-4 py-4"
         >
-          <SolarUserCrossRoundedLineDuotone class="w-16 h-16" />
+          <SolarUserCrossRoundedLineDuotone class="h-16 w-16" />
           <slot name="emptyText">
             <p class="text-lg">No hay vendedores</p>
           </slot>
-          <div class="w-full border-t flex flex-col items-center justify-center my-4"></div>
+          <div class="my-4 flex w-full flex-col items-center justify-center border-t"></div>
           <slot name="actionForEmpty"> </slot>
         </div>
         <div class="divide-y">
           <div
             v-for="seller in sellersFiltered"
             :key="seller.id!"
-            class="px-4 py-3 flex items-center gap-4"
+            class="flex items-center gap-4 px-4 py-3"
           >
-            <Avatar class="w-10 h-10">
+            <Avatar class="h-10 w-10">
               <AvatarImage class="" :src="seller.avatar_url || ''" />
               <AvatarFallback>{{ avatarLetters(seller.name!) }}</AvatarFallback>
             </Avatar>

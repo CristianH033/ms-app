@@ -4,20 +4,20 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div class="w-screen min-h-dvh grid grid-flow-row grid-rows-[auto_1fr_auto]">
-    <nav class="w-full h-auto px-4 py-2 flex flex-row justify-between items-center">
+  <div class="grid min-h-dvh w-screen grid-flow-row grid-rows-[auto_1fr_auto]">
+    <nav class="flex h-auto w-full flex-row items-center justify-between px-4 py-2">
       <!-- <img alt="Vue logo" src="@/assets/img/logo.svg" class="max-w-24" /> -->
       <span>App Logo</span>
       <ThemeSelector />
     </nav>
-    <main class="h-full flex flex-col justify-center items-center p-4">
+    <main class="flex h-full flex-col items-center justify-center p-4">
       <RouterView v-slot="{ Component, route }">
         <Transition name="zoom" mode="out-in">
           <component :is="Component" :key="route.path" />
         </Transition>
       </RouterView>
     </main>
-    <footer class="w-full h-10 px-4 py-2 flex flex-row justify-center items-center">
+    <footer class="flex h-10 w-full flex-row items-center justify-center px-4 py-2">
       <p class="text-xs">
         <span>Copyright © 2024</span>
         <span> - </span>

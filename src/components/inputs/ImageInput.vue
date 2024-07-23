@@ -54,17 +54,17 @@ const clearInput = () => {
     <slot name="preview">
       <div v-auto-animate>
         <div
-          class="relative p-3 border w-full h-full rounded-md rounded-b-none border-b-0 overflow-hidden"
+          class="relative h-full w-full overflow-hidden rounded-md rounded-b-none border border-b-0 p-3"
           v-if="imgPreview"
         >
           <button
             type="button"
             @click="clearInput"
-            class="border rounded-full p-1 bg-background-elevated/50 backdrop-blur absolute right-1 top-1"
+            class="absolute right-1 top-1 rounded-full border bg-background-elevated/50 p-1 backdrop-blur"
           >
-            <SolarCloseCircleLineDuotone class="w-5 h-5" />
+            <SolarCloseCircleLineDuotone class="h-5 w-5" />
           </button>
-          <img :src="imgPreview" class="object-cover rounded-3xs border min-h-32 max-h-32" />
+          <img :src="imgPreview" class="max-h-32 min-h-32 rounded-3xs border object-cover" />
         </div>
       </div>
     </slot>

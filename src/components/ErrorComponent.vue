@@ -20,15 +20,15 @@ const reload = () => {
 </script>
 <template>
   <div
-    class="@container w-full max-w-[30rem] m-auto rounded-lg p-4 flex flex-col gap-4 outline-offset-4 outline-dashed outline-destructive"
+    class="m-auto flex w-full max-w-[30rem] flex-col gap-4 rounded-lg p-4 outline-dashed outline-offset-4 outline-destructive @container"
   >
     <div
-      class="w-full flex flex-col-reverse justify-between text-destructive @sm:items-end @sm:flex-row @sm:gap-4"
+      class="flex w-full flex-col-reverse justify-between text-destructive @sm:flex-row @sm:items-end @sm:gap-4"
     >
       <div>
-        <h1 class="text-2xl break-all">{{ error.name ?? 'Error' }}</h1>
+        <h1 class="break-all text-2xl">{{ error.name ?? 'Error' }}</h1>
       </div>
-      <MaterialSymbolsErrorOutline class="w-12 h-12 shrink-0 self-end @sm:self-center" />
+      <MaterialSymbolsErrorOutline class="h-12 w-12 shrink-0 self-end @sm:self-center" />
     </div>
     <p>{{ error.message ?? 'An unknown error occurred.' }}</p>
     <div class="flex flex-col-reverse justify-end gap-2 @sm:flex-row">

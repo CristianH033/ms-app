@@ -20,17 +20,17 @@ const props = defineProps({
 
 <template>
   <Card class="overflow-hidden">
-    <div class="w-full h-60">
+    <div class="h-60 w-full">
       <LazyImg
-        class="w-full h-full object-cover"
+        class="h-full w-full object-cover"
         :src="getFileAsBase64(props.raffle.image_path!)"
         :thumbHash="props.raffle.thumb_hash"
       />
     </div>
     <CardHeader>
-      <div class="w-full flex flex-row justify-between">
+      <div class="flex w-full flex-row justify-between">
         <CardTitle> {{ props.raffle.name }} </CardTitle>
-        <SolarCupStarLineDuotone class="w-6 h-6" />
+        <SolarCupStarLineDuotone class="h-6 w-6" />
       </div>
       <CardDescription>
         <span> Poner Fecha </span>
@@ -42,14 +42,14 @@ const props = defineProps({
       </p>
     </CardContent>
     <CardFooter
-      class="flex-col items-stretch sm:items-center sm:justify-stretch sm:flex-row gap-y-4 gap-x-2"
+      class="flex-col items-stretch gap-x-2 gap-y-4 sm:flex-row sm:items-center sm:justify-stretch"
     >
-      <Button variant="secondary" type="button" class="gap-2 justify-start">
-        <SolarPenNewSquareLineDuotone class="w-6 h-6" />
+      <Button variant="secondary" type="button" class="justify-start gap-2">
+        <SolarPenNewSquareLineDuotone class="h-6 w-6" />
         <span> Editar </span>
       </Button>
       <div
-        class="grow flex flex-col items-stretch sm:items-center sm:justify-end sm:flex-row gap-y-4 gap-x-2"
+        class="flex grow flex-col items-stretch gap-x-2 gap-y-4 sm:flex-row sm:items-center sm:justify-end"
       >
         <RouterLink
           :to="{ name: 'raffle-sellers', params: { id: props.raffle.id } }"
@@ -58,12 +58,12 @@ const props = defineProps({
         >
           <Button
             type="button"
-            class="gap-2 justify-start"
+            class="justify-start gap-2"
             @click="navigate"
             @keypress.enter="navigate"
             role="link"
           >
-            <SolarUserSpeakLineDuotone class="w-6 h-6" />
+            <SolarUserSpeakLineDuotone class="h-6 w-6" />
             <span> Vendedores </span>
           </Button>
         </RouterLink>
@@ -74,12 +74,12 @@ const props = defineProps({
         >
           <Button
             type="button"
-            class="gap-2 justify-start"
+            class="justify-start gap-2"
             @click="navigate"
             @keypress.enter="navigate"
             role="link"
           >
-            <SolarTicketLineDuotone class="w-6 h-6" />
+            <SolarTicketLineDuotone class="h-6 w-6" />
             <span> Numeros Disponibles </span>
           </Button>
         </RouterLink>

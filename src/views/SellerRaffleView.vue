@@ -229,14 +229,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="p-4 rounded-md mx-auto">
-    <div class="flex justify-between items-center mb-4">
+  <div class="mx-auto rounded-md p-4">
+    <div class="mb-4 flex items-center justify-between">
       <div>
-        <h1 class="text-primary text-2xl font-bold uppercase">{{ raffle?.raffle_name }}</h1>
+        <h1 class="text-2xl font-bold uppercase text-primary">{{ raffle?.raffle_name }}</h1>
         <h2 class="text-2xl font-bold uppercase">{{ seller?.name }}</h2>
         <p>{{ seller?.phone }}</p>
       </div>
-      <div class="text-right max-w-80">
+      <div class="max-w-80 text-right">
         <!-- <p>{{ formatDate(raffle?.draw_drawn_at!) }}</p> -->
         <p>{{ numberToCurrency(raffleSellerInfo?.ticket_price!) }}</p>
         <p>{{ raffle?.lottery_name }}</p>
@@ -251,10 +251,10 @@ onBeforeUnmount(() => {
       <div
         v-for="group in ticketsGrouped"
         :key="group.group"
-        class="flex items-center gap-4 print:gap-1 border p-4 print:p-2 rounded-md break-before-auto"
+        class="flex break-before-auto items-center gap-4 rounded-md border p-4 print:gap-1 print:p-2"
       >
         <div
-          class="tabular-nums flex flex-row justify-center items-center self-start print:self-center"
+          class="flex flex-row items-center justify-center self-start tabular-nums print:self-center"
         >
           <h3 class="text-7xl text-primary print:text-7xl">{{ group.group }}</h3>
         </div>
@@ -263,13 +263,13 @@ onBeforeUnmount(() => {
             v-for="ticket in group.sellerTickets"
             :key="ticket.id"
             as="button"
-            class="ml-2 button small"
+            class="button small ml-2"
             @trigger="openRemoveDialog(ticket)"
           >
             <Button
               variant="ghost"
               @contextmenu.prevent="openRemoveDialog(ticket)"
-              class="border-primary print:min-w-10 print:min-h-10 print:w-10 print:h-10 print:text-sm print:font-extrabold print:rounded-md text-lg min-w-14 min-h-14 w-14 h-14 border rounded-full flex-col justify-center items-center"
+              class="h-14 min-h-14 w-14 min-w-14 flex-col items-center justify-center rounded-full border border-primary text-lg print:h-10 print:min-h-10 print:w-10 print:min-w-10 print:rounded-md print:text-sm print:font-extrabold"
             >
               <span class="pointer-events-none">{{ ticket.number }}</span>
             </Button>
@@ -277,15 +277,15 @@ onBeforeUnmount(() => {
           <Button
             @click="openDialogForGroup(group.group)"
             variant="ghost"
-            class="print:hidden text-lg w-14 h-14 border rounded-full"
+            class="h-14 w-14 rounded-full border text-lg print:hidden"
           >
             +
           </Button>
         </div>
       </div>
-      <div class="w-full flex flex-col print:flex-row gap-4">
-        <div class="w-full flex items-center gap-4 border p-4 print:p-2 rounded-md">
-          <h3 class="font-extrabold text-3xl text-primary">POOL</h3>
+      <div class="flex w-full flex-col gap-4 print:flex-row">
+        <div class="flex w-full items-center gap-4 rounded-md border p-4 print:p-2">
+          <h3 class="text-3xl font-extrabold text-primary">POOL</h3>
           <div class="flex flex-row flex-wrap gap-2">
             <!-- <Button
               v-for="i in 12"
@@ -295,14 +295,14 @@ onBeforeUnmount(() => {
             >
               <span class="pointer-events-none user-select-none">{{ i }}</span>
             </Button> -->
-            <Button variant="ghost" class="print:hidden text-lg w-14 h-14 border"> + </Button>
+            <Button variant="ghost" class="h-14 w-14 border text-lg print:hidden"> + </Button>
           </div>
         </div>
         <div class="flex justify-end">
           <div
-            class="flex flex-row print:flex-col items-center border rounded-md p-4 print:p-2 gap-4 print:gap-2 text-right"
+            class="flex flex-row items-center gap-4 rounded-md border p-4 text-right print:flex-col print:gap-2 print:p-2"
           >
-            <p class="font-semibold text-lg">TOTAL</p>
+            <p class="text-lg font-semibold">TOTAL</p>
             <p class="text-4xl font-extrabold text-primary">{{ totalSellerTickets }}</p>
           </div>
         </div>
@@ -310,12 +310,12 @@ onBeforeUnmount(() => {
     </div>
     <AlertDialog :open="selectDialogOpen" v-on:update:open="(value) => (selectDialogOpen = value)">
       <AlertDialogContent
-        class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+        class="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg p-0 transition-[opacity,_transform]"
       >
-        <AlertDialogHeader class="p-6 pb-4 border-b">
+        <AlertDialogHeader class="border-b p-6 pb-4">
           <AlertDialogTitle>
-            <div class="flex flex-row gap-2 justify-start items-center">
-              <SolarTicketLineDuotone class="w-8 h-8" />
+            <div class="flex flex-row items-center justify-start gap-2">
+              <SolarTicketLineDuotone class="h-8 w-8" />
               <span> Asignar Boletas </span>
             </div>
           </AlertDialogTitle>
@@ -323,7 +323,7 @@ onBeforeUnmount(() => {
             Seleccione una o más boletas para asignarlas a este vendedor
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div class="px-6 py-4 overflow-y-auto relative max-h-[55dvh]">
+        <div class="relative max-h-[55dvh] overflow-y-auto px-6 py-4">
           <div
             className="w-full max-w-3xl grid grid-cols-5 md:grid-cols-10 gap-x-2 gap-y-2 place-items-center"
           >
@@ -331,7 +331,7 @@ onBeforeUnmount(() => {
               v-for="ticket in dialogGroupTickets"
               :key="ticket.id"
               variant="ghost"
-              class="text-lg w-14 h-14 border rounded-full"
+              class="h-14 w-14 rounded-full border text-lg"
               :class="{
                 'bg-green-600 hover:bg-green-700': isSelected(ticket)
               }"
@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
             </Button>
           </div>
         </div>
-        <AlertDialogFooter class="p-6 pt-4 border-t gap-2">
+        <AlertDialogFooter class="gap-2 border-t p-6 pt-4">
           <AlertDialogCancel as-child>
             <Button variant="secondary" type="button" :disabled="isLoading">Cancelar</Button>
           </AlertDialogCancel>
@@ -357,7 +357,7 @@ onBeforeUnmount(() => {
             :disabled="isLoading"
           >
             <SvgSpinnersDotRevolve v-if="isLoading" class="h-6 w-6" />
-            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <SolarAddCircleLineDuotone v-else class="h-6 w-6" />
             <span>Asignar</span>
           </Button>
         </AlertDialogFooter>
@@ -365,12 +365,12 @@ onBeforeUnmount(() => {
     </AlertDialog>
     <AlertDialog :open="removeDialogOpen" v-on:update:open="(value) => (removeDialogOpen = value)">
       <AlertDialogContent
-        class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+        class="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg p-0 transition-[opacity,_transform]"
       >
-        <AlertDialogHeader class="p-6 pb-4 border-b">
+        <AlertDialogHeader class="border-b p-6 pb-4">
           <AlertDialogTitle>
-            <div class="flex flex-row gap-2 justify-start items-center">
-              <SolarTicketLineDuotone class="w-8 h-8" />
+            <div class="flex flex-row items-center justify-start gap-2">
+              <SolarTicketLineDuotone class="h-8 w-8" />
               <span> Remover Boleta </span>
             </div>
           </AlertDialogTitle>
@@ -378,16 +378,16 @@ onBeforeUnmount(() => {
             Esta acción removerá la boleta de este vendedor
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div class="flex flex-row gap-2 justify-center items-center p-4">
+        <div class="flex flex-row items-center justify-center gap-2 p-4">
           <Button
             variant="ghost"
-            class="text-4xl w-32 h-32 border rounded-full"
+            class="h-32 w-32 rounded-full border text-4xl"
             :disabled="isLoading"
           >
             {{ selectedTicketToRemove?.number }}
           </Button>
         </div>
-        <AlertDialogFooter class="p-6 pt-4 border-t gap-2">
+        <AlertDialogFooter class="gap-2 border-t p-6 pt-4">
           <AlertDialogCancel as-child>
             <Button variant="secondary" type="button" :disabled="isLoading">Cancelar</Button>
           </AlertDialogCancel>
@@ -403,13 +403,13 @@ onBeforeUnmount(() => {
             :disabled="isLoading"
           >
             <SvgSpinnersDotRevolve v-if="isLoading" class="h-6 w-6" />
-            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <SolarAddCircleLineDuotone v-else class="h-6 w-6" />
             <span>Remover</span>
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    <header class="hidden print:block print:!fixed print:top-0">SÁNCHEZ INVERSIONES</header>
+    <header class="hidden print:!fixed print:top-0 print:block">SÁNCHEZ INVERSIONES</header>
   </div>
 </template>
 

@@ -10,11 +10,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <div
-    class="relative flex py-5 items-center"
+    class="relative flex items-center py-5"
     :class="props.variant === 'horizontal' ? 'flex-row' : 'flex-col'"
   >
     <div class="flex-grow border-t"></div>
-    <span class="flex-shrink mx-4" :class="{ orientation: props.variant === 'horizontal' }">
+    <span class="mx-4 flex-shrink" :class="{ orientation: props.variant === 'horizontal' }">
       <slot />
     </span>
     <div class="flex-grow border-t"></div>

@@ -19,25 +19,25 @@ const logout = async () => {
 
 <template>
   <header
-    class="print:hidden col-span-3 row-start-1 row-end-2 w-screen sticky top-0 z-20 px-4 py-2 h-16 flex flex-row justify-between gap-4 bg-background/90 text-foreground backdrop-blur border-b"
+    class="sticky top-0 z-20 col-span-3 row-start-1 row-end-2 flex h-16 w-screen flex-row justify-between gap-4 border-b bg-background/90 px-4 py-2 text-foreground backdrop-blur print:hidden"
   >
-    <div class="w-32 h-full justify-self-start flex justify-start items-center">
+    <div class="flex h-full w-32 items-center justify-start justify-self-start">
       <!-- <img class="w-full h-full" alt="Vue logo" src="@/assets/img/logo.svg" /> -->
       <!-- <span>App logo</span> -->
-      <MdiCardsOutline class="w-11 h-11" />
+      <MdiCardsOutline class="h-11 w-11" />
     </div>
-    <div class="flex justify-center items-center justify-self-center self-center w-full">
+    <div class="flex w-full items-center justify-center self-center justify-self-center">
       <Transition name="fade" mode="out-in">
         <span class="text-2xl" :key="appStore.getAppTitle">{{ appStore.getAppTitle }}</span>
       </Transition>
     </div>
     <Button
       variant="ghost"
-      class="w-32 h-full justify-self-end gap-2"
+      class="h-full w-32 gap-2 justify-self-end"
       @click="logout"
       :loading="loading"
     >
-      <SolarLogout3LineDuotone class="w-6 h-6" />
+      <SolarLogout3LineDuotone class="h-6 w-6" />
       <span class="">Salir</span>
     </Button>
   </header>

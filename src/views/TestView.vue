@@ -55,29 +55,29 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <div class="w-full flex flex-col items-center gap-4">
+  <div class="flex w-full flex-col items-center gap-4">
     <div
-      class="w-full grid grid-cols-[repeat(auto-fit,minmax(60px,1fr))] auto-rows-[60px] grid-flow-dense gap-4"
+      class="grid w-full grid-flow-dense auto-rows-[60px] grid-cols-[repeat(auto-fit,minmax(60px,1fr))] gap-4"
     >
       <div
         v-for="(image, i) in images"
         :key="i"
-        class="rounded-md border overflow-hidden"
+        class="overflow-hidden rounded-md border"
         :class="{
           'col-span-3 row-span-2': image.ratio === 'landscape',
-          'row-span-3 col-span-2': image.ratio === 'portrait',
-          'row-span-3 col-span-3': image.ratio === 'square' && Math.random() > 0.5
+          'col-span-2 row-span-3': image.ratio === 'portrait',
+          'col-span-3 row-span-3': image.ratio === 'square' && Math.random() > 0.5
         }"
       >
         <LazyImg
           :src="image.src"
           :thumbHash="image.thumbhash"
           :alt="image.ratio"
-          class="w-full h-full object-contain"
+          class="h-full w-full object-contain"
         />
       </div>
     </div>
-    <div class="w-full h-16 flex flex-col items-center justify-center" ref="loadMoreEl"></div>
+    <div class="flex h-16 w-full flex-col items-center justify-center" ref="loadMoreEl"></div>
   </div>
 </template>
 

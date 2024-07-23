@@ -4,7 +4,7 @@ import RegisterForm from '@/components/forms/RegisterForm.vue'
 
 <template>
   <div
-    class="w-full max-w-md md:max-w-lg lg:max-w-xl flex flex-col items-center justify-center gap-4"
+    class="flex w-full max-w-md flex-col items-center justify-center gap-4 md:max-w-lg lg:max-w-xl"
   >
     <RegisterForm />
   </div>

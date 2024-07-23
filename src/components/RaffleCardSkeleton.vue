@@ -5,25 +5,25 @@ import { Card, CardHeader, CardFooter, CardDescription, CardContent } from './ui
 
 <template>
   <Card class="overflow-hidden">
-    <Skeleton class="w-full h-60 rounded-none" />
+    <Skeleton class="h-60 w-full rounded-none" />
     <CardHeader>
-      <div class="w-full flex flex-row justify-between">
-        <Skeleton class="w-32 h-4 rounded-full" />
-        <Skeleton class="w-8 h-8 rounded-full" />
+      <div class="flex w-full flex-row justify-between">
+        <Skeleton class="h-4 w-32 rounded-full" />
+        <Skeleton class="h-8 w-8 rounded-full" />
       </div>
       <CardDescription>
-        <Skeleton class="w-20 h-2 rounded-full" />
+        <Skeleton class="h-2 w-20 rounded-full" />
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <Skeleton class="mb-4 w-full h-2 rounded-full" />
+      <Skeleton class="mb-4 h-2 w-full rounded-full" />
     </CardContent>
     <CardFooter
-      class="flex-col items-stretch sm:items-center sm:justify-end sm:flex-row gap-x-2 gap-y-4"
+      class="flex-col items-stretch gap-x-2 gap-y-4 sm:flex-row sm:items-center sm:justify-end"
     >
-      <Skeleton class="sm:w-20 h-11 rounded-lg" />
-      <Skeleton class="sm:w-20 h-11 rounded-lg" />
-      <Skeleton class="sm:w-20 h-11 rounded-lg" />
+      <Skeleton class="h-11 rounded-lg sm:w-20" />
+      <Skeleton class="h-11 rounded-lg sm:w-20" />
+      <Skeleton class="h-11 rounded-lg sm:w-20" />
     </CardFooter>
   </Card>
 </template>

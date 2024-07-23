@@ -299,7 +299,7 @@ onMounted(async () => {
 <template>
   <form
     @submit.prevent="submitRaffle"
-    class="@container/form w-full flex flex-col gap-2"
+    class="flex w-full flex-col gap-2 @container/form"
     :aria-disabled="isSubmiting"
   >
     <fieldset :disabled="isSubmiting">
@@ -337,7 +337,7 @@ onMounted(async () => {
                 >
                   <AlertDialogTrigger as-child>
                     <Button variant="outline" type="button">
-                      <SolarAddCircleLineDuotone class="w-6 h-6" />
+                      <SolarAddCircleLineDuotone class="h-6 w-6" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -439,21 +439,21 @@ onMounted(async () => {
         </FormItem>
       </FormField>
       <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-        <fieldset v-auto-animate class="border col-span-2 rounded-md p-4 flex flex-col gap-4">
-          <legend class="text-lg font-medium flex gap-2">
-            <SolarCupStarLineDuotone class="w-8 h-8" />
+        <fieldset v-auto-animate class="col-span-2 flex flex-col gap-4 rounded-md border p-4">
+          <legend class="flex gap-2 text-lg font-medium">
+            <SolarCupStarLineDuotone class="h-8 w-8" />
             <span>Premios</span>
           </legend>
-          <div class="w-full relative" v-for="(prize, i) in formData.prizes" :key="prize.key">
+          <div class="relative w-full" v-for="(prize, i) in formData.prizes" :key="prize.key">
             <button
               v-if="formData.prizes.length > 1"
               type="button"
-              class="bg-background rounded-xl absolute right-0 top-0"
+              class="absolute right-0 top-0 rounded-xl bg-background"
               @click="removePrize(prize.key)"
             >
-              <SolarCloseSquareLineDuotone class="w-8 h-8" />
+              <SolarCloseSquareLineDuotone class="h-8 w-8" />
             </button>
-            <fieldset class="w-full border p-4 rounded-md">
+            <fieldset class="w-full rounded-md border p-4">
               <legend class="text-lg font-medium">Premio {{ i + 1 }}</legend>
               <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.name'">
                 <FormItem>
@@ -507,24 +507,24 @@ onMounted(async () => {
               </FormField>
             </fieldset>
           </div>
-          <div class="w-full py-2 flex flex-row items-center justify-end">
+          <div class="flex w-full flex-row items-center justify-end py-2">
             <Button
               variant="outline"
               type="button"
               class="w-full gap-2 @xl/form:w-auto"
               @click="addPrize"
             >
-              <SolarAddCircleLineDuotone class="w-6 h-6" />
+              <SolarAddCircleLineDuotone class="h-6 w-6" />
               <span>Agregar premio</span>
             </Button>
           </div>
         </fieldset>
       </div>
       <slot name="actions" v-if="!withoutShowingActions" v-bind="{ isSubmiting }">
-        <FormItem class="w-full py-2 flex flex-row items-center justify-end">
+        <FormItem class="flex w-full flex-row items-center justify-end py-2">
           <Button v-auto-animate type="submit" class="w-full gap-2 @xl/form:w-auto">
             <SvgSpinnersDotRevolve v-if="isSubmiting" class="h-6 w-6" />
-            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <SolarAddCircleLineDuotone v-else class="h-6 w-6" />
             <span>Crear</span>
           </Button>
         </FormItem>

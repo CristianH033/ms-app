@@ -30,8 +30,8 @@
   }
 
   body {
-    @apply print:!w-[8.5in] print:!h-[14in] print:mx-auto;
-    @apply w-screen min-h-dvh bg-primary dark:bg-background overflow-x-hidden overscroll-contain text-foreground;
+    @apply print:mx-auto print:!h-[14in] print:!w-[8.5in];
+    @apply min-h-dvh w-screen overflow-x-hidden overscroll-contain bg-primary text-foreground dark:bg-background;
   }
 }
 

@@ -79,46 +79,46 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center">
-    <div ref="sentinal" class="w-full h-0"></div>
-    <div class="flex flex-col w-full max-w-3xl gap-4">
+  <div class="flex w-full flex-col items-center">
+    <div ref="sentinal" class="h-0 w-full"></div>
+    <div class="flex w-full max-w-3xl flex-col gap-4">
       <div
-        class="flex flex-row gap-4 transition-all duration-300 bg-background-elevated/90 backdrop-blur px-4 py-3 border rounded-lg sticky top-16 z-10"
+        class="sticky top-16 z-10 flex flex-row gap-4 rounded-lg border bg-background-elevated/90 px-4 py-3 backdrop-blur transition-all duration-300"
         :class="{
-          '!bg-background/90 @3xl/main:!bg-background-elevated/90 rounded-none @3xl/main:rounded-b-lg border-t-0 border-x-0 @3xl/main:border-x -mx-4':
+          '-mx-4 rounded-none border-x-0 border-t-0 !bg-background/90 @3xl/main:rounded-b-lg @3xl/main:border-x @3xl/main:!bg-background-elevated/90':
             isSticky
         }"
       >
-        <div class="grow relative">
-          <SolarMagniferOutline class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
+        <div class="relative grow">
+          <SolarMagniferOutline class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
           <Input
             type="text"
             v-model="search"
             autocomplete="off"
             placeholder="Buscar"
-            class="w-full pl-11 pr-4 py-2 text-sm"
+            class="w-full py-2 pl-11 pr-4 text-sm"
           />
         </div>
         <AlertDialog :open="raffleFormOpen" v-on:update:open="(value) => (raffleFormOpen = value)">
           <AlertDialogTrigger asChild>
             <Button class="gap-2">
-              <SolarAddCircleLineDuotone class="w-5 h-5" />
+              <SolarAddCircleLineDuotone class="h-5 w-5" />
               <span class="hidden md:inline">Nueva rifa</span>
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent
-            class="transition-[opacity,_transform] gap-0 p-0 max-w-2xl w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] rounded-lg grid-rows-[auto_minmax(0,1fr)_auto]"
+            class="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg p-0 transition-[opacity,_transform]"
           >
-            <AlertDialogHeader class="p-6 pb-4 border-b">
+            <AlertDialogHeader class="border-b p-6 pb-4">
               <AlertDialogTitle>
-                <div class="flex flex-row gap-2 justify-start items-center">
-                  <SolarTicketLineDuotone class="w-8 h-8" />
+                <div class="flex flex-row items-center justify-start gap-2">
+                  <SolarTicketLineDuotone class="h-8 w-8" />
                   <span> Nueva Rifa </span>
                 </div>
               </AlertDialogTitle>
               <AlertDialogDescription> Crea una nueva rifa </AlertDialogDescription>
             </AlertDialogHeader>
-            <div class="px-6 py-4 overflow-y-auto relative">
+            <div class="relative overflow-y-auto px-6 py-4">
               <RaffleForm
                 withoutActions
                 id="raffle-form"
@@ -126,7 +126,7 @@ onMounted(async () => {
                 v-on:success="onSucess"
               />
             </div>
-            <AlertDialogFooter class="p-6 pt-4 border-t gap-2">
+            <AlertDialogFooter class="gap-2 border-t p-6 pt-4">
               <AlertDialogCancel as-child>
                 <Button variant="secondary" type="button" :disabled="submiting">Cancelar</Button>
               </AlertDialogCancel>
@@ -140,7 +140,7 @@ onMounted(async () => {
                 :disabled="submiting"
               >
                 <SvgSpinnersDotRevolve v-if="submiting" class="h-6 w-6" />
-                <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+                <SolarAddCircleLineDuotone v-else class="h-6 w-6" />
                 <span>Crear</span>
               </Button>
               <!-- </AlertDialogAction> -->
@@ -149,11 +149,11 @@ onMounted(async () => {
         </AlertDialog>
       </div>
 
-      <div class="w-full flex flex-col gap-4 items-center">
+      <div class="flex w-full flex-col items-center gap-4">
         <RafflesList :raffles="rafflesFiltered" :loading="loading" />
       </div>
     </div>
 
-    <div class="w-full flex flex-col items-center"></div>
+    <div class="flex w-full flex-col items-center"></div>
   </div>
 </template>

@@ -35,17 +35,17 @@ onMounted(async () => {
 <template>
   <div class="w-full @container/ticketInfo">
     <div
-      class="w-full flex flex-col gap-2 overflow-hidden relative @md/ticketInfo:flex-row @md/ticketInfo:gap-8"
+      class="relative flex w-full flex-col gap-2 overflow-hidden @md/ticketInfo:flex-row @md/ticketInfo:gap-8"
     >
-      <div class="min-w-auto flex flex-col justify-center items-center">
+      <div class="min-w-auto flex flex-col items-center justify-center">
         <div
-          class="w-28 h-28 rounded-full border bg-background-elevated flex flex-col justify-center items-center"
+          class="flex h-28 w-28 flex-col items-center justify-center rounded-full border bg-background-elevated"
         >
           <span class="text-3xl">{{ ticketInfo?.number }}</span>
         </div>
       </div>
-      <div class="min-w-0 flex flex-col gap-2">
-        <h2 class="text-2xl my-2">Información del boleto</h2>
+      <div class="flex min-w-0 flex-col gap-2">
+        <h2 class="my-2 text-2xl">Información del boleto</h2>
         <p v-if="ticketInfo?.sellers" class="capitalize">
           Vendedor: {{ ticketInfo?.sellers?.name }}
         </p>
@@ -58,15 +58,15 @@ onMounted(async () => {
         </p>
         <div
           v-if="ticketInfo?.sellers && ticketInfo?.sellers?.tickets"
-          class="w-full flex flex-col gap-2"
+          class="flex w-full flex-col gap-2"
         >
           <hr class="" />
           <label class="">Otros boletos del vendedor:</label>
-          <div class="flex flex-row gap-2 overflow-x-auto p-2 rounded-md border">
+          <div class="flex flex-row gap-2 overflow-x-auto rounded-md border p-2">
             <div
               v-for="ticket in ticketInfo?.sellers?.tickets"
               :key="ticket.id"
-              class="min-w-12 min-h-12 w-12 h-12 rounded-full border bg-background-elevated flex flex-col justify-center items-center"
+              class="flex h-12 min-h-12 w-12 min-w-12 flex-col items-center justify-center rounded-full border bg-background-elevated"
             >
               <span>{{ ticket.number }}</span>
             </div>

@@ -3,6 +3,7 @@ node_modules
 dist
 dist-ssr
 coverage
+public
 *.local
 
 test-results/

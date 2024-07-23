@@ -131,7 +131,7 @@ onMounted(async () => {
                 </SelectTrigger>
                 <RouterLink :to="{ name: 'sellers' }" v-slot="{ navigate }">
                   <Button variant="outline" type="button" @click="navigate">
-                    <SolarAddCircleLineDuotone class="w-6 h-6" />
+                    <SolarAddCircleLineDuotone class="h-6 w-6" />
                   </Button>
                 </RouterLink>
               </div>
@@ -187,7 +187,7 @@ onMounted(async () => {
       </div>
 
       <FormItem
-        class="space-y-0 w-full py-2 flex flex-col-reverse md:flex-row items-center justify-end gap-2"
+        class="flex w-full flex-col-reverse items-center justify-end gap-2 space-y-0 py-2 md:flex-row"
       >
         <Button type="button" class="w-full gap-2" variant="outline" @click="cancel">
           <span>Cancelar</span>
@@ -195,7 +195,7 @@ onMounted(async () => {
         <Button type="submit" class="w-full gap-2">
           <div v-auto-animate>
             <SvgSpinnersDotRevolve v-if="isLoading" class="h-6 w-6" />
-            <SolarAddCircleLineDuotone v-else class="w-6 h-6" />
+            <SolarAddCircleLineDuotone v-else class="h-6 w-6" />
           </div>
           <span>Asignar</span>
         </Button>

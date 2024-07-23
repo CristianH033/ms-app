@@ -48,13 +48,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center">
+  <div class="flex w-full flex-col items-center">
     <SellersList :sellers="sellers" :isLoading="isLoading">
       <template #actionButton>
         <AlertDialog :open="openFormModal" v-on:update:open="(value) => (openFormModal = value)">
           <AlertDialogTrigger as-child>
             <Button class="gap-2">
-              <SolarAddCircleLineDuotone class="w-5 h-5" />
+              <SolarAddCircleLineDuotone class="h-5 w-5" />
               <span class="hidden md:inline">Nuevo vendedor</span>
             </Button>
           </AlertDialogTrigger>
@@ -71,7 +71,7 @@ onMounted(async () => {
       </template>
       <template #actionForEmpty>
         <Button class="gap-2" @click="openFormModal = true">
-          <SolarAddCircleLineDuotone class="w-5 h-5" />
+          <SolarAddCircleLineDuotone class="h-5 w-5" />
           <span>Crear vendedor</span>
         </Button>
       </template>
