@@ -1,3 +1,25 @@
+-- DROP ALL POLICIES
+DROP POLICY IF EXISTS "CRUD on lotteries." ON lotteries;
+DROP POLICY IF EXISTS "CRUD on draws." ON draws;
+DROP POLICY IF EXISTS "CRUD on raffles." ON raffles;
+DROP POLICY IF EXISTS "CRUD on raffle prizes." ON prizes;
+DROP POLICY IF EXISTS "CRUD on buyers." ON buyers;
+DROP POLICY IF EXISTS "CRUD on sellers." ON sellers;
+DROP POLICY IF EXISTS "CRUD on raffle sellers." ON raffles_sellers;
+DROP POLICY IF EXISTS "CRUD on tickets pulls." ON tickets_pulls;
+DROP POLICY IF EXISTS "CRUD on raffle tickets." ON tickets;
+
+-- DROP ALL TABLES
+DROP TABLE IF EXISTS tickets;
+DROP TABLE IF EXISTS tickets_pulls;
+DROP TABLE IF EXISTS buyers;
+DROP TABLE IF EXISTS raffles_sellers;
+DROP TABLE IF EXISTS sellers;
+DROP TABLE IF EXISTS prizes;
+DROP TABLE IF EXISTS raffles;
+DROP TABLE IF EXISTS draws;
+DROP TABLE IF EXISTS lotteries;
+
 -- CREATE TABLES;
 CREATE TABLE lotteries (
   id SERIAL PRIMARY KEY,

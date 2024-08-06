@@ -1,3 +1,9 @@
+-- DROP ALL VIEWS
+DROP VIEW IF EXISTS sellers_with_tickets_count;
+DROP VIEW IF EXISTS sellers_with_tickets_count_by_raffle;
+DROP VIEW IF EXISTS sellers_by_raffle;
+DROP VIEW IF EXISTS raffle_stats;
+
 -- CREATE VIEW SellersWithTicketsCount
 CREATE view sellers_with_tickets_count AS
 SELECT
