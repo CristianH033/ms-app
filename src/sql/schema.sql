@@ -1,13 +1,38 @@
 -- DROP ALL POLICIES
-DROP POLICY IF EXISTS "CRUD on lotteries." ON lotteries;
-DROP POLICY IF EXISTS "CRUD on draws." ON draws;
-DROP POLICY IF EXISTS "CRUD on raffles." ON raffles;
-DROP POLICY IF EXISTS "CRUD on raffle prizes." ON prizes;
-DROP POLICY IF EXISTS "CRUD on buyers." ON buyers;
-DROP POLICY IF EXISTS "CRUD on sellers." ON sellers;
-DROP POLICY IF EXISTS "CRUD on raffle sellers." ON raffles_sellers;
-DROP POLICY IF EXISTS "CRUD on tickets pulls." ON tickets_pulls;
-DROP POLICY IF EXISTS "CRUD on raffle tickets." ON tickets;
+BEGIN;
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'lotteries') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on lotteries." ON lotteries;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'draws') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on draws." ON draws;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'raffles') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on raffles." ON raffles;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'prizes') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on raffle prizes." ON prizes;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'buyers') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on buyers." ON buyers;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'sellers') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on sellers." ON sellers;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'raffles_sellers') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on raffle sellers." ON raffles_sellers;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'tickets_pulls') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on tickets pulls." ON tickets_pulls;';
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'tickets') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on raffle tickets." ON tickets;';
+  END IF;
+END $$;
+
+COMMIT;
 
 -- DROP ALL TABLES
 DROP TABLE IF EXISTS tickets;

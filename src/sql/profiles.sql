@@ -1,14 +1,28 @@
 -- DROP TRIGGERS
-DROP TRIGGER on_auth_user_created ON auth.users;
-DROP TRIGGER on_profile_updated ON public.profiles;
+BEGIN;
 
--- DROP FUNCTIONS
-DROP FUNCTION IF EXISTS public.handle_new_user;
-DROP FUNCTION IF EXISTS public.update_user_metadata;
-DROP FUNCTION IF EXISTS public.sync_user_profiles;
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'auth' AND tablename = 'users') THEN
+    -- DROP TRIGGERS
+    EXECUTE 'DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;';
+  END IF;
 
--- DROP POLICIES
-DROP POLICY IF EXISTS "CRUD on profiles." ON public.profiles;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
+    -- DROP TRIGGERS
+    EXECUTE 'DROP TRIGGER IF EXISTS on_profile_updated ON public.profiles;';
+    
+    -- DROP FUNCTIONS
+    EXECUTE 'DROP FUNCTION IF EXISTS public.handle_new_user;';
+    EXECUTE 'DROP FUNCTION IF EXISTS public.update_user_metadata;';
+    EXECUTE 'DROP FUNCTION IF EXISTS public.sync_user_profiles;';
+
+    -- DROP POLICIES
+    EXECUTE 'DROP POLICY IF EXISTS "CRUD on profiles." ON public.profiles;';
+  END IF;
+END $$;
+
+COMMIT;
 
 -- DROP PROFILES TABLE
 DROP TABLE IF EXISTS public.profiles;
