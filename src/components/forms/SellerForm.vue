@@ -84,7 +84,7 @@ const submit = handleSubmit(
     }
 
     if (values.photo) {
-      await uploadFile(values.photo, values.photo.name)
+      await uploadFile(values.photo, values.photo.name, 'avatars')
         .then((data) => {
           console.log(data)
           sellerData.avatar_url = data?.fullPath!

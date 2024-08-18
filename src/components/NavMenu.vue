@@ -5,6 +5,8 @@ import SolarBellBingBoldDuotone from '~icons/solar/bell-bing-bold-duotone'
 import SolarBellBingLineDuotone from '~icons/solar/bell-bing-line-duotone'
 import SolarHomeBoldDuotone from '~icons/solar/home-bold-duotone'
 import SolarHomeLineDuotone from '~icons/solar/home-line-duotone'
+import SolarTestTubeBoldDuotone from '~icons/solar/test-tube-bold-duotone'
+import SolarTestTubeLineDuotone from '~icons/solar/test-tube-line-duotone'
 import SolarUserBoldDuotone from '~icons/solar/user-bold-duotone'
 import SolarUserLineDuotone from '~icons/solar/user-line-duotone'
 import SolarUserSpeakBoldDuotone from '~icons/solar/user-speak-bold-duotone'
@@ -35,6 +37,12 @@ const menuItems = [
     name: 'Cuenta',
     pathName: 'account'
   }
+  // {
+  //   iconComponent: SolarTestTubeLineDuotone,
+  //   activeIconComponent: SolarTestTubeBoldDuotone,
+  //   name: 'Tests',
+  //   pathName: 'tests'
+  // }
 ]
 </script>
 

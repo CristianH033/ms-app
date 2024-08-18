@@ -3,10 +3,10 @@ import { supabase } from '@/lib/supabase.client'
 import { v4 as uuidv4 } from 'uuid'
 import { blobToBase64 } from '../utils/fetch'
 
-export const uploadFile = async (file: File, name: string) => {
+export const uploadFile = async (file: File, name: string, bucket: string = '') => {
   const uuid = uuidv4().slice(-10)
   name = uuid + '-' + name
-  const { data, error } = await supabase.storage.from('raffles').upload(name, file, {
+  const { data, error } = await supabase.storage.from(bucket).upload(name, file, {
     cacheControl: '3600',
     upsert: false
   })

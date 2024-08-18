@@ -192,7 +192,7 @@ const removePrize = (key: string) => {
 }
 
 const uploadAndReturnPath = async (file: File): Promise<string> => {
-  const data = await uploadFile(file, file.name)
+  const data = await uploadFile(file, file.name, 'covers')
   return data?.fullPath!
 }
 
@@ -412,8 +412,12 @@ onMounted(async () => {
           <FormControl>
             <MoneyInput
               :model-value="value"
-              @update:modelValue="(value) => handleChange(value, true)"
-              v-model="formData.ticket_price"
+              @update:modelValue="
+                (value) => {
+                  handleChange(value, true)
+                  formData.ticket_price = value.toString()
+                }
+              "
               required
             />
           </FormControl>
@@ -479,8 +483,12 @@ onMounted(async () => {
                   <FormControl>
                     <MoneyInput
                       :model-value="value"
-                      @update:modelValue="(value) => handleChange(value, true)"
-                      v-model="prize.prize_value"
+                      @update:modelValue="
+                        (value) => {
+                          handleChange(value, true)
+                          prize.prize_value = value.toString()
+                        }
+                      "
                       required
                     />
                   </FormControl>

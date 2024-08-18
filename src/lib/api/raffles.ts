@@ -71,6 +71,10 @@ export const createNewRaffleWithPrizes = async (
 ): Promise<RaffleInsertResult | null> => {
   const { prizes, ...raffleDetails } = raffleData
 
+  console.log(raffleDetails)
+
+  console.log(prizes)
+
   const { data, error } = (await supabase.rpc('create_raffle_with_prizes', {
     raffle_data: raffleDetails,
     prizes_data: prizes
