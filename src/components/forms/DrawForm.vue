@@ -39,7 +39,13 @@ const formState = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
 const lotteries = ref<Tables<'lotteries'>[]>([])
 
-const emit = defineEmits(['submit', 'success', 'error', 'cancel'])
+// const emit = defineEmits(['submit', 'success', 'error', 'cancel'])
+const emit = defineEmits<{
+  (e: 'submit'): void
+  (e: 'success', draw_id: number): void
+  (e: 'error', error: string): void
+  (e: 'cancel'): void
+}>()
 
 const loading = computed(() => formState.value === 'pending')
 const disableForm = computed(() => formState.value === 'pending' || loading.value)
@@ -85,8 +91,9 @@ const fetchLotteries = () => {
 const submitDraw = handleSubmit((values) => {
   formState.value = 'pending'
   createNewDraw({ ...values, lottery_id: parseInt(values.lottery_id) })
-    .then(() => {
+    .then(async (data) => {
       formState.value = 'success'
+      emit('success', data?.id!)
     })
     .catch(() => {
       formState.value = 'error'
@@ -94,7 +101,7 @@ const submitDraw = handleSubmit((values) => {
     .finally(() => {
       setTimeout(() => {
         formState.value = 'idle'
-      }, 500)
+      }, 1000)
     })
 })
 
@@ -108,18 +115,6 @@ watch(value, (val) => {
     if (!values.name || values.name.startsWith('Sorteo del ')) {
       setFieldValue('name', `Sorteo del ${df.format(toDate(val))}`)
     }
-  }
-})
-
-watch(formState, (state) => {
-  if (state === 'success') {
-    emit('success')
-  }
-  if (state === 'error') {
-    emit('error')
-  }
-  if (state === 'pending') {
-    emit('submit', values)
   }
 })
 

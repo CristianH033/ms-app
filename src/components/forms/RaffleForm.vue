@@ -106,7 +106,8 @@ const formSchema = toTypedSchema(
       .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
     description: z
       .string({ required_error: 'La descripción es requerida' })
-      .min(3, { message: 'La descripción debe tener al menos 3 caracteres' }),
+      .min(3, { message: 'La descripción debe tener al menos 3 caracteres' })
+      .optional(),
     number_of_tickets: z.number({ required_error: 'El numero de tickets es requerido' }).min(100, {
       message: 'El numero de tickets debe ser mayor o igual a 100'
     }),
@@ -204,7 +205,7 @@ const buildNewRaffleData = async (data: {
     image: File
   }[]
   name: string
-  description: string
+  description?: string | undefined
   number_of_tickets: number
   ticket_price: number
   image: File
@@ -276,10 +277,12 @@ const closeRaffleForm = () => {
   openDrawsFormModal.value = false
 }
 
-const onSucess = async () => {
+const onSucess = async (id: number) => {
   closeRaffleForm()
   // reload raffles
   await fetchDraws()
+
+  formData.value.draw_id = id.toString()
 }
 
 const fetchDraws = async () => {
@@ -378,7 +381,6 @@ onMounted(async () => {
               placeholder="Descripción de la Rifa"
               v-bind="componentField"
               v-model:model-value="formData.description"
-              required
             />
           </FormControl>
           <!-- <FormDescription> This is your public display name. </FormDescription> -->

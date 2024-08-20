@@ -58,7 +58,7 @@ onMounted(async () => {
               <span class="hidden md:inline">Nuevo vendedor</span>
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent @escape-key-down="(evt) => evt.preventDefault()">
             <AlertDialogHeader>
               <AlertDialogTitle>Crear nuevo vendedor</AlertDialogTitle>
               <AlertDialogDescription> Crea un nuevo vendedor </AlertDialogDescription>

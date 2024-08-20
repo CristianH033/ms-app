@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import RafflesList from '@/components/RafflesList.vue'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
-import { getAllRaffles } from '@/lib/api/raffles'
-import type { Tables } from '@/types/supabase.db'
+import { getRafflesStatsWithPrizes, type RaffleStatsWithPrizes } from '@/lib/api/raffles'
 import { computed, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import RaffleForm from '../components/forms/RaffleForm.vue'
@@ -25,7 +24,7 @@ import {
 const loading = ref(false)
 const submiting = ref(false)
 const search = ref('')
-const raffles = ref<Tables<'raffles'>[]>([])
+const raffles = ref<RaffleStatsWithPrizes[]>([])
 const raffleFormOpen = ref(false)
 
 const isSticky = ref(false)
@@ -34,7 +33,7 @@ const sentinal = ref<HTMLDivElement | null>(null)
 
 const rafflesFiltered = computed(() => {
   return raffles.value.filter((raffle) => {
-    return raffle.name.toLowerCase().includes(search.value.toLowerCase())
+    return raffle.raffle_name!.toLowerCase().includes(search.value.toLowerCase())
   })
 })
 
@@ -61,7 +60,7 @@ const onSucess = async () => {
 
 const fetchRaffles = async () => {
   loading.value = true
-  await getAllRaffles()
+  await getRafflesStatsWithPrizes()
     .then((data) => {
       raffles.value = data
     })
@@ -107,6 +106,7 @@ onMounted(async () => {
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent
+            @escape-key-down="(evt) => evt.preventDefault()"
             class="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg p-0 transition-[opacity,_transform]"
           >
             <AlertDialogHeader class="border-b p-6 pb-4">

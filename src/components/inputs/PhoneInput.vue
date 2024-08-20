@@ -25,7 +25,7 @@ const modelValue = useVModel(props, 'modelValue', emits, {
     v-model:unmasked="modelValue"
     type="text"
     :mask="'000-000-00-00'"
-    placeholder="312-345-67-89"
+    placeholder="3XX-XXX-XX-XX"
     :class="
       cn(
         'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-right text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',

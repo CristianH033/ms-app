@@ -1,9 +1,16 @@
 import type { Tables } from '@/types/supabase.db'
 import { supabase } from '../supabase.client'
 
+export interface RaffleStats extends Tables<'raffle_stats'> {}
+
+export interface RaffleStatsWithPrizes extends Tables<'raffle_stats'> {
+  prizes: Tables<'prizes'>[]
+}
+
 export interface NewRaffleWithPrizes
-  extends Omit<Tables<'raffles'>, 'id' | 'created_at' | 'updated_at'> {
+  extends Omit<Tables<'raffles'>, 'id' | 'description' | 'created_at' | 'updated_at'> {
   prizes: Omit<Tables<'prizes'>, 'id' | 'raffle_id' | 'created_at' | 'updated_at'>[]
+  description: string | undefined
   number_of_tickets: number
   ticket_price: number
 }
@@ -40,6 +47,32 @@ export const getAllRafflesWithPrizes = async () => {
   } else {
     return raffles
   }
+}
+
+export const getRafflesStats = async (): Promise<RaffleStats[]> => {
+  const { data: raffles, error } = await supabase
+    .from('raffle_stats')
+    .select('*')
+    .order('raffle_id', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return raffles
+}
+
+export const getRafflesStatsWithPrizes = async (): Promise<RaffleStatsWithPrizes[]> => {
+  const { data: raffles, error } = await supabase
+    .from('raffle_stats')
+    .select('*, prizes(*)')
+    .order('raffle_id', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return raffles
 }
 
 export const getRafflePrizes = async (raffleId: number): Promise<Tables<'prizes'>[]> => {

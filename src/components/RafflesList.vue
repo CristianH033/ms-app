@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Tables } from '@/types/supabase.db'
-import RaffleCardSkeleton from './RaffleCardSkeleton.vue'
-import RaffleCard from './RaffleCard.vue'
+import type { RaffleStatsWithPrizes } from '@/lib/api/raffles'
 import SolarBillCrossLineDuotone from '~icons/solar/bill-cross-line-duotone'
+import RaffleCard from './RaffleCard.vue'
+import RaffleCardSkeleton from './RaffleCardSkeleton.vue'
 
 const props = defineProps({
   loading: {
@@ -10,7 +10,7 @@ const props = defineProps({
     default: false
   },
   raffles: {
-    type: Array<Tables<'raffles'>>,
+    type: Array<RaffleStatsWithPrizes>,
     required: true
   }
 })
@@ -28,6 +28,6 @@ const props = defineProps({
       <SolarBillCrossLineDuotone class="h-32 w-32 text-muted-foreground" />
       <p class="text-center text-lg text-muted-foreground">No hay rifas creadas</p>
     </div>
-    <RaffleCard v-else v-for="raffle in props.raffles" :key="raffle.id" :raffle="raffle" />
+    <RaffleCard v-else v-for="raffle in props.raffles" :key="raffle.raffle_id!" :raffle="raffle" />
   </div>
 </template>

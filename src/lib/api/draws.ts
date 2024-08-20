@@ -25,12 +25,12 @@ export const createNewDraw = async (drawData: {
   lottery_id: number
   name: string
   drawn_at: string
-}): Promise<boolean> => {
-  const { error } = await supabase.from('draws').insert(drawData)
+}): Promise<Tables<'draws'> | null> => {
+  const { data, error } = await supabase.from('draws').insert(drawData).select().single()
 
   if (error) {
     throw new Error(error.message)
   }
 
-  return true
+  return data
 }
