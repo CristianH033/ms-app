@@ -5,7 +5,7 @@ import { Card, CardHeader, CardFooter, CardDescription, CardContent } from './ui
 
 <template>
   <Card class="overflow-hidden">
-    <Skeleton class="h-60 w-full rounded-none" />
+    <Skeleton class="aspect-[16/7] w-full rounded-none" />
     <CardHeader>
       <div class="flex w-full flex-row justify-between">
         <Skeleton class="h-4 w-32 rounded-full" />
@@ -13,17 +13,23 @@ import { Card, CardHeader, CardFooter, CardDescription, CardContent } from './ui
       </div>
       <CardDescription>
         <Skeleton class="h-2 w-20 rounded-full" />
+        <Skeleton class="mt-2 h-2 w-20 rounded-full" />
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <Skeleton class="mb-4 h-2 w-full rounded-full" />
+      <Skeleton class="mt-4 h-2 w-full rounded-full" />
+      <Skeleton class="mt-5 h-10 w-full rounded-full" />
     </CardContent>
     <CardFooter
       class="flex-col items-stretch gap-x-2 gap-y-4 sm:flex-row sm:items-center sm:justify-end"
     >
-      <Skeleton class="h-11 rounded-lg sm:w-20" />
-      <Skeleton class="h-11 rounded-lg sm:w-20" />
-      <Skeleton class="h-11 rounded-lg sm:w-20" />
+      <div class="flex w-full flex-col items-center justify-between gap-4 sm:flex-row">
+        <Skeleton class="h-11 w-full rounded-lg sm:w-20" />
+        <div class="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
+          <Skeleton class="h-11 w-full rounded-lg sm:w-24" />
+          <Skeleton class="h-11 w-full rounded-lg sm:w-24" />
+        </div>
+      </div>
     </CardFooter>
   </Card>
 </template>

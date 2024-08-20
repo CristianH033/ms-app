@@ -44,13 +44,11 @@ const formatCurrency = (value: number) => {
 
 <template>
   <Card class="overflow-hidden">
-    <div class="h-60 w-full">
-      <LazyImg
-        class="h-full w-full object-cover"
-        :src="getFileAsBase64(props.raffle.image_path!)"
-        :thumbHash="props.raffle.thumb_hash"
-      />
-    </div>
+    <LazyImg
+      class="aspect-[16/7] w-full object-cover"
+      :src="getFileAsBase64(props.raffle.image_path!)"
+      :thumbHash="props.raffle.thumb_hash"
+    />
     <CardHeader>
       <div class="flex w-full flex-row justify-between">
         <CardTitle class="capitalize"> {{ props.raffle.raffle_name }} </CardTitle>

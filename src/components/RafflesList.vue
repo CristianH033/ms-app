@@ -17,7 +17,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="flex w-full max-w-2xl flex-col gap-4">
+  <div class="flex w-full max-w-xl flex-col gap-4">
     <div v-if="loading" class="flex w-full flex-col gap-4">
       <RaffleCardSkeleton v-for="i in 2" :key="i" />
     </div>
