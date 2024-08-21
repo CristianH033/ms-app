@@ -1,1 +1,0 @@
-import{d as n,o as a,c as o,n as c,e as t,p as r}from"./index-D_lficq2.js";const u=n({__name:"Skeleton",props:{class:{}},setup(e){const s=e;return(l,p)=>(a(),o("div",{class:c(t(r)("animate-pulse rounded-md bg-muted",s.class))},null,2))}});export{u as _};
