@@ -1,12 +1,35 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { computed, onMounted, ref } from 'vue'
-import { useForm } from 'vee-validate'
-import { z } from 'zod'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import type { Tables } from '@/types/supabase.db'
 import { getAllDraws } from '@/lib/api/draws'
+import {
+  createNewRaffleWithPrizes,
+  type NewPrize,
+  type NewRaffle,
+  type NewRaffleWithPrizes
+} from '@/lib/api/raffles'
+import { uploadFile } from '@/lib/api/storage'
+import type { Tables } from '@/types/supabase.db'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useDebounceFn, useMemoize } from '@vueuse/core'
+import { v4 as uuidv4 } from 'uuid'
+import { useForm } from 'vee-validate'
+import { computed, onMounted, ref } from 'vue'
+import { z } from 'zod'
+import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
+import SolarCloseSquareLineDuotone from '~icons/solar/close-square-line-duotone'
+import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
+import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
+import ImageInput from '../inputs/ImageInput.vue'
+import MoneyInput from '../inputs/MoneyInput.vue'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '../ui/alert-dialog'
+import { Button } from '../ui/button'
 import {
   Select,
   SelectContent,
@@ -16,26 +39,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '../ui/select'
-import { Button } from '../ui/button'
-import { useDebounceFn, useMemoize } from '@vueuse/core'
-import ImageInput from '../inputs/ImageInput.vue'
-import MoneyInput from '../inputs/MoneyInput.vue'
-import SolarCloseSquareLineDuotone from '~icons/solar/close-square-line-duotone'
-import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
-import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
 import { Textarea } from '../ui/textarea'
-import { createNewRaffleWithPrizes, type NewRaffleWithPrizes } from '@/lib/api/raffles'
-import { v4 as uuidv4 } from 'uuid'
-import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '../ui/alert-dialog'
 import DrawForm from './DrawForm.vue'
-import { uploadFile } from '@/lib/api/storage'
 
 const MIN_FILE_SIZE = 1
 const MAX_FILE_SIZE = 5000000
@@ -81,87 +86,86 @@ const formData = ref({
 const memoizedDraws = useMemoize(async () => await getAllDraws())
 
 const clearCache = useDebounceFn(() => {
-  console.log('Clearing cache')
   memoizedDraws.clear()
 }, 30000)
 
-const formSchema = toTypedSchema(
-  z.object({
-    draw_id: z.string({ required_error: 'Sorteo es requerido' }).refine(
-      async (id) => {
-        try {
-          clearCache()
-        } catch (error) {
-          console.error(error)
-        }
+const zodObject = z.object({
+  draw_id: z.string({ required_error: 'Sorteo es requerido' }).refine(
+    async (id) => {
+      try {
+        clearCache()
+      } catch (error) {
+        console.error(error)
+      }
 
-        return await memoizedDraws().then((draws) =>
-          draws?.some((draw) => draw.id.toString() === id)
-        )
-      },
-      { message: 'El Sorteo no existe' }
-    ),
-    name: z
-      .string({ required_error: 'Nombre es requerido' })
-      .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
-    description: z
-      .string({ required_error: 'La descripción es requerida' })
-      .min(3, { message: 'La descripción debe tener al menos 3 caracteres' })
-      .optional(),
-    number_of_tickets: z.number({ required_error: 'El numero de tickets es requerido' }).min(100, {
-      message: 'El numero de tickets debe ser mayor o igual a 100'
+      return await memoizedDraws().then((draws) => draws?.some((draw) => draw.id.toString() === id))
+    },
+    { message: 'El Sorteo no existe' }
+  ),
+  name: z
+    .string({ required_error: 'Nombre es requerido' })
+    .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
+  description: z
+    .string({ required_error: 'La descripción es requerida' })
+    .min(3, { message: 'La descripción debe tener al menos 3 caracteres' })
+    .optional(),
+  number_of_tickets: z.number({ required_error: 'El numero de tickets es requerido' }).min(100, {
+    message: 'El numero de tickets debe ser mayor o igual a 100'
+  }),
+  ticket_price: z
+    .string({ required_error: 'El valor es requerido' })
+    .transform((val) => parseFloat(val)) // Transforma el string a un número
+    .refine((val) => !isNaN(val) && val >= 1, {
+      message: 'El valor debe ser un número mayor o igual a 1'
     }),
-    ticket_price: z
-      .string({ required_error: 'El valor es requerido' })
-      .transform((val) => parseFloat(val)) // Transforma el string a un número
-      .refine((val) => !isNaN(val) && val >= 1, {
-        message: 'El valor debe ser un número mayor o igual a 1'
-      }),
-    prizes: z
-      .array(
-        z.object({
-          name: z
-            .string({ required_error: 'Nombre es requerido' })
-            .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
-          prize_value: z
-            .string({ required_error: 'El valor es requerido' })
-            .transform((val) => parseFloat(val)) // Transforma el string a un número
-            .refine((val) => !isNaN(val) && val >= 1, {
-              message: 'El valor debe ser un número mayor o igual a 1'
-            }),
-          image: z
-            .instanceof(File)
-            .refine((file) => file instanceof File, {
-              message: 'Debe seleccionar una imagen'
-            })
-            .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
-              message: 'Tipo de archivo no aceptado'
-            })
-            .refine((file) => file.size >= MIN_FILE_SIZE, {
-              message: 'El archivo está vacío'
-            })
-            .refine((file) => file.size <= MAX_FILE_SIZE, {
-              message: 'El archivo es demasiado grande'
-            })
-        })
-      )
-      .min(1),
-    image: z
-      .instanceof(File)
-      .refine((file) => file instanceof File, {
-        message: 'Debe seleccionar una imagen'
+  prizes: z
+    .array(
+      z.object({
+        name: z
+          .string({ required_error: 'Nombre es requerido' })
+          .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
+        prize_value: z
+          .string({ required_error: 'El valor es requerido' })
+          .transform((val) => parseFloat(val)) // Transforma el string a un número
+          .refine((val) => !isNaN(val) && val >= 1, {
+            message: 'El valor debe ser un número mayor o igual a 1'
+          }),
+        image: z
+          .instanceof(File)
+          .refine((file) => file instanceof File, {
+            message: 'Debe seleccionar una imagen'
+          })
+          .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+            message: 'Tipo de archivo no aceptado'
+          })
+          .refine((file) => file.size >= MIN_FILE_SIZE, {
+            message: 'El archivo está vacío'
+          })
+          .refine((file) => file.size <= MAX_FILE_SIZE, {
+            message: 'El archivo es demasiado grande'
+          })
       })
-      .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
-        message: 'Tipo de archivo no aceptado'
-      })
-      .refine((file) => file.size >= MIN_FILE_SIZE, {
-        message: 'El archivo está vació'
-      })
-      .refine((file) => file.size <= MAX_FILE_SIZE, {
-        message: 'El archivo es demasiado grande'
-      })
-  })
-)
+    )
+    .min(1),
+  image: z
+    .instanceof(File)
+    .refine((file) => file instanceof File, {
+      message: 'Debe seleccionar una imagen'
+    })
+    .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+      message: 'Tipo de archivo no aceptado'
+    })
+    .refine((file) => file.size >= MIN_FILE_SIZE, {
+      message: 'El archivo está vació'
+    })
+    .refine((file) => file.size <= MAX_FILE_SIZE, {
+      message: 'El archivo es demasiado grande'
+    })
+})
+
+type FormData = z.infer<typeof zodObject>
+
+const formSchema = toTypedSchema(zodObject)
 
 const form = useForm({
   validationSchema: formSchema,
@@ -197,46 +201,70 @@ const uploadAndReturnPath = async (file: File): Promise<string> => {
   return data?.fullPath!
 }
 
-const buildNewRaffleData = async (data: {
-  draw_id: string
-  prizes: {
-    name: string
-    prize_value: number
-    image: File
-  }[]
-  name: string
-  description?: string | undefined
-  number_of_tickets: number
-  ticket_price: number
-  image: File
-}): Promise<NewRaffleWithPrizes> => {
-  const newRaffle = await {
-    draw_id: parseInt(data.draw_id!),
-    name: data.name,
-    description: data.description,
-    image_path: await uploadAndReturnPath(data.image),
-    thumb_hash: formData.value.thumb_hash,
-    number_of_tickets: data.number_of_tickets,
-    ticket_price: data.ticket_price,
-    prizes: [] as NewRaffleWithPrizes['prizes']
-  }
+const buildNewRaffleDetails = (data: FormData): Promise<NewRaffle> => {
+  return new Promise<NewRaffle>((resolve, reject) => {
+    uploadAndReturnPath(data.image)
+      .then((image_path) => {
+        resolve({
+          draw_id: parseInt(data.draw_id!),
+          name: data.name,
+          description: data.description,
+          image_path: image_path,
+          thumb_hash: formData.value.thumb_hash,
+          number_of_tickets: data.number_of_tickets,
+          ticket_price: data.ticket_price
+        })
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
 
-  await data.prizes.forEach(async (p, i) => {
-    await uploadAndReturnPath(p.image).then((path) => {
-      newRaffle.prizes.push({
-        name: p.name,
-        prize_value: p.prize_value,
-        thumb_hash: formData.value.prizes[i].thumb_hash,
-        image_path: path
+const buildNewRafflePrizes = (data: FormData): Promise<NewPrize[]> => {
+  return Promise.all(
+    data.prizes.map((p, i) => {
+      return new Promise<NewPrize>((resolve, reject) => {
+        uploadAndReturnPath(p.image)
+          .then((image_path) => {
+            resolve({
+              name: p.name,
+              prize_value: p.prize_value,
+              image_path: image_path,
+              thumb_hash: formData.value.prizes[i].thumb_hash
+            })
+          })
+          .catch((error) => {
+            reject(error)
+          })
       })
     })
-  })
+  )
+}
 
-  return newRaffle
+const buildNewRaffleData = (data: FormData): Promise<NewRaffleWithPrizes> => {
+  return new Promise<NewRaffleWithPrizes>((resolve, reject) => {
+    buildNewRaffleDetails(data)
+      .then((newRaffleDetails) => {
+        buildNewRafflePrizes(data)
+          .then((newPrizes) => {
+            resolve({
+              ...newRaffleDetails,
+              prizes: newPrizes
+            })
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
 }
 
 const submitRaffle = form.handleSubmit(
-  async (data) => {
+  async (data: FormData) => {
     isSubmiting.value = true
     form.setErrors({})
 
@@ -244,15 +272,12 @@ const submitRaffle = form.handleSubmit(
 
     const newRaffle = await buildNewRaffleData(data)
 
-    // console.log(raffleData)
-
     createNewRaffleWithPrizes(newRaffle)
-      .then((data) => {
-        console.log(data)
+      .then(() => {
         emit('success')
       })
       .catch((error) => {
-        console.log(error)
+        console.error(error)
       })
       .finally(() => {
         isSubmiting.value = false
@@ -290,8 +315,6 @@ const fetchDraws = async () => {
   await getAllDraws()
     .then((data) => (draws.value = data!))
     .finally(() => (isSubmiting.value = false))
-
-  console.log(draws.value)
 }
 
 onMounted(async () => {

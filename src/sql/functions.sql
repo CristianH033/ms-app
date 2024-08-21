@@ -31,8 +31,8 @@ BEGIN
     raffle_data->>'description',
     raffle_data->>'image_path',
     raffle_data->>'thumb_hash',
-    COALESCE((raffle_data->>'created_at')::TIMESTAMP, NOW()),
-    COALESCE((raffle_data->>'updated_at')::TIMESTAMP, NOW())
+    NOW(),
+    NOW()
   )
   RETURNING id INTO raffle_id;
 
@@ -50,10 +50,10 @@ BEGIN
     raffle_id,
     prize->>'name',
     (prize->>'prize_value')::NUMERIC,
-    prize->>'image',
+    prize->>'image_path',
     prize->>'thumb_hash',
-    COALESCE((prize->>'created_at')::TIMESTAMP, NOW()),
-    COALESCE((prize->>'updated_at')::TIMESTAMP, NOW())
+    NOW(),
+    NOW()
   FROM jsonb_array_elements(prizes_data) AS prize;
 
   -- Generar e insertar tickets

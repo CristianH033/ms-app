@@ -7,12 +7,25 @@ export interface RaffleStatsWithPrizes extends Tables<'raffle_stats'> {
   prizes: Tables<'prizes'>[]
 }
 
-export interface NewRaffleWithPrizes
-  extends Omit<Tables<'raffles'>, 'id' | 'description' | 'created_at' | 'updated_at'> {
-  prizes: Omit<Tables<'prizes'>, 'id' | 'raffle_id' | 'created_at' | 'updated_at'>[]
-  description: string | undefined
+export interface NewRaffle {
+  draw_id: number
+  name: string
+  description?: string | undefined
   number_of_tickets: number
   ticket_price: number
+  image_path: string
+  thumb_hash: string | null
+}
+
+export interface NewPrize {
+  name: string
+  prize_value: number
+  image_path: string | null
+  thumb_hash: string | null
+}
+
+export interface NewRaffleWithPrizes extends NewRaffle {
+  prizes: NewPrize[]
 }
 
 interface RaffleInsertResult {
@@ -20,11 +33,6 @@ interface RaffleInsertResult {
   prizes_count?: number
   error?: string
 }
-
-// interface RpcParams {
-//   raffle_data: Omit<NewRaffleWithPrizes, 'prizes'>
-//   prizes_data: NewRaffleWithPrizes['prizes']
-// }
 
 export const getAllRaffles = async (): Promise<Tables<'raffles'>[]> => {
   const { data: raffles, error } = await supabase.from('raffles').select('*')
@@ -102,17 +110,17 @@ export const getRaffleById = async (id: number): Promise<Tables<'raffles'> | und
 export const createNewRaffleWithPrizes = async (
   raffleData: NewRaffleWithPrizes
 ): Promise<RaffleInsertResult | null> => {
-  const { prizes, ...raffleDetails } = raffleData
+  const { prizes, ...raffle } = raffleData
 
-  console.log(raffleDetails)
-
-  console.log(prizes)
+  const jsonRaffle = JSON.parse(JSON.stringify(raffle))
+  const jsonPrizes = JSON.parse(JSON.stringify(prizes))
 
   const { data, error } = (await supabase.rpc('create_raffle_with_prizes', {
-    raffle_data: raffleDetails,
-    prizes_data: prizes
-    //})) as QueryData<RaffleInsertResult>
+    raffle_data: jsonRaffle,
+    prizes_data: jsonPrizes
   })) as { data: RaffleInsertResult | null; error: Error | null }
+
+  console.log({ data, error })
 
   if (error) throw error
 
