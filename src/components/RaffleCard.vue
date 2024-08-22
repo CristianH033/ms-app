@@ -104,8 +104,9 @@ const formatCurrency = (value: number) => {
                       </div>
                       <div class="w-full">
                         <LazyImg
-                          class="aspect-video w-full"
+                          class="aspect-video w-full rounded-md"
                           :src="getFileAsBase64(prize.image_path!)"
+                          :thumb-hash="prize.thumb_hash"
                         />
                       </div>
                     </div>
