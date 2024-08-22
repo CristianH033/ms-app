@@ -11,10 +11,9 @@ import {
 import { uploadFile } from '@/lib/api/storage'
 import type { Tables } from '@/types/supabase.db'
 import { toTypedSchema } from '@vee-validate/zod'
-import { useDebounceFn, useMemoize } from '@vueuse/core'
 import { v4 as uuidv4 } from 'uuid'
 import { useForm } from 'vee-validate'
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { z } from 'zod'
 import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
 import SolarCloseSquareLineDuotone from '~icons/solar/close-square-line-duotone'
@@ -83,22 +82,10 @@ const formData = ref({
   }[]
 })
 
-const memoizedDraws = useMemoize(async () => await getAllDraws())
-
-const clearCache = useDebounceFn(() => {
-  memoizedDraws.clear()
-}, 30000)
-
 const zodObject = z.object({
   draw_id: z.string({ required_error: 'Sorteo es requerido' }).refine(
     async (id) => {
-      try {
-        clearCache()
-      } catch (error) {
-        console.error(error)
-      }
-
-      return await memoizedDraws().then((draws) => draws?.some((draw) => draw.id.toString() === id))
+      return (await getAllDraws())?.some((draw) => draw.id.toString() === id)
     },
     { message: 'El Sorteo no existe' }
   ),
@@ -298,16 +285,20 @@ const withoutShowingActions = computed(() => {
 
 const openDrawsFormModal = ref(false)
 
-const closeRaffleForm = () => {
+const closeDrawForm = () => {
   openDrawsFormModal.value = false
 }
 
-const onSucess = async (id: number) => {
-  closeRaffleForm()
+const onSuccess = async (id: number) => {
+  closeDrawForm()
   // reload raffles
   await fetchDraws()
 
-  formData.value.draw_id = id.toString()
+  nextTick(() => {
+    formData.value.draw_id = id.toString()
+    form.setFieldValue('draw_id', id.toString())
+    form.setFieldTouched('draw_id', true)
+  })
 }
 
 const fetchDraws = async () => {
@@ -369,7 +360,7 @@ onMounted(async () => {
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Crear nuevo sorteo</AlertDialogTitle>
-                      <DrawForm v-on:success="onSucess" v-on:cancel="closeRaffleForm" />
+                      <DrawForm v-on:success="onSuccess" v-on:cancel="closeDrawForm" />
                     </AlertDialogHeader>
                     <!-- <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
