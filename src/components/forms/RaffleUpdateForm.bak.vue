@@ -2,13 +2,8 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { getAllDraws } from '@/lib/api/draws'
-import {
-  createNewRaffleWithPrizes,
-  type NewPrize,
-  type NewRaffle,
-  type NewRaffleWithPrizes
-} from '@/lib/api/raffles'
-import { uploadFile } from '@/lib/api/storage'
+import { type RaffleWithPrizes } from '@/lib/api/raffles'
+import { getFileAsBase64, uploadFile } from '@/lib/api/storage'
 import type { Tables } from '@/types/supabase.db'
 import { toTypedSchema } from '@vee-validate/zod'
 import { v4 as uuidv4 } from 'uuid'
@@ -40,14 +35,19 @@ import {
 } from '../ui/select'
 import { Textarea } from '../ui/textarea'
 import DrawForm from './DrawForm.vue'
-import { eventBus } from '@/lib/event-bus'
 
 const MIN_FILE_SIZE = 1
 const MAX_FILE_SIZE = 5000000
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
+interface FormUpdateRaffleWithPrizes
+  extends Omit<RaffleWithPrizes, 'prizes' | 'created_at' | 'updated_at'> {
+  prizes: Omit<RaffleWithPrizes['prizes'], 'created_at' | 'updated_at'>
+}
+
 interface Props {
   withoutActions?: boolean | ('' | 'true' | 'false')
+  raffle: FormUpdateRaffleWithPrizes
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -59,97 +59,115 @@ const isSubmiting = defineModel<boolean>('isSubmiting', { required: false, defau
 const draws = ref<Tables<'draws'>[]>([])
 
 const formData = ref({
-  draw_id: undefined as string | undefined,
-  name: '' as string,
-  description: '' as string,
-  image_path: null as string | null,
-  thumb_hash: null as string | null,
-  number_of_tickets: 1000 as number,
-  ticket_price: '' as string,
-  prizes: [
-    {
-      key: uuidv4().slice(-10),
-      name: '' as string,
-      prize_value: '' as string,
-      image: null as File | null,
-      thumb_hash: null as string | null
-    }
-  ] as {
-    key: string
-    name: string
-    prize_value: string
-    image: File | null
-    thumb_hash: string | null
-  }[]
+  ...props.raffle,
+  draw_id: props.raffle.draw_id.toString(),
+  // image_touched: false,
+  prizes: props.raffle.prizes.map((p) => ({
+    id: p.id as number | undefined,
+    raffle_id: p.raffle_id,
+    name: p.name,
+    image: null as File | null,
+    // image_touched: false,
+    image_path: p.image_path,
+    thumb_hash: p.thumb_hash,
+    prize_value: p.prize_value,
+    key: uuidv4().slice(-10).toString()
+  }))
 })
 
-const zodObject = z.object({
-  draw_id: z.string({ required_error: 'Sorteo es requerido' }).refine(
-    (id) => {
-      return draws.value.some((draw) => draw.id.toString() === id)
+const zodObject = z
+  .object({
+    draw_id: z.string({ required_error: 'Sorteo es requerido' }).refine(
+      (id) => {
+        return draws.value.some((draw) => draw.id.toString() === id)
+      },
+      { message: 'El Sorteo no existe' }
+    ),
+    name: z
+      .string({ required_error: 'Nombre es requerido' })
+      .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
+    description: z
+      .string({ required_error: 'La descripción es requerida' })
+      .min(3, { message: 'La descripción debe tener al menos 3 caracteres' })
+      .optional(),
+    // ticket_price: z
+    //   .string({ required_error: 'El valor es requerido' })
+    //   .transform((val) => parseFloat(val)) // Transforma el string a un número
+    //   .refine((val) => !isNaN(val) && val >= 1, {
+    //     message: 'El valor debe ser un número mayor o igual a 1'
+    //   }),
+    prizes: z
+      .array(
+        z
+          .object({
+            raffle_id: z.string({ required_error: 'El sorteo es requerido' }),
+            name: z
+              .string({ required_error: 'Nombre es requerido' })
+              .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
+            prize_value: z
+              .string({ required_error: 'El valor es requerido' })
+              .transform((val) => parseFloat(val)) // Transforma el string a un número
+              .refine((val) => !isNaN(val) && val >= 1, {
+                message: 'El valor debe ser un número mayor o igual a 1'
+              }),
+            image_touched: z.boolean().default(true),
+            image: z.union([
+              z
+                .instanceof(File, { message: 'Debe seleccionar una imagen' })
+                .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+                  message: 'Tipo de archivo no aceptado'
+                })
+                .refine((file) => file.size >= MIN_FILE_SIZE, {
+                  message: 'El archivo está vacío'
+                })
+                .refine((file) => file.size <= MAX_FILE_SIZE, {
+                  message: 'La imagen es demasiado grande'
+                }),
+              z.undefined()
+            ])
+          })
+          .refine(
+            (data) => {
+              if (data.image_touched) {
+                return data.image instanceof File
+              }
+              return true
+            },
+            {
+              message: 'La imagen es requerida cuando se ha tocado el campo',
+              path: ['image']
+            }
+          )
+      )
+      .min(1),
+    image_touched: z.boolean().default(true),
+    image: z.union([
+      z
+        .instanceof(File, { message: 'Debe seleccionar una imagen' })
+        .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+          message: 'Tipo de archivo no aceptado'
+        })
+        .refine((file) => file.size >= MIN_FILE_SIZE, {
+          message: 'El archivo está vacío'
+        })
+        .refine((file) => file.size <= MAX_FILE_SIZE, {
+          message: 'El archivo es demasiado grande'
+        }),
+      z.undefined()
+    ])
+  })
+  .refine(
+    (data) => {
+      if (data.image_touched) {
+        return data.image instanceof File
+      }
+      return true
     },
-    { message: 'El Sorteo no existe' }
-  ),
-  name: z
-    .string({ required_error: 'Nombre es requerido' })
-    .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
-  description: z
-    .string({ required_error: 'La descripción es requerida' })
-    .min(3, { message: 'La descripción debe tener al menos 3 caracteres' })
-    .optional(),
-  number_of_tickets: z.number({ required_error: 'El numero de tickets es requerido' }).min(100, {
-    message: 'El numero de tickets debe ser mayor o igual a 100'
-  }),
-  ticket_price: z
-    .string({ required_error: 'El valor es requerido' })
-    .transform((val) => parseFloat(val)) // Transforma el string a un número
-    .refine((val) => !isNaN(val) && val >= 1, {
-      message: 'El valor debe ser un número mayor o igual a 1'
-    }),
-  prizes: z
-    .array(
-      z.object({
-        name: z
-          .string({ required_error: 'Nombre es requerido' })
-          .min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
-        prize_value: z
-          .string({ required_error: 'El valor es requerido' })
-          .transform((val) => parseFloat(val)) // Transforma el string a un número
-          .refine((val) => !isNaN(val) && val >= 1, {
-            message: 'El valor debe ser un número mayor o igual a 1'
-          }),
-        image: z
-          .instanceof(File)
-          .refine((file) => file instanceof File, {
-            message: 'Debe seleccionar una imagen'
-          })
-          .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
-            message: 'Tipo de archivo no aceptado'
-          })
-          .refine((file) => file.size >= MIN_FILE_SIZE, {
-            message: 'El archivo está vacío'
-          })
-          .refine((file) => file.size <= MAX_FILE_SIZE, {
-            message: 'El archivo es demasiado grande'
-          })
-      })
-    )
-    .min(1),
-  image: z
-    .instanceof(File)
-    .refine((file) => file instanceof File, {
-      message: 'Debe seleccionar una imagen'
-    })
-    .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
-      message: 'Tipo de archivo no aceptado'
-    })
-    .refine((file) => file.size >= MIN_FILE_SIZE, {
-      message: 'El archivo está vació'
-    })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: 'El archivo es demasiado grande'
-    })
-})
+    {
+      message: 'La imagen es requerida cuando se ha tocado el campo',
+      path: ['image']
+    }
+  )
 
 type FormData = z.infer<typeof zodObject>
 
@@ -158,17 +176,37 @@ const formSchema = toTypedSchema(zodObject)
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
-    number_of_tickets: formData.value.number_of_tickets
+    draw_id: formData.value.draw_id.toString(),
+    name: formData.value.name,
+    description: formData.value.description,
+    // ticket_price: undefined,
+    prizes: formData.value.prizes.map((p) => ({
+      raffle_id: p.raffle_id.toString(),
+      name: p.name,
+      prize_value: p.prize_value!.toString(),
+      // image_touched: p.image_touched,
+      image_touched: p.image_path ? false : true,
+      image: undefined
+    })),
+    // image_touched: formData.value.image_touched,
+    image_touched: formData.value.image_path ? false : true,
+    image: undefined
   }
 })
 
+const emit = defineEmits(['success'])
+
 const addPrize = () => {
   formData.value.prizes.push({
-    key: uuidv4().slice(-10),
+    id: undefined,
+    raffle_id: formData.value.id,
     name: '',
-    prize_value: '',
+    prize_value: null,
     image: null,
-    thumb_hash: null
+    // image_touched: true,
+    image_path: null,
+    thumb_hash: null,
+    key: uuidv4().slice(-10).toString()
   })
 }
 
@@ -187,75 +225,47 @@ const uploadAndReturnPath = async (file: File): Promise<string> => {
   return data?.fullPath!
 }
 
-const buildNewRaffleDetails = (data: FormData): Promise<NewRaffle> => {
-  return new Promise<NewRaffle>((resolve, reject) => {
-    uploadAndReturnPath(data.image)
-      .then((image_path) => {
-        resolve({
-          draw_id: parseInt(data.draw_id!),
-          name: data.name,
-          description: data.description,
-          image_path: image_path,
-          thumb_hash: formData.value.thumb_hash,
-          number_of_tickets: data.number_of_tickets,
-          ticket_price: data.ticket_price
-        })
-      })
-      .catch((error) => {
-        reject(error)
-      })
-  })
+const processPrizesFiles = async (data: FormData) => {
+  const promises = data.prizes
+    .filter((p) => p.image instanceof File)
+    .map((p) => uploadAndReturnPath(p.image as File))
+
+  return Promise.all(promises)
 }
 
-const buildNewRafflePrizes = (data: FormData): Promise<NewPrize[]> => {
-  return Promise.all(
-    data.prizes.map((p, i) => {
-      return new Promise<NewPrize>((resolve, reject) => {
-        uploadAndReturnPath(p.image)
-          .then((image_path) => {
-            resolve({
-              name: p.name,
-              prize_value: p.prize_value,
-              image_path: image_path,
-              thumb_hash: formData.value.prizes[i].thumb_hash
-            })
-          })
-          .catch((error) => {
-            reject(error)
-          })
-      })
-    })
-  )
+const buildNewRaffleData = async (data: FormData): Promise<FormUpdateRaffleWithPrizes> => {
+  // const newRaffle = await buildNewRaffleDetails(data)
+  // const newPrizes = await buildNewRafflePrizes(data)
+
+  return props.raffle
 }
 
-const buildNewRaffleData = async (data: FormData): Promise<NewRaffleWithPrizes> => {
-  const newRaffle = await buildNewRaffleDetails(data)
-  const newPrizes = await buildNewRafflePrizes(data)
-
-  return {
-    ...newRaffle,
-    prizes: newPrizes
-  }
-}
-
-const submitRaffle = form.handleSubmit(
+const updateRaffle = form.handleSubmit(
   async (data: FormData) => {
     isSubmiting.value = true
-    form.setErrors({})
-    const newRaffle = await buildNewRaffleData(data)
 
-    createNewRaffleWithPrizes(newRaffle)
-      .then(() => {
-        eventBus.emit('createRaffle')
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-      .finally(() => {
-        isSubmiting.value = false
-      })
+    console.log(data)
+
+    form.setErrors({})
+
+    // const raffle = await buildNewRaffleData(data)
+
+    // await updateRaffleWithPrizes(raffle)
+    //   .then(() => {
+    //     emit('success')
+    //   })
+    //   .catch((error) => {
+    //     console.error(error)
+    //   })
+    //   .finally(() => {
+    //     isSubmiting.value = false
+    //   })
+
+    isSubmiting.value = false
   },
   ({ errors }) => {
+    console.log(errors)
+    console.log(form)
     const firstErrorFieldName = Object.keys(errors)[0].replace('[', '.').replace(']', '')
     const el = document.querySelector(`[name="${firstErrorFieldName}"]`)
     if (el) {
@@ -300,7 +310,7 @@ onMounted(async () => {
 
 <template>
   <form
-    @submit.prevent="submitRaffle"
+    @submit.prevent="updateRaffle"
     class="flex w-full flex-col gap-2 @container/form"
     :aria-disabled="isSubmiting"
   >
@@ -317,7 +327,6 @@ onMounted(async () => {
               required
             />
           </FormControl>
-          <!-- <FormDescription> This is your public display name. </FormDescription> -->
           <div v-auto-animate>
             <FormMessage />
           </div>
@@ -347,10 +356,6 @@ onMounted(async () => {
                       <AlertDialogTitle>Crear nuevo sorteo</AlertDialogTitle>
                       <DrawForm v-on:success="onSuccess" v-on:cancel="closeDrawForm" />
                     </AlertDialogHeader>
-                    <!-- <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter> -->
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
@@ -365,7 +370,6 @@ onMounted(async () => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <!-- <FormDescription> Elige un sorteo para la rifa </FormDescription> -->
           <div v-auto-animate>
             <FormMessage />
           </div>
@@ -382,47 +386,6 @@ onMounted(async () => {
               v-model:model-value="formData.description"
             />
           </FormControl>
-          <!-- <FormDescription> This is your public display name. </FormDescription> -->
-          <div v-auto-animate>
-            <FormMessage />
-          </div>
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="number_of_tickets">
-        <FormItem>
-          <FormLabel>Número de Bonos:</FormLabel>
-          <FormControl>
-            <Input
-              type="number"
-              inputmode="numeric"
-              placeholder="Nombre de la Rifa"
-              v-bind="componentField"
-              v-model:model-value="formData.number_of_tickets"
-              required
-            />
-          </FormControl>
-          <!-- <FormDescription> This is your public display name. </FormDescription> -->
-          <div v-auto-animate>
-            <FormMessage />
-          </div>
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ value, handleChange }" name="ticket_price">
-        <FormItem>
-          <FormLabel>Costo del Bono</FormLabel>
-          <FormControl>
-            <MoneyInput
-              :model-value="value"
-              @update:modelValue="
-                (value) => {
-                  handleChange(value, true)
-                  formData.ticket_price = value.toString()
-                }
-              "
-              required
-            />
-          </FormControl>
-          <!-- <FormDescription> This is your public display name. </FormDescription> -->
           <div v-auto-animate>
             <FormMessage />
           </div>
@@ -432,9 +395,20 @@ onMounted(async () => {
         <FormItem>
           <FormLabel>Portada de la rifa</FormLabel>
           <FormControl>
-            <ImageInput v-bind="componentField" v-model:base64ThumbHash="formData.thumb_hash" />
+            <ImageInput
+              v-bind="componentField"
+              v-model:base64ThumbHash="formData.thumb_hash"
+              :label="formData.image_path || undefined"
+              :initialImage="getFileAsBase64(formData.image_path!)"
+              @touched="
+                () => {
+                  console.log('ImageInput touched')
+                  form.setFieldValue('image_touched', true)
+                  // form.setFieldTouched('image_touched', true)
+                }
+              "
+            ></ImageInput>
           </FormControl>
-          <!-- <FormDescription> This is your public display name. </FormDescription> -->
           <div v-auto-animate>
             <FormMessage />
           </div>
@@ -457,7 +431,20 @@ onMounted(async () => {
             </button>
             <fieldset class="w-full rounded-md border p-4">
               <legend class="text-lg font-medium">Premio {{ i + 1 }}</legend>
-              <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.name'">
+              <FormField v-slot="{ componentField }" :name="`prizes.${i}.raffle_id`">
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="hidden"
+                      v-bind="componentField"
+                      v-model:model-value="prize.raffle_id"
+                      touched
+                      required
+                    />
+                  </FormControl>
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" :name="`prizes.${i}.name`">
                 <FormItem>
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
@@ -469,13 +456,12 @@ onMounted(async () => {
                       required
                     />
                   </FormControl>
-                  <!-- <FormDescription> This is your public display name. </FormDescription> -->
                   <div v-auto-animate>
                     <FormMessage />
                   </div>
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ value, handleChange }" :name="'prizes.' + i + '.prize_value'">
+              <FormField v-slot="{ value, handleChange }" :name="`prizes.${i}.prize_value`">
                 <FormItem>
                   <FormLabel>Valor del premio</FormLabel>
                   <FormControl>
@@ -484,28 +470,37 @@ onMounted(async () => {
                       @update:modelValue="
                         (value) => {
                           handleChange(value, true)
-                          prize.prize_value = value.toString()
+                          prize.prize_value = Number(value)
                         }
                       "
                       required
                     />
                   </FormControl>
-                  <!-- <FormDescription> This is your public display name. </FormDescription> -->
                   <div v-auto-animate>
                     <FormMessage />
                   </div>
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" :name="'prizes.' + i + '.image'">
+              <FormField v-slot="{ componentField }" :name="`prizes.${i}.image`">
                 <FormItem>
                   <FormLabel>Imagen</FormLabel>
                   <FormControl>
                     <ImageInput
                       v-bind="componentField"
                       v-model:base64ThumbHash="prize.thumb_hash"
+                      :label="prize.image_path || undefined"
+                      :initialImage="
+                        prize.image_path ? getFileAsBase64(prize.image_path) : undefined
+                      "
+                      @touched="
+                        () => {
+                          console.log('ImageInput touched')
+                          form.setFieldValue(`prizes.${i}.image_touched`, true)
+                          // form.setFieldTouched(`prizes.${i}.image_touched`, true)
+                        }
+                      "
                     />
                   </FormControl>
-                  <!-- <FormDescription> This is your public display name. </FormDescription> -->
                   <div v-auto-animate>
                     <FormMessage />
                   </div>

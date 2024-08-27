@@ -88,3 +88,39 @@ EXCEPTION
     RETURN jsonb_build_object('error', SQLERRM);
 END;
 $$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS delete_raffle_and_associated_data;
+
+CREATE OR REPLACE FUNCTION delete_raffle_and_associated_data(
+    p_raffle_id INT
+) RETURNS JSONB AS $$
+DECLARE
+    result JSONB;
+BEGIN
+    -- Eliminar premios
+    DELETE FROM prizes WHERE raffle_id = p_raffle_id;
+    
+    -- Eliminar tickets
+    DELETE FROM tickets WHERE raffle_id = p_raffle_id;
+    
+    -- Eliminar tickets pulls
+    DELETE FROM tickets_pulls WHERE raffle_id = p_raffle_id;
+    
+    -- Eliminar raffle sellers
+    DELETE FROM raffles_sellers WHERE raffle_id = p_raffle_id;
+    
+    -- Eliminar rifa
+    DELETE FROM raffles WHERE id = p_raffle_id;
+    
+    -- Preparar el resultado
+    SELECT jsonb_build_object(
+        'raffle_id', p_raffle_id
+    ) INTO result;
+    
+    RETURN result;
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Si ocurre cualquier error, lo capturamos y lo devolvemos
+        RETURN jsonb_build_object('error', SQLERRM);
+END;
+$$ LANGUAGE plpgsql;

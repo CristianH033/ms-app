@@ -634,6 +634,12 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_raffle_and_associated_data: {
+        Args: {
+          p_raffle_id: number
+        }
+        Returns: Json
+      }
       sync_user_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined

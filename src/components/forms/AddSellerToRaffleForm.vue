@@ -6,7 +6,7 @@ import { z } from 'zod'
 import type { Tables } from '@/types/supabase.db'
 import { useForm } from 'vee-validate'
 import { getAllSellers } from '@/lib/api/sellers'
-import { assignSelletToRaffle } from '@/lib/api/raffles'
+import { assignSellerToRaffle } from '@/lib/api/raffles'
 import MoneyInput from '../inputs/MoneyInput.vue'
 import {
   Select,
@@ -74,7 +74,7 @@ const submit = handleSubmit(
     emits('submit')
     isLoading.value = true
     error.value = null
-    await assignSelletToRaffle(
+    await assignSellerToRaffle(
       props.raffleId!,
       Number(values.seller_id),
       Number(values.ticket_price)

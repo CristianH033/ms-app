@@ -8,14 +8,17 @@ import {
 import type { RaffleStatsWithPrizes } from '@/lib/api/raffles'
 import { getFileAsBase64 } from '@/lib/api/storage'
 import { formatDate } from '@vueuse/core'
+import { onUnmounted, ref } from 'vue'
 import SolarCalendarMarkLineDuotone from '~icons/solar/calendar-mark-line-duotone'
 import SolarCupStarLineDuotone from '~icons/solar/cup-star-line-duotone'
 import SolarPenNewSquareLineDuotone from '~icons/solar/pen-new-square-line-duotone'
 import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
 import SolarUserSpeakLineDuotone from '~icons/solar/user-speak-line-duotone'
+import RaffleDialog from './dialogs/RaffleDialog.vue'
 import LazyImg from './LazyImg.vue'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
+import { eventBus } from '@/lib/event-bus'
 
 const props = defineProps({
   raffle: {
@@ -24,6 +27,17 @@ const props = defineProps({
     default: () => {}
   }
 })
+
+const raffleDialogOpen = ref(false)
+const submiting = ref(false)
+
+const openRaffleDialog = () => {
+  raffleDialogOpen.value = true
+}
+
+const closeRaffleDialog = () => {
+  raffleDialogOpen.value = false
+}
 
 const format = (date: string) => {
   return formatDate(new Date(date), 'dddd DD [de] MMMM [de] YYYY', {
@@ -40,6 +54,16 @@ const formatCurrency = (value: number) => {
 
   return currency.format(value)
 }
+
+const onDelete = () => {
+  closeRaffleDialog()
+}
+
+eventBus.on('deleteRaffle', onDelete)
+
+onUnmounted(() => {
+  eventBus.off('deleteRaffle', onDelete)
+})
 </script>
 
 <template>
@@ -102,9 +126,9 @@ const formatCurrency = (value: number) => {
                           Valor del premio: {{ formatCurrency(prize.prize_value!) }}
                         </p>
                       </div>
-                      <div class="w-full">
+                      <div class="w-full rounded-md border">
                         <LazyImg
-                          class="aspect-video w-full rounded-md"
+                          class="aspect-video w-full object-contain"
                           :src="getFileAsBase64(prize.image_path!)"
                           :thumb-hash="prize.thumb_hash"
                         />
@@ -121,7 +145,12 @@ const formatCurrency = (value: number) => {
     <CardFooter
       class="flex-col items-stretch gap-x-2 gap-y-4 sm:flex-row sm:items-center sm:justify-stretch"
     >
-      <Button variant="secondary" type="button" class="justify-start gap-2">
+      <Button
+        variant="secondary"
+        type="button"
+        class="justify-start gap-2"
+        @click="openRaffleDialog"
+      >
         <SolarPenNewSquareLineDuotone class="h-6 w-6" />
         <span> Editar </span>
       </Button>
@@ -162,6 +191,19 @@ const formatCurrency = (value: number) => {
         </RouterLink>
       </div>
     </CardFooter>
+    <RaffleDialog
+      v-model:open="raffleDialogOpen"
+      v-model:is-submiting="submiting"
+      :raffle="{
+        id: props.raffle.raffle_id!,
+        name: props.raffle.raffle_name!,
+        description: props.raffle.description || undefined,
+        draw_id: props.raffle.draw_id!,
+        image_path: props.raffle.image_path,
+        thumb_hash: props.raffle.thumb_hash,
+        prizes: props.raffle.prizes
+      }"
+    />
   </Card>
 </template>
 

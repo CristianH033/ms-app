@@ -62,6 +62,49 @@ export const binaryThumbHashToDataURL = (binaryThumbHash: Uint8Array) => {
   return thumbHashToDataURL(binaryThumbHash)
 }
 
-export const base64ThumbHashToDataURL = (thumbHash: string) => {
+export const base64ThumbHashToDataURL = (thumbHash: string): string => {
   return thumbHashToDataURL(thumbHashFromBase64(thumbHash))
+}
+
+export const applyOpacityToImage = async (
+  base64Image: string,
+  opacity: number
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    opacity = Math.max(0, Math.min(1, opacity))
+
+    if (opacity === 1) {
+      resolve(base64Image)
+      return
+    }
+
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+
+      if (!ctx) {
+        reject(new Error('No se pudo crear el contexto del canvas'))
+        return
+      }
+
+      canvas.width = img.width
+      canvas.height = img.height
+
+      ctx.drawImage(img, 0, 0)
+
+      ctx.globalAlpha = opacity
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      const modifiedBase64 = canvas.toDataURL('image/png')
+      resolve(modifiedBase64)
+    }
+
+    img.onerror = () => {
+      reject(new Error('No se pudo cargar la imagen'))
+    }
+
+    img.src = base64Image
+  })
 }

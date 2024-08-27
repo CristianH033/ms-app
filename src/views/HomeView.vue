@@ -1,31 +1,20 @@
 <script setup lang="ts">
+import RaffleDialog from '@/components/dialogs/RaffleDialog.vue'
 import RafflesList from '@/components/RafflesList.vue'
-import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
-import { getRafflesStatsWithPrizes, type RaffleStatsWithPrizes } from '@/lib/api/raffles'
-import { computed, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
-import RaffleForm from '../components/forms/RaffleForm.vue'
-import SolarMagniferOutline from '~icons/solar/magnifer-outline'
-import SolarTicketLineDuotone from '~icons/solar/ticket-line-duotone'
-import SvgSpinnersDotRevolve from '~icons/svg-spinners/dot-revolve'
 import Input from '@/components/ui/input/Input.vue'
+import { getRafflesStatsWithPrizes, type RaffleStatsWithPrizes } from '@/lib/api/raffles'
 import { useIntersectionObserver } from '@vueuse/core'
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '@/components/ui/alert-dialog'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import SolarAddCircleLineDuotone from '~icons/solar/add-circle-line-duotone'
+import SolarMagniferOutline from '~icons/solar/magnifer-outline'
+import { eventBus } from '@/lib/event-bus'
 
 const loading = ref(false)
 const submiting = ref(false)
 const search = ref('')
 const raffles = ref<RaffleStatsWithPrizes[]>([])
-const raffleFormOpen = ref(false)
+const raffleDialogOpen = ref(false)
 
 const isSticky = ref(false)
 
@@ -48,13 +37,23 @@ useIntersectionObserver(
   }
 )
 
-const closeRaffleForm = () => {
-  raffleFormOpen.value = false
+const openRaffleDialog = () => {
+  raffleDialogOpen.value = true
 }
 
-const onSucess = async () => {
-  closeRaffleForm()
+const closeRaffleDialog = () => {
+  raffleDialogOpen.value = false
+}
+
+const onSuccess = async () => {
+  closeRaffleDialog()
   // reload raffles
+  await fetchRaffles()
+}
+
+const onDelete = async () => {
+  console.log('On delete, reload raffles')
+  closeRaffleDialog()
   await fetchRaffles()
 }
 
@@ -72,8 +71,18 @@ const fetchRaffles = async () => {
     })
 }
 
+eventBus.on('createRaffle', onSuccess)
+eventBus.on('updateRaffle', onSuccess)
+eventBus.on('deleteRaffle', onDelete)
+
 onMounted(async () => {
   await fetchRaffles()
+})
+
+onUnmounted(() => {
+  eventBus.off('createRaffle', onSuccess)
+  eventBus.off('updateRaffle', onSuccess)
+  eventBus.off('deleteRaffle', onDelete)
 })
 </script>
 
@@ -98,55 +107,10 @@ onMounted(async () => {
             class="w-full py-2 pl-11 pr-4 text-sm"
           />
         </div>
-        <AlertDialog :open="raffleFormOpen" v-on:update:open="(value) => (raffleFormOpen = value)">
-          <AlertDialogTrigger asChild>
-            <Button class="gap-2">
-              <SolarAddCircleLineDuotone class="h-5 w-5" />
-              <span class="hidden md:inline">Nueva rifa</span>
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent
-            @escape-key-down="(evt) => evt.preventDefault()"
-            class="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg p-0 transition-[opacity,_transform]"
-          >
-            <AlertDialogHeader class="border-b p-6 pb-4">
-              <AlertDialogTitle>
-                <div class="flex flex-row items-center justify-start gap-2">
-                  <SolarTicketLineDuotone class="h-8 w-8" />
-                  <span> Nueva Rifa </span>
-                </div>
-              </AlertDialogTitle>
-              <AlertDialogDescription> Crea una nueva rifa </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div class="relative overflow-y-auto px-6 py-4">
-              <RaffleForm
-                withoutActions
-                id="raffle-form"
-                v-model:isSubmiting="submiting"
-                v-on:success="onSucess"
-              />
-            </div>
-            <AlertDialogFooter class="gap-2 border-t p-6 pt-4">
-              <AlertDialogCancel as-child>
-                <Button variant="secondary" type="button" :disabled="submiting">Cancelar</Button>
-              </AlertDialogCancel>
-              <!-- <AlertDialogAction as-child> -->
-              <!-- <Button type="submit" form="raffle-form" :disabled="submiting">Crear</Button> -->
-              <Button
-                class="gap-3"
-                v-auto-animate
-                form="raffle-form"
-                type="submit"
-                :disabled="submiting"
-              >
-                <SvgSpinnersDotRevolve v-if="submiting" class="h-6 w-6" />
-                <SolarAddCircleLineDuotone v-else class="h-6 w-6" />
-                <span>Crear</span>
-              </Button>
-              <!-- </AlertDialogAction> -->
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button class="gap-2" @click="openRaffleDialog">
+          <SolarAddCircleLineDuotone class="h-5 w-5" />
+          <span class="hidden md:inline">Nueva rifa</span>
+        </Button>
       </div>
 
       <div class="flex w-full flex-col items-center gap-4">
@@ -155,5 +119,6 @@ onMounted(async () => {
     </div>
 
     <div class="flex w-full flex-col items-center"></div>
+    <RaffleDialog v-model:open="raffleDialogOpen" v-model:is-submiting="submiting" />
   </div>
 </template>

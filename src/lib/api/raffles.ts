@@ -7,25 +7,35 @@ export interface RaffleStatsWithPrizes extends Tables<'raffle_stats'> {
   prizes: Tables<'prizes'>[]
 }
 
-export interface NewRaffle {
-  draw_id: number
-  name: string
-  description?: string | undefined
-  number_of_tickets: number
-  ticket_price: number
-  image_path: string
-  thumb_hash: string | null
+export interface Raffle extends Omit<Tables<'raffles'>, 'description'> {
+  description: string | undefined
 }
 
-export interface NewPrize {
-  name: string
-  prize_value: number
-  image_path: string | null
-  thumb_hash: string | null
+export interface Prize extends Tables<'prizes'> {}
+
+export interface NewRaffle extends Omit<Raffle, 'id' | 'created_at' | 'updated_at'> {
+  number_of_tickets: number
+  ticket_price: number
+}
+
+export interface NewPrize extends Omit<Prize, 'id' | 'raffle_id' | 'created_at' | 'updated_at'> {}
+
+export interface RaffleWithPrizes extends Raffle {
+  prizes: Prize[]
 }
 
 export interface NewRaffleWithPrizes extends NewRaffle {
   prizes: NewPrize[]
+}
+
+export interface UpdateRaffle extends Omit<Raffle, 'created_at' | 'updated_at'> {}
+
+export interface UpdatePrize extends Omit<Prize, 'id' | 'created_at' | 'updated_at'> {
+  id?: number
+}
+
+export interface UpdateRaffleWithPrizes extends UpdateRaffle {
+  prizes: UpdatePrize[]
 }
 
 interface RaffleInsertResult {
@@ -127,7 +137,99 @@ export const createNewRaffleWithPrizes = async (
   return data
 }
 
-export const assignSelletToRaffle = async (
+export const updateRaffle = async (raffle: Tables<'raffles'>) => {
+  const { data, error } = await supabase
+    .from('raffles')
+    .update(raffle)
+    .eq('id', raffle.id)
+    .select()
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const updateRaffleWithPrizes = async (raffleData: UpdateRaffleWithPrizes) => {
+  const { data, error: updateRaffleError } = await supabase
+    .from('raffles')
+    .update({
+      draw_id: raffleData.draw_id,
+      name: raffleData.name,
+      description: raffleData.description,
+      image_path: raffleData.image_path,
+      thumb_hash: raffleData.thumb_hash
+    })
+    .eq('id', raffleData.id)
+    .select()
+    .single()
+
+  if (updateRaffleError) {
+    throw updateRaffleError
+  }
+
+  const currentPrizes = await getRafflePrizes(raffleData.id)
+
+  const prizesToUpdate = raffleData.prizes.filter((p) => p.id !== undefined)
+
+  const prizesToDelete = currentPrizes.filter(
+    (cp) => !prizesToUpdate.map((p) => Number(p.id)).includes(Number(cp.id))
+  )
+
+  const prizesToCreate = raffleData.prizes.filter((p) => !prizesToUpdate.includes(p))
+
+  const { error: deletePrizesError } = await supabase
+    .from('prizes')
+    .delete()
+    .in(
+      'id',
+      prizesToDelete.map((p) => p.id)
+    )
+
+  if (deletePrizesError) {
+    throw deletePrizesError
+  }
+
+  const { error: createPrizesError } = await supabase.from('prizes').insert(
+    prizesToCreate.map((p) => {
+      return {
+        name: p.name,
+        raffle_id: raffleData.id,
+        prize_value: p.prize_value,
+        image_path: p.image_path,
+        thumb_hash: p.thumb_hash
+      }
+    })
+  )
+
+  if (createPrizesError) {
+    throw createPrizesError
+  }
+
+  const { error: updatePrizesError } = await supabase.from('prizes').upsert(prizesToUpdate)
+
+  if (updatePrizesError) {
+    throw updatePrizesError
+  }
+
+  return data
+}
+
+export const deleteRaffleWithAssociatedData = async (id: number) => {
+  const { data, error } = await supabase.rpc('delete_raffle_and_associated_data', {
+    p_raffle_id: id
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const assignSellerToRaffle = async (
   raffleId: number,
   sellerId: number,
   ticket_price: number
