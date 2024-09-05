@@ -1,0 +1,1 @@
+import{d as t,r,q as s,o as l,c as i,a as e,t as u}from"./index-DVOd51A8.js";const m=t({__name:"DrawView",setup(d){const a=r();return s(()=>{a.value=void 0}),(p,n)=>{var o;return l(),i("div",null,[n[0]||(n[0]=e("h2",null,"Drawing View",-1)),e("div",null,[e("span",null,u((o=a.value)==null?void 0:o.name),1)])])}}});export{m as default};
