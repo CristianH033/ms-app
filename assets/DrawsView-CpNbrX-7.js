@@ -1,0 +1,1 @@
+import{_ as a}from"./DrawsList.vue_vue_type_script_setup_true_lang-C7J1NxC-.js";import{d as r,o as s,c as o,a as t,b as n}from"./index-BXzmiJAW.js";const l=r({__name:"DrawsView",setup(m){return(_,e)=>(s(),o("div",null,[e[0]||(e[0]=t("h1",null,"Draws View",-1)),n(a,{draws:[]})]))}});export{l as default};
