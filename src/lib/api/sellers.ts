@@ -4,18 +4,11 @@ import type { QueryData } from '@supabase/supabase-js'
 
 // Queries
 const SellerWithTicketsQuery = supabase.from('sellers').select(`*, tickets(*)`)
-const sellersWithTicketsCountQuery = supabase
-  .from('sellers_with_tickets_count')
-  .select('*')
-  .order('name', { ascending: true })
-const sellersWithTicketsCountByRaffleQuery = supabase
-  .from('sellers_with_tickets_count_by_raffle')
-  .select('*')
 
 // Types for queries
 export type SellersWithTickets = QueryData<typeof SellerWithTicketsQuery>
-export type SellersWithTicketsCount = QueryData<typeof sellersWithTicketsCountQuery>
-export type SellersWithTicketsCountByRaffle = QueryData<typeof sellersWithTicketsCountByRaffleQuery>
+export type SellersWithTicketsCount = Tables<'sellers_with_tickets_count'>[]
+export type SellersWithTicketsCountByRaffle = Tables<'sellers_with_tickets_count_by_raffle'>[]
 
 export const getAllSellers = async (): Promise<Tables<'sellers'>[] | undefined> => {
   const { data: sellers, error } = await supabase.from('sellers').select('*')
@@ -29,6 +22,7 @@ export const getAllSellers = async (): Promise<Tables<'sellers'>[] | undefined> 
 
 export const getAllSellersWithTickets = async (): Promise<SellersWithTickets> => {
   const { data: sellers, error } = await SellerWithTicketsQuery
+
   if (error) {
     throw new Error(error.message)
   }
@@ -37,7 +31,11 @@ export const getAllSellersWithTickets = async (): Promise<SellersWithTickets> =>
 }
 
 export const getAllSellersWithTicketsCount = async (): Promise<SellersWithTicketsCount> => {
-  const { data: sellers, error } = await sellersWithTicketsCountQuery
+  const { data: sellers, error } = await supabase
+    .from('sellers_with_tickets_count')
+    .select('*')
+    .order('name', { ascending: true })
+
   if (error) {
     throw new Error(error.message)
   }
@@ -47,7 +45,9 @@ export const getAllSellersWithTicketsCount = async (): Promise<SellersWithTicket
 
 export const getAllSellersWithTicketsCountByRaffle =
   async (): Promise<SellersWithTicketsCountByRaffle> => {
-    const { data: sellers, error } = await sellersWithTicketsCountByRaffleQuery
+    const { data: sellers, error } = await supabase
+      .from('sellers_with_tickets_count_by_raffle')
+      .select('*')
 
     if (error) {
       throw new Error(error.message)
@@ -59,10 +59,12 @@ export const getAllSellersWithTicketsCountByRaffle =
 export const getAllSellersWithTicketsCountByRaffleId = async (
   raffleId: number
 ): Promise<SellersWithTicketsCountByRaffle> => {
-  const { data: sellers, error } = await sellersWithTicketsCountByRaffleQuery.eq(
-    'raffle_id',
-    raffleId
-  )
+  const { data: sellers, error } = await supabase
+    .from('sellers_with_tickets_count_by_raffle')
+    .select('*')
+    .eq('raffle_id', raffleId)
+
+  console.log(sellers, error)
 
   if (error) {
     throw new Error(error.message)

@@ -26,7 +26,7 @@ const raffle = ref<Tables<'raffle_stats'> | undefined>()
 const sellers = ref<Tables<'sellers'>[]>([])
 const raffleSellers = ref<Tables<'sellers_with_tickets_count'>[]>([])
 const drawnAt = ref<string>('')
-const isLoading = ref(false)
+const isLoading = ref(true)
 const openFormModal = ref(false)
 
 const raffleId = router.currentRoute.value.params.id
