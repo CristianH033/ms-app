@@ -42,19 +42,13 @@ export default defineConfig({
     //     type: 'module'
     //   }
     // }),
-    compression({ algorithm: 'deflate' }),
-    compression({ algorithm: 'gzip' }),
-    compression({
-      algorithm: 'brotliCompress',
-      deleteOriginalAssets: false
-    })
+    compression({ algorithms: ['deflate', 'gzip', 'brotliCompress'] })
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  esbuild: { legalComments: 'none' },
   build: {
     emptyOutDir: true
   }
