@@ -13,7 +13,7 @@ const props = defineProps<{
 const ticketInfo = ref<TicketInfo[number]>()
 
 const getTicketInfo = async () => {
-  const { data, error } = await ticketInfoQuery.eq('id', props.ticketId).single()
+  const { data, error } = await ticketInfoQuery.eq('id', Number(props.ticketId)).single()
 
   if (error) {
     console.error(error)

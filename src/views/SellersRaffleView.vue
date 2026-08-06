@@ -29,7 +29,7 @@ const drawnAt = ref<string>('')
 const isLoading = ref(true)
 const openFormModal = ref(false)
 
-const raffleId = router.currentRoute.value.params.id
+const raffleId = Number(router.currentRoute.value.params.id)
 
 const fetchRaffleStats = async () => {
   await supabase

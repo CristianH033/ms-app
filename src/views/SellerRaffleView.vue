@@ -26,8 +26,8 @@ const router = useRouter()
 const title = useTitle()
 
 // raffles/:id/sellers/:seller_id
-const raffleId = router.currentRoute.value.params.id
-const sellerId = router.currentRoute.value.params.seller_id
+const raffleId = Number(router.currentRoute.value.params.id)
+const sellerId = Number(router.currentRoute.value.params.seller_id)
 
 const raffle = ref<Tables<'raffle_stats'>>()
 const seller = ref<Tables<'sellers'>>()
