@@ -148,6 +148,7 @@ const getAvailableTickets = async () => {
     .select('*')
     .eq('raffle_id', raffleId)
     .is('seller_id', null)
+    .order('number')
 
   if (error) {
     throw new Error(error.message)
