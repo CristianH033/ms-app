@@ -1,0 +1,1 @@
+var e=e=>e.split(` `).map(e=>e.charAt(0)).slice(0,2).join(``).toUpperCase(),t=e=>new Intl.NumberFormat(`es-CO`,{style:`currency`,currency:`COP`}).format(e);export{t as n,e as t};

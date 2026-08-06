@@ -1,0 +1,1 @@
+import{Lt as e,P as t,f as n,j as r,l as i,ot as a,v as o}from"./runtime-core.esm-bundler-gvzS_ZDe.js";var s=o({__name:`LotteryView`,setup(o){let s=a();return r(()=>{s.value=void 0}),(r,a)=>(t(),n(`div`,null,[a[0]||=i(`h2`,null,`Lottery View`,-1),i(`div`,null,[i(`span`,null,e(s.value?.name)+` - `+e(s.value?.description),1)])]))}});export{s as default};

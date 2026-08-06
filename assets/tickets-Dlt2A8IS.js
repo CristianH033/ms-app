@@ -1,0 +1,1 @@
+import{t as e}from"./supabase.client-BYary-Li.js";var t=async t=>{let{data:n,error:r}=await e.from(`tickets`).select(`*`).eq(`raffle_id`,t).order(`id`,{ascending:!0});if(r)throw Error(r.message);return n};export{t};

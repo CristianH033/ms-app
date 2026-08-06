@@ -1,0 +1,1 @@
+import{P as e,f as t,g as n,l as r,v as i}from"./runtime-core.esm-bundler-gvzS_ZDe.js";import{t as a}from"./DrawsList-BHuXUYRP.js";var o=i({__name:`DrawsView`,setup(i){return(i,o)=>(e(),t(`div`,null,[o[0]||=r(`h1`,null,`Draws View`,-1),n(a,{draws:[]})]))}});export{o as default};

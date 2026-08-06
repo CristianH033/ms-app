@@ -1,0 +1,1 @@
+import{L as e,P as t,Pt as n,f as r,ht as i,v as a}from"./runtime-core.esm-bundler-gvzS_ZDe.js";import{t as o}from"./utils-Er3i6ntN.js";var s=a({__name:`AlertDialogFooter`,props:{class:{}},setup(a){let s=a;return(a,c)=>(t(),r(`div`,{class:n(i(o)(`flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-x-2`,s.class))},[e(a.$slots,`default`)],2))}});export{s as t};

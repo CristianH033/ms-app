@@ -1,0 +1,1 @@
+import{P as e,Pt as t,f as n,ht as r,v as i}from"./runtime-core.esm-bundler-gvzS_ZDe.js";import{t as a}from"./utils-Er3i6ntN.js";var o=i({__name:`Skeleton`,props:{class:{}},setup(i){let o=i;return(i,s)=>(e(),n(`div`,{class:t(r(a)(`animate-pulse rounded-md bg-muted`,o.class))},null,2))}});export{o as t};
