@@ -36,3 +36,5 @@ playwright-report/
 .env
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/playwright-profile/
+.claude/playwright-output/
